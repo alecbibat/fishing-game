@@ -17,7 +17,7 @@ export function defaultState(name = 'Angler') {
     coins: 50,
     xp: 0,
     zone: 'town',
-    pos: { x: 42, z: 72 },
+    pos: { x: 35, z: 94 },
     backpackTier: 0,
     rod: { kind: 'tier', id: 'rod_t1' },
     rodTierOwned: 1,

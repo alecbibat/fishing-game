@@ -27,6 +27,29 @@ function distToRiver(x, z) {
 }
 const gauss = (x, z, cx, cz, sigma) => Math.exp(-(dist2d(x, z, cx, cz) ** 2) / (2 * sigma * sigma));
 
+// dirt paths that stitch the world together
+const PATHS = [
+  [[35, 92], [16, 130], [-30, 186], [-120, 226], [-200, 250], [-260, 258]],        // square → meadow ponds
+  [[30, 58], [80, 30], [140, -30], [200, -120], [232, -230], [242, -300]],         // square → lake
+  [[46, 96], [110, 180], [220, 300], [340, 380], [440, 420]],                      // square → docks
+  [[8, 44], [-50, -6], [-130, -50], [-240, -10], [-360, 40], [-440, 70]],          // town → swamp
+  [[-24, -110], [-90, -170], [-180, -250], [-280, -360], [-330, -440]],            // bridge → mountains/cave
+];
+function distToPaths(x, z) {
+  let best = 1e9;
+  for (const path of PATHS) {
+    for (let i = 0; i < path.length - 1; i++) {
+      const [ax, az] = path[i], [bx, bz] = path[i + 1];
+      const dx = bx - ax, dz = bz - az;
+      const t = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), 0, 1);
+      best = Math.min(best, dist2d(x, z, ax + dx * t, az + dz * t));
+      if (best < 1) return best;
+    }
+  }
+  return best;
+}
+export const SQUARE = { x: 35, z: 80 };
+
 export function overworldHeight(x, z) {
   let h = fbm(x * 0.0022, z * 0.0022, 4, SEED) * 26 - 6;
   // mountains
@@ -95,27 +118,47 @@ export function overworldZone(x, z) {
 function groundColor(x, z, h, wl) {
   const biome = overworldBiome(x, z);
   const n = fbm(x * 0.01, z * 0.01, 2, SEED + 77);
+  const inTown = dist2d(x, z, 0, 100) < 150;
+  const cobble = () => {
+    const cb = 0.5 + hash2(Math.round(x * 1.6), Math.round(z * 1.6), 5) * 0.2;
+    return [cb, cb * 0.98, cb * 0.92];
+  };
   let c;
-  if (h < wl - 6) c = [0.13, 0.22, 0.28];
-  else if (h < wl + 0.3) {
-    c = biome === 'swamp' ? [0.32, 0.3, 0.2] : biome === 'volcanic' ? [0.4, 0.28, 0.2] : [0.85, 0.76, 0.55];
-  } else if (h < wl + 1.6) {
-    c = biome === 'swamp' ? [0.36, 0.35, 0.24] : biome === 'volcanic' ? [0.48, 0.32, 0.22] : [0.88, 0.8, 0.58];
-  } else if (h > 46) c = [0.92, 0.94, 0.96];
-  else if (h > 27) c = [0.52, 0.52, 0.5];
+  if (h < wl - 6) c = [0.14, 0.24, 0.3];
+  else if (h < wl + 0.35) {
+    // waterline: paved quays in town, mud in the swamp, sand elsewhere
+    if (inTown) c = [0.52, 0.5, 0.46];
+    else c = biome === 'swamp' ? [0.34, 0.31, 0.2] : biome === 'volcanic' ? [0.42, 0.29, 0.2] : [0.89, 0.78, 0.53];
+  } else if (h < wl + 0.9 && !inTown) {
+    c = biome === 'swamp' ? [0.38, 0.36, 0.24] : biome === 'volcanic' ? [0.5, 0.33, 0.22] : [0.91, 0.82, 0.57];
+  } else if (h > 46) c = [0.93, 0.94, 0.96];
+  else if (h > 27) c = [0.54, 0.53, 0.5];
   else {
+    // town square cobbles
+    if (dist2d(x, z, SQUARE.x, SQUARE.z) < 26) return cobble();
+    // dirt paths
+    const pd = distToPaths(x, z);
+    if (pd < 3.2) {
+      if (inTown) return cobble();
+      const k = 0.85 + n * 0.2;
+      return [0.62 * k, 0.52 * k, 0.36 * k];
+    }
     switch (biome) {
-      case 'swamp': c = [0.33, 0.42, 0.27]; break;
-      case 'volcanic': c = [0.5, 0.34, 0.24]; break;
-      case 'glacier': c = [0.72, 0.8, 0.82]; break;
-      case 'harbor': {
-        const town = dist2d(x, z, 0, 100) < 150;
-        c = town ? [0.66, 0.63, 0.56] : [0.46, 0.62, 0.34];
+      case 'swamp': c = [0.34, 0.43, 0.26]; break;
+      case 'volcanic': c = [0.52, 0.35, 0.24]; break;
+      case 'glacier': c = [0.74, 0.81, 0.82]; break;
+      case 'harbor':
+        c = inTown ? [0.45, 0.6, 0.33] : [0.44, 0.63, 0.3]; // town greens
         break;
-      }
-      default: c = [0.44, 0.63, 0.34];
+      default: c = [0.43, 0.64, 0.29];
     }
     c = c.map((v) => v * (0.88 + n * 0.24));
+    // soften path edges
+    if (pd < 6) {
+      const mix = (pd - 3.2) / 2.8;
+      const pe = inTown ? [0.56, 0.55, 0.51] : [0.58, 0.49, 0.34];
+      c = [c[0] * mix + pe[0] * (1 - mix), c[1] * mix + pe[1] * (1 - mix), c[2] * mix + pe[2] * (1 - mix)];
+    }
   }
   return c;
 }
@@ -179,12 +222,12 @@ export function placeMerged(items) {
 }
 
 // ---------------- water material ----------------
-export function makeWater(width, depth, color, opacity = 0.82) {
+export function makeWater(width, depth, color, opacity = 0.78) {
   const geo = new THREE.PlaneGeometry(width, depth, Math.min(96, width / 12 | 0 || 8), Math.min(96, depth / 12 | 0 || 8));
   geo.rotateX(-Math.PI / 2);
   const mat = new THREE.MeshPhongMaterial({
-    color, transparent: true, opacity, shininess: 120,
-    specular: new THREE.Color('#bfeeff'), flatShading: true,
+    color, transparent: true, opacity, shininess: 160,
+    specular: new THREE.Color('#ffe8c8'), flatShading: true,
   });
   const mesh = new THREE.Mesh(geo, mat);
   const base = geo.attributes.position.array.slice();
@@ -212,13 +255,15 @@ export class World {
     this.hotspots = [];
     this.hotspotTimer = 0;
     this.dayLength = 1200; // seconds per full day
-    this.gameTime = 0.35;  // start mid-morning
+    this.gameTime = 0.3;   // start on a golden morning
 
-    this.hemi = new THREE.HemisphereLight('#cfe8ef', '#5a6b4a', 0.9);
-    this.sun = new THREE.DirectionalLight('#fff4d6', 1.2);
+    this.hemi = new THREE.HemisphereLight('#d8e8f0', '#7d8a5c', 0.75);
+    this.sun = new THREE.DirectionalLight('#ffe2ae', 1.35);
     this.sun.position.set(120, 180, 80);
-    scene.add(this.hemi, this.sun);
-    this.fog = new THREE.Fog('#bfe3e0', 180, 700);
+    this.fill = new THREE.DirectionalLight('#ffd9c4', 0.22); // warm bounce fill
+    this.fill.position.set(-100, 60, -120);
+    scene.add(this.hemi, this.sun, this.fill);
+    this.fog = new THREE.Fog('#c8e0e4', 150, 620);
     scene.fog = this.fog;
   }
 
@@ -314,12 +359,12 @@ export class World {
 
   applySky() {
     const tt = this.gameTime;
-    const dayC = new THREE.Color('#9fd8e8'), duskC = new THREE.Color('#f2b98a'), nightC = new THREE.Color('#16243c');
+    const dayC = new THREE.Color('#9ed4e8'), duskC = new THREE.Color('#f0a468'), nightC = new THREE.Color('#1a2740');
     let sky, sunI, hemiI;
     const k = this.timeKey();
-    if (k === 'day') { sky = dayC; sunI = 1.15; hemiI = 0.9; }
-    else if (k === 'dawnDusk') { sky = duskC; sunI = 0.75; hemiI = 0.65; }
-    else { sky = nightC; sunI = 0.12; hemiI = 0.32; }
+    if (k === 'day') { sky = dayC; sunI = 1.35; hemiI = 0.75; }
+    else if (k === 'dawnDusk') { sky = duskC; sunI = 0.85; hemiI = 0.55; }
+    else { sky = nightC; sunI = 0.1; hemiI = 0.3; }
     this._skyCur = this._skyCur || sky.clone();
     this._skyCur.lerp(sky, 0.02);
     this.scene.background = this._skyCur;
@@ -455,7 +500,7 @@ export class World {
         if (zone === 'glacier' || z < -420) proto = r > 0.86 ? protos.pine2 : protos.pine;
         else if (zone === 'swamp') proto = r > 0.75 ? protos.willow : protos.dead;
         else if (zone === 'volcanic') { if (r < 0.9) continue; proto = protos.dead; }
-        else if (z > 380) proto = protos.palm;
+        else if (z > 440) proto = protos.palm; // palms only near the coast
         else if (zone === 'pond') proto = r > 0.8 ? protos.willow : protos.oak;
         else proto = r > 0.88 ? protos.pine : (r > 0.6 ? protos.oak2 : protos.oak);
         items.push({ proto, x, y: h - 0.15, z, ry: r * 6.28, s: 0.8 + r * 0.7 });
@@ -492,15 +537,17 @@ export class World {
     for (const [cx, cz] of [[458, 428], [462, 431], [500, 415], [24, 44], [98, 96]]) {
       items.push({ proto: hash2(cx, cz) > 0.5 ? crateProto : barrelProto, x: cx, y: overworldHeight(cx, cz), z: cz, ry: hash2(cx, cz) * 3, s: 1 });
     }
-    // bridges over river
-    for (const [bx, bz, ry] of [[-1, -110, 0.32], [-16, 224, 0.1]]) {
-      const b = P.makeBridge(26, 4.5);
-      items.push({ proto: b, x: bx, y: overworldWaterLevel(bx, bz) + 0.6, z: bz, ry, s: 1 });
-    }
-    // town canal bridges (walkable)
-    for (const [bx, bz] of [[6, 58], [-8, 150]]) {
-      const b = P.makeBridge(34, 5);
-      items.push({ proto: b, x: bx, y: 0.6, z: bz, ry: 0, s: 1 });
+    // bridges over the river — decks long enough to land on dry ground both sides
+    const bridgeSpots = [
+      { x: 6, z: 58, len: 48 },     // town square crossing
+      { x: -8, z: 150, len: 48 },   // south town crossing
+      { x: -20, z: -110, len: 48 }, // north road to the mountains
+      { x: -18, z: 224, len: 48 },  // meadow road
+    ];
+    const bridgePlatforms = [];
+    for (const b of bridgeSpots) {
+      items.push({ proto: P.makeBridge(b.len, 5), x: b.x, y: 0.6, z: b.z, ry: 0, s: 1 });
+      bridgePlatforms.push({ x1: b.x - b.len / 2, x2: b.x + b.len / 2, z1: b.z - 2.6, z2: b.z + 2.6, y: 1.7 });
     }
     // lighthouse
     const lh = new THREE.Group();
@@ -560,6 +607,188 @@ export class World {
       items.push({ proto: signProto, x: sx, y: overworldHeight(sx, sz), z: sz, ry: hash2(sx, sz) * 6, s: 1 });
     }
 
+    // ---- Willowbrook town square (the spawn) ----
+    const sq = SQUARE;
+    const sqY = overworldHeight(sq.x, sq.z);
+    // real cobblestone plaza (canvas texture — terrain verts are too coarse for this)
+    {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 512;
+      const g2 = cv.getContext('2d');
+      g2.fillStyle = '#6e6a60';
+      g2.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 900; i++) {
+        const rx = hash2(i, 1) * 512, rz = hash2(i, 2) * 512;
+        const rw = 10 + hash2(i, 3) * 14, rh = 8 + hash2(i, 4) * 10;
+        const tone = 128 + Math.floor(hash2(i, 5) * 60);
+        g2.fillStyle = `rgb(${tone},${tone - 4},${tone - 12})`;
+        g2.beginPath();
+        g2.ellipse(rx, rz, rw / 2, rh / 2, hash2(i, 6) * 3, 0, Math.PI * 2);
+        g2.fill();
+      }
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(3, 3);
+      const plaza = new THREE.Mesh(new THREE.CircleGeometry(26, 36), new THREE.MeshLambertMaterial({ map: tex }));
+      plaza.rotation.x = -Math.PI / 2;
+      plaza.position.set(sq.x, sqY + 0.07, sq.z);
+      group.add(plaza);
+      // stone rim
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(26, 0.5, 5, 40), P.mat('#7b7d76'));
+      rim.rotation.x = -Math.PI / 2;
+      rim.position.set(sq.x, sqY + 0.1, sq.z);
+      group.add(rim);
+    }
+    const fountain = P.makeFountain();
+    fountain.position.set(sq.x, sqY, sq.z);
+    group.add(fountain);
+    this.animated.push(fountain);
+    blockers.push({ x: sq.x, z: sq.z, r: 3.8 });
+    for (const [bx, bz, ry] of [[sq.x - 8, sq.z - 6, 0.9], [sq.x + 9, sq.z - 5, -0.9], [sq.x + 7, sq.z + 9, 2.4]]) {
+      items.push({ proto: P.makeBench(), x: bx, y: overworldHeight(bx, bz), z: bz, ry, s: 1 });
+    }
+    const stall1 = P.makeStall('#c0392b'), stall2 = P.makeStall('#2e6da4');
+    items.push({ proto: stall1, x: sq.x - 14, y: overworldHeight(sq.x - 14, sq.z - 10), z: sq.z - 10, ry: 0.6, s: 1 });
+    items.push({ proto: stall2, x: sq.x + 16, y: overworldHeight(sq.x + 16, sq.z - 8), z: sq.z - 8, ry: -0.7, s: 1 });
+    blockers.push({ x: sq.x - 14, z: sq.z - 10, r: 2 }, { x: sq.x + 16, z: sq.z - 8, r: 2 });
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2 + 0.4;
+      const fx2 = sq.x + Math.cos(a) * 20, fz2 = sq.z + Math.sin(a) * 20;
+      items.push({ proto: P.makeFlowers(i + 60), x: fx2, y: overworldHeight(fx2, fz2), z: fz2, ry: 0, s: 1 });
+    }
+    // live lamps with glowing bulbs around the square + a warm light
+    for (const [lx, lz] of [[sq.x - 12, sq.z + 8], [sq.x + 13, sq.z + 10], [sq.x - 10, sq.z - 12], [sq.x + 12, sq.z - 12]]) {
+      const lamp = P.makeLamp();
+      lamp.position.set(lx, overworldHeight(lx, lz), lz);
+      group.add(lamp);
+    }
+    const squareGlow = new THREE.PointLight('#ffcf8a', 140, 60, 2);
+    squareGlow.position.set(sq.x, sqY + 6, sq.z);
+    group.add(squareGlow);
+    // notice board
+    const board = new THREE.Group();
+    board.add(new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 0.14), P.mat('#8a6642')));
+    board.children[0].position.y = 1.9;
+    const post1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 2.6, 0.16), P.mat('#6e4a2e'));
+    post1.position.set(-1.1, 1.3, 0);
+    const post2 = post1.clone(); post2.position.x = 1.1;
+    const note = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.6), P.mat('#e8dcc8'));
+    note.position.set(-0.4, 1.95, 0.08);
+    const note2 = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.4), P.mat('#d8c8a8'));
+    note2.position.set(0.5, 1.85, 0.08);
+    board.add(post1, post2, note, note2);
+    board.position.set(sq.x - 16, sqY, sq.z + 16);
+    board.rotation.y = Math.PI * 0.85;
+    group.add(board);
+    blockers.push({ x: sq.x - 16, z: sq.z + 16, r: 1.6 });
+
+    // ---- fishing piers (auto-find the shoreline) ----
+    const pierPlatforms = [];
+    const addPier = (zLine, xFrom, xTo) => {
+      const step = xTo > xFrom ? 2 : -2;
+      for (let x = xFrom; Math.abs(x - xTo) > 2; x += step) {
+        if (overworldHeight(x, zLine) >= overworldWaterLevel(x, zLine) - 0.15) continue;
+        // x is the first watery sample — pier starts just before it
+        const startX = x - step * 2;
+        const len = 16;
+        const dir = Math.sign(step);
+        const pier = P.makeDock(len, 3);
+        items.push({ proto: pier, x: startX, y: 0, z: zLine, ry: dir > 0 ? -Math.PI / 2 : Math.PI / 2, s: 1 });
+        const x1 = dir > 0 ? startX - 1 : startX - len, x2 = dir > 0 ? startX + len : startX + 1;
+        pierPlatforms.push({ x1, x2, z1: zLine - 1.6, z2: zLine + 1.6, y: 0.95 });
+        return { x: startX + dir * len * 0.7, z: zLine };
+      }
+      return null;
+    };
+    addPier(262, -240, -320);       // meadow pond pier
+    const lakePier = addPier(-320, 230, 380); // lake pier
+    if (lakePier) {
+      // fishing hut by the lake pier
+      const hut = P.makeHouse({ w: 5, d: 4, h: 2.6, wall: '#c8b89a', roof: '#5f7a43' });
+      const hx = 236, hz = -334;
+      items.push({ proto: hut, x: hx, y: overworldHeight(hx, hz), z: hz, ry: 0.8, s: 1 });
+      blockers.push({ x: hx, z: hz, r: 3.6 });
+    }
+
+    // ---- wayside spots between destinations ----
+    const windmill = P.makeWindmill();
+    windmill.position.set(-150, overworldHeight(-150, 218), 218);
+    group.add(windmill);
+    this.animated.push(windmill);
+    blockers.push({ x: -150, z: 218, r: 3 });
+    // travellers' camp at the crossroads
+    items.push({ proto: P.makeTent('#b8683c'), x: -128, y: overworldHeight(-128, -52), z: -52, ry: 0.6, s: 1 });
+    items.push({ proto: P.makeTent('#6b8f4a'), x: -134, y: overworldHeight(-134, -46), z: -46, ry: -0.8, s: 1 });
+    const campFire2 = P.makeCampfire();
+    campFire2.position.set(-130, overworldHeight(-130, -58), -58);
+    group.add(campFire2);
+    this.animated.push(campFire2);
+    // ruined watchtower on the lake road
+    const ruin = new THREE.Group();
+    for (let i = 0; i < 4; i++) {
+      const ring = new THREE.Mesh(new THREE.CylinderGeometry(2.4 - i * 0.15, 2.6 - i * 0.15, 1.6, 9), P.mat(i % 2 ? '#7b7d76' : '#8d8d85'));
+      ring.position.y = 0.8 + i * 1.6;
+      if (i === 3) { ring.scale.x = 0.6; ring.position.x = 0.7; }
+      ruin.add(ring);
+    }
+    ruin.position.set(185, overworldHeight(185, -140), -140);
+    group.add(ruin);
+    blockers.push({ x: 185, z: -140, r: 3 });
+
+    // ---- ground cover: grass tufts, flowers, bushes ----
+    const cover = {
+      tuft: P.makeGrassTuft(1), tuft2: P.makeGrassTuft(2),
+      flowers: P.makeFlowers(3), flowers2: P.makeFlowers(4), bush: P.makeBush(5), bush2: P.makeBush(6),
+    };
+    for (let gx = -HALF + 8; gx < HALF; gx += 15) {
+      for (let gz = -HALF + 8; gz < HALF; gz += 15) {
+        const r = hash2(gx, gz, SEED + 99);
+        if (r < 0.7) continue;
+        const x = gx + (hash2(gx, gz, 7) - 0.5) * 10;
+        const z = gz + (hash2(gx, gz, 8) - 0.5) * 10;
+        const h = overworldHeight(x, z);
+        const wl = overworldWaterLevel(x, z);
+        if (h < wl + 1 || h > 26) continue;
+        if (dist2d(x, z, sq.x, sq.z) < 26) continue;
+        if (distToPaths(x, z) < 3.4) continue;
+        const zone = overworldZone(x, z);
+        if (zone === 'volcanic' || zone === 'glacier') continue;
+        let proto;
+        if (r > 0.965) proto = hash2(gx, gz, 9) > 0.5 ? cover.bush : cover.bush2;
+        else if (r > 0.9 && (zone === 'pond' || zone === 'town' || distToPaths(x, z) < 14)) proto = hash2(gx, gz, 10) > 0.5 ? cover.flowers : cover.flowers2;
+        else proto = hash2(gx, gz, 11) > 0.5 ? cover.tuft : cover.tuft2;
+        items.push({ proto, x, y: h - 0.05, z, ry: r * 6.28, s: 0.8 + r * 0.5 });
+      }
+    }
+
+    // ---- drifting clouds ----
+    const clouds = new THREE.Group();
+    for (let i = 0; i < 11; i++) {
+      const c = new THREE.Group();
+      const puffs = 3 + Math.floor(hash2(i, 1) * 3);
+      for (let p = 0; p < puffs; p++) {
+        const puff = new THREE.Mesh(
+          new THREE.IcosahedronGeometry(6 + hash2(i, p + 2) * 7, 0),
+          new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#e8f0f4', emissiveIntensity: 0.28, transparent: true, opacity: 0.92, flatShading: true })
+        );
+        puff.position.set(p * 8 - puffs * 4 + hash2(i, p + 5) * 6, hash2(i, p + 8) * 3, (hash2(i, p + 11) - 0.5) * 10);
+        puff.scale.y = 0.45;
+        c.add(puff);
+      }
+      c.position.set((hash2(i, 20) - 0.5) * 1700, 130 + hash2(i, 21) * 60, (hash2(i, 22) - 0.5) * 1700);
+      c.userData.speed = 1.2 + hash2(i, 23) * 1.6;
+      clouds.add(c);
+    }
+    clouds.userData.animate = (t, dt) => {
+      for (const c of clouds.children) {
+        c.position.x += c.userData.speed * dt;
+        if (c.position.x > 950) c.position.x = -950;
+      }
+    };
+    group.add(clouds);
+    this.animated.push(clouds);
+
     const merged = placeMerged(items);
     if (merged) group.add(merged);
 
@@ -596,14 +825,14 @@ export class World {
       biome: overworldBiome,
       zone: overworldZone,
       inBounds: (x, z) => x > -HALF + 6 && x < HALF - 6 && z > -HALF + 6 && z < HALF - 6,
-      spawn: { x: 42, z: 72 },
+      spawn: { x: 35, z: 94 },
       interactables,
       blockers,
       platforms: [
         { x1: 468.5, x2: 471.5, z1: 452, z2: 472, y: 0.95 },
         { x1: 498.5, x2: 501.5, z1: 448, z2: 468, y: 0.95 },
-        { x1: -11, x2: 23, z1: 55.4, z2: 60.6, y: 1.7 },
-        { x1: -25, x2: 9, z1: 147.4, z2: 152.6, y: 1.7 },
+        ...bridgePlatforms,
+        ...pierPlatforms,
       ],
       hotspotAreas: [
         { x: -320, z: 260, spread: 120 }, { x: 380, z: -320, spread: 220 },

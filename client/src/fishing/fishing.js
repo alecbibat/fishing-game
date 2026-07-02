@@ -120,17 +120,19 @@ export class Fishing {
     return false;
   }
 
-  tryStartCast() {
+  tryStartCast(mode = 'hold') {
     if (this.active) return false;
     if (!S.activeBait) { emit('toast', { text: 'You need bait!', sub: 'Buy some at the Bait Shop in Willowbrook.' }); return false; }
     if (!this.canFishHere()) return false;
     this.phase = 'casting';
+    this.castMode = mode;
     this.castT = 0;
     this.player.frozen = true;
     this.player.rig.userData.rod.visible = true;
     this.player.rig.userData.setAnim('fish');
     this.ui.root.classList.remove('hidden');
     this.ui.castMeter.classList.remove('hidden');
+    this.ui.hint.textContent = mode === 'click' ? 'Click again to cast!' : '';
     emit('fishing', { phase: 'casting' });
     return true;
   }
@@ -240,7 +242,10 @@ export class Fishing {
       this.castT += dt;
       this.castPower = Math.abs(Math.sin(this.castT * 2.4));
       this.ui.castFill.style.width = `${this.castPower * 100}%`;
-      if (!hold) this.releaseCast();
+      if (this.castMode === 'click') {
+        // click-cast: a second click (or Space tap) releases
+        if (input.consumeClick() || (this.castT > 0.2 && input.keys['Space'])) this.releaseCast();
+      } else if (!hold) this.releaseCast();
       return;
     }
 

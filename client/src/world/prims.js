@@ -214,6 +214,136 @@ export function makeCrate() {
   return m(new THREE.BoxGeometry(0.9, 0.9, 0.9), mat('#a87a4a'), 0, 0.45, 0);
 }
 
+export function makeBench() {
+  const g = new THREE.Group();
+  g.add(m(new THREE.BoxGeometry(1.8, 0.1, 0.5), mat('#8a6642'), 0, 0.5, 0));
+  g.add(m(new THREE.BoxGeometry(1.8, 0.5, 0.1), mat('#7a5230'), 0, 0.85, -0.22));
+  g.add(m(new THREE.BoxGeometry(0.12, 0.5, 0.45), mat('#5d4430'), -0.75, 0.25, 0));
+  g.add(m(new THREE.BoxGeometry(0.12, 0.5, 0.45), mat('#5d4430'), 0.75, 0.25, 0));
+  return g;
+}
+
+export function makeStall(awning = '#c0392b') {
+  const g = new THREE.Group();
+  g.add(m(new THREE.BoxGeometry(2.6, 0.9, 1.4), mat('#8a6642'), 0, 0.45, 0)); // counter
+  for (const sx of [-1.2, 1.2]) {
+    g.add(m(new THREE.BoxGeometry(0.12, 2.3, 0.12), mat('#6e4a2e'), sx, 1.15, -0.6));
+    g.add(m(new THREE.BoxGeometry(0.12, 2.3, 0.12), mat('#6e4a2e'), sx, 1.15, 0.6));
+  }
+  // striped awning
+  for (let i = 0; i < 5; i++) {
+    const stripe = m(new THREE.BoxGeometry(0.56, 0.06, 1.9), mat(i % 2 ? '#f2ead4' : awning), -1.12 + i * 0.56, 2.36, 0.1);
+    stripe.rotation.x = -0.18;
+    g.add(stripe);
+  }
+  g.add(m(new THREE.BoxGeometry(0.5, 0.3, 0.5), mat('#a8b86b'), -0.6, 1.05, 0));
+  g.add(m(new THREE.BoxGeometry(0.4, 0.25, 0.4), mat('#c47a4a'), 0.4, 1.02, 0.2));
+  return g;
+}
+
+export function makeFountain() {
+  const g = new THREE.Group();
+  g.add(m(new THREE.CylinderGeometry(3, 3.3, 0.9, 12), mat('#8d8d85'), 0, 0.45, 0));
+  const water = m(new THREE.CylinderGeometry(2.7, 2.7, 0.12, 12), new THREE.MeshPhongMaterial({ color: '#5fb8c4', transparent: true, opacity: 0.85, shininess: 140 }), 0, 0.92, 0);
+  g.add(water);
+  g.add(m(new THREE.CylinderGeometry(0.35, 0.5, 1.6, 8), mat('#7b7d76'), 0, 1.6, 0));
+  g.add(m(new THREE.CylinderGeometry(1.1, 1.3, 0.35, 10), mat('#8d8d85'), 0, 2.4, 0));
+  const spout = m(new THREE.ConeGeometry(0.28, 0.8, 8), emissiveMat('#bfe8f0', 0.35), 0, 2.9, 0);
+  g.add(spout);
+  // droplet points
+  const n = 40;
+  const pts = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    pts[i * 3] = Math.cos(a) * (0.4 + (i % 4) * 0.35);
+    pts[i * 3 + 1] = 1.2 + (i % 7) * 0.25;
+    pts[i * 3 + 2] = Math.sin(a) * (0.4 + (i % 4) * 0.35);
+  }
+  const pg = new THREE.BufferGeometry();
+  pg.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  const drops = new THREE.Points(pg, new THREE.PointsMaterial({ color: '#dff6f8', size: 0.16, transparent: true, opacity: 0.9 }));
+  g.add(drops);
+  g.userData.animate = (t, dt) => {
+    const p = pg.attributes.position.array;
+    for (let i = 0; i < n; i++) {
+      p[i * 3 + 1] -= dt * 1.6;
+      if (p[i * 3 + 1] < 1.0) p[i * 3 + 1] = 2.9;
+    }
+    pg.attributes.position.needsUpdate = true;
+    water.material.opacity = 0.75 + Math.sin(t * 2.4) * 0.08;
+  };
+  return g;
+}
+
+export function makeFlowers(seed = 1) {
+  const g = new THREE.Group();
+  const colors = ['#e86a6a', '#e8c86a', '#c17fd4', '#f0f0f0', '#f0965a'];
+  const n = 3 + Math.floor(hash2(seed, 1) * 4);
+  for (let i = 0; i < n; i++) {
+    const x = (hash2(seed, i + 2) - 0.5) * 1.6, z = (hash2(seed, i + 5) - 0.5) * 1.6;
+    const h = 0.3 + hash2(seed, i + 8) * 0.3;
+    g.add(m(new THREE.BoxGeometry(0.04, h, 0.04), mat('#5c8a4a'), x, h / 2, z));
+    g.add(m(new THREE.IcosahedronGeometry(0.11, 0), mat(colors[Math.floor(hash2(seed, i + 11) * colors.length)]), x, h + 0.06, z));
+  }
+  return g;
+}
+
+export function makeGrassTuft(seed = 1) {
+  const g = new THREE.Group();
+  const n = 3 + Math.floor(hash2(seed, 1) * 3);
+  for (let i = 0; i < n; i++) {
+    const h = 0.35 + hash2(seed, i) * 0.4;
+    const blade = m(new THREE.BoxGeometry(0.06, h, 0.06), mat(hash2(seed, i + 3) > 0.5 ? '#679a4a' : '#78a856'),
+      (hash2(seed, i + 6) - 0.5) * 0.5, h / 2, (hash2(seed, i + 9) - 0.5) * 0.5);
+    blade.rotation.z = (hash2(seed, i + 12) - 0.5) * 0.5;
+    g.add(blade);
+  }
+  return g;
+}
+
+export function makeBush(seed = 1) {
+  const g = new THREE.Group();
+  const s = 0.5 + hash2(seed, 1) * 0.6;
+  g.add(m(new THREE.IcosahedronGeometry(0.7 * s, 0), mat('#4a8a44'), 0, 0.5 * s, 0));
+  if (hash2(seed, 3) > 0.5) g.add(m(new THREE.IcosahedronGeometry(0.45 * s, 0), mat('#57a05a'), 0.5 * s, 0.35 * s, 0.2));
+  if (hash2(seed, 5) > 0.6) {
+    for (let i = 0; i < 4; i++) {
+      g.add(m(new THREE.IcosahedronGeometry(0.06, 0), mat('#d84a5a'), (hash2(seed, i + 7) - 0.5) * s, (0.4 + hash2(seed, i + 9) * 0.4) * s, (hash2(seed, i + 11) - 0.5) * s));
+    }
+  }
+  return g;
+}
+
+export function makeWindmill() {
+  const g = new THREE.Group();
+  const tower = m(new THREE.CylinderGeometry(1.6, 2.4, 9, 8), mat('#e0d4b8'), 0, 4.5, 0);
+  g.add(tower);
+  g.add(m(new THREE.ConeGeometry(2, 2.2, 8), mat('#a8543f'), 0, 10, 0));
+  g.add(m(new THREE.BoxGeometry(1, 1.6, 0.15), mat('#6b4a2e'), 0, 0.9, 2.35));
+  const hub = new THREE.Group();
+  hub.position.set(0, 8.6, 2.1);
+  for (let i = 0; i < 4; i++) {
+    const blade = m(new THREE.BoxGeometry(0.5, 4.4, 0.08), mat('#d8ccb0'), 0, 2.4, 0);
+    const frame = m(new THREE.BoxGeometry(0.12, 4.6, 0.14), mat('#6e4a2e'), -0.3, 2.4, 0);
+    const arm = new THREE.Group();
+    arm.add(blade, frame);
+    arm.rotation.z = (i / 4) * Math.PI * 2;
+    hub.add(arm);
+  }
+  g.add(hub);
+  g.userData.animate = (t) => { hub.rotation.z = t * 0.5; };
+  return g;
+}
+
+export function makeTent(color = '#b8683c') {
+  const g = new THREE.Group();
+  const tent = m(new THREE.ConeGeometry(1.6, 2, 4), mat(color), 0, 1, 0);
+  tent.rotation.y = Math.PI / 4;
+  g.add(tent);
+  g.add(m(new THREE.CylinderGeometry(0.05, 0.05, 2.4, 4), mat('#6e4a2e'), 0, 1.2, 0));
+  return g;
+}
+
 export function makeSignpost() {
   const g = new THREE.Group();
   g.add(m(new THREE.CylinderGeometry(0.08, 0.1, 1.6, 5), mat('#6e4a2e'), 0, 0.8, 0));

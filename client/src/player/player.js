@@ -4,44 +4,91 @@ import { clamp, lerp } from '../core/util.js';
 import { mat } from '../world/prims.js';
 import { makeTextSprite } from '../world/prims.js';
 
-// ---------- humanoid rig ----------
+// ---------- humanoid rig (RuneScape-style blocky proportions) ----------
 export function makeHumanoid(look = {}) {
   const { shirt = '#d9663f', pants = '#3f5d8a', hat = '#7a5230', skin = '#f0c49a', hair = '#5d4430' } = look;
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.0, 0.5), mat(shirt));
-  body.position.y = 1.15;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 8, 7), mat(skin));
-  head.position.y = 2.05;
-  const hairM = new THREE.Mesh(new THREE.SphereGeometry(0.44, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2.6), mat(hair));
-  hairM.position.y = 2.12;
-  const legL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.7, 0.34), mat(pants));
-  legL.position.set(-0.22, 0.35, 0);
-  const legR = legL.clone(); legR.position.x = 0.22;
-  const armL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.85, 0.28), mat(shirt));
-  armL.position.set(-0.56, 1.2, 0);
-  const armR = armL.clone(); armR.position.x = 0.56;
-  g.add(body, head, hairM, legL, legR, armL, armR);
-  let hatG = null;
+  const shade = (hex, f) => '#' + new THREE.Color(hex).multiplyScalar(f).getHexString();
+
+  // torso: broad chest tapering to a belted waist
+  const torso = new THREE.Group();
+  const chest = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.62, 0.46), mat(shirt));
+  chest.position.y = 1.42;
+  const waist = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.34, 0.4), mat(shirt));
+  waist.position.y = 0.96;
+  const belt = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.12, 0.42), mat(shade(pants, 0.55)));
+  belt.position.y = 0.82;
+  const shoulderL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.2, 0.48), mat(shade(shirt, 0.8)));
+  shoulderL.position.set(-0.56, 1.66, 0);
+  const shoulderR = shoulderL.clone();
+  shoulderR.position.x = 0.56;
+  torso.add(chest, waist, belt, shoulderL, shoulderR);
+  g.add(torso);
+
+  // head: blocky with neck, hair cap, face
+  const neck = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.22), mat(skin));
+  neck.position.y = 1.78;
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.54, 0.5), mat(skin));
+  head.position.y = 2.12;
+  const hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.18, 0.54), mat(hair));
+  hairTop.position.y = 2.38;
+  const hairBack = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.34, 0.16), mat(hair));
+  hairBack.position.set(0, 2.18, -0.22);
+  const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.03), mat('#26221c'));
+  eyeL.position.set(-0.12, 2.16, 0.26);
+  const eyeR = eyeL.clone(); eyeR.position.x = 0.12;
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.12, 0.08), mat(shade(skin, 0.9)));
+  nose.position.set(0, 2.06, 0.27);
+  g.add(neck, head, hairTop, hairBack, eyeL, eyeR, nose);
   if (hat) {
-    hatG = new THREE.Group();
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.07, 10), mat(hat));
-    const topM = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.4, 0.35, 9), mat(hat));
-    topM.position.y = 0.2;
-    hatG.add(brim, topM);
-    hatG.position.y = 2.42;
+    const hatG = new THREE.Group();
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.58, 0.08, 9), mat(hat));
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.36, 0.34, 8), mat(hat));
+    top.position.y = 0.18;
+    hatG.add(brim, top);
+    hatG.position.y = 2.46;
     g.add(hatG);
   }
-  // simple face
-  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 4, 4), mat('#2a2a2a'));
-  eyeL.position.set(-0.14, 2.1, 0.38);
-  const eyeR = eyeL.clone(); eyeR.position.x = 0.14;
-  g.add(eyeL, eyeR);
-  // fishing rod (hidden unless fishing/held)
+
+  // arms: pivot at the shoulder, hang at the sides, skin forearms + hands
+  function makeArm(side) {
+    const arm = new THREE.Group();
+    arm.position.set(side * 0.56, 1.6, 0);
+    const upper = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.5, 0.26), mat(shirt));
+    upper.position.y = -0.3;
+    const fore = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.42, 0.22), mat(skin));
+    fore.position.y = -0.74;
+    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.24), mat(shade(skin, 0.92)));
+    hand.position.y = -1.0;
+    arm.add(upper, fore, hand);
+    arm.rotation.z = side * -0.08; // slight outward hang
+    return arm;
+  }
+  const armL = makeArm(-1), armR = makeArm(1);
+  g.add(armL, armR);
+
+  // legs: pivot at the hip, boots
+  function makeLeg(side) {
+    const leg = new THREE.Group();
+    leg.position.set(side * 0.2, 0.78, 0);
+    const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.44, 0.34), mat(pants));
+    thigh.position.y = -0.22;
+    const shin = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.36, 0.3), mat(shade(pants, 0.82)));
+    shin.position.y = -0.58;
+    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.14, 0.44), mat('#4a3a28'));
+    boot.position.set(0, -0.73, 0.05);
+    leg.add(thigh, shin, boot);
+    return leg;
+  }
+  const legL = makeLeg(-1), legR = makeLeg(1);
+  g.add(legL, legR);
+
+  // fishing rod (hidden unless fishing/held) — held in the right hand
   const rod = new THREE.Group();
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 2.6, 5), mat('#8a6642'));
   pole.position.y = 1.3;
   rod.add(pole);
-  rod.position.set(0.62, 1.1, 0.25);
+  rod.position.set(0.6, 0.7, 0.3);
   rod.rotation.x = -0.9;
   rod.visible = false;
   g.add(rod);
@@ -54,21 +101,21 @@ export function makeHumanoid(look = {}) {
   g.userData.animate = (t, dt) => {
     phase += dt * (anim === 'walk' ? 9 : 2);
     if (anim === 'walk') {
-      legL.rotation.x = Math.sin(phase) * 0.7;
-      legR.rotation.x = -Math.sin(phase) * 0.7;
-      armL.rotation.x = -Math.sin(phase) * 0.5;
-      armR.rotation.x = rod.visible ? -0.9 : Math.sin(phase) * 0.5;
-      body.position.y = 1.15 + Math.abs(Math.sin(phase)) * 0.05;
+      legL.rotation.x = Math.sin(phase) * 0.65;
+      legR.rotation.x = -Math.sin(phase) * 0.65;
+      armL.rotation.x = -Math.sin(phase) * 0.55;
+      armR.rotation.x = rod.visible ? -0.9 : Math.sin(phase) * 0.55;
+      torso.position.y = Math.abs(Math.sin(phase)) * 0.04;
     } else if (anim === 'fish') {
       legL.rotation.x = legR.rotation.x = 0;
-      armR.rotation.x = -1.1;
-      armL.rotation.x = -0.25;
-      body.position.y = 1.15;
+      armR.rotation.x = -1.15;
+      armL.rotation.x = -0.3;
+      torso.position.y = 0;
     } else {
       legL.rotation.x = legR.rotation.x = 0;
-      armL.rotation.x = Math.sin(phase * 0.5) * 0.06;
-      armR.rotation.x = rod.visible ? -0.9 : Math.sin(phase * 0.5 + 1) * 0.06;
-      body.position.y = 1.15 + Math.sin(phase * 0.8) * 0.02;
+      armL.rotation.x = Math.sin(phase * 0.5) * 0.05;
+      armR.rotation.x = rod.visible ? -0.9 : Math.sin(phase * 0.5 + 1) * 0.05;
+      torso.position.y = Math.sin(phase * 0.8) * 0.015;
     }
     rod.rotation.x = anim === 'fish' ? -0.55 : -0.9;
   };
@@ -125,10 +172,10 @@ export class Player {
     const k = input.keys;
     let mx = 0, mz = 0;
     if (!this.frozen && !input.typing) {
-      if (k['KeyW'] || k['ArrowUp']) mz -= 1;
-      if (k['KeyS'] || k['ArrowDown']) mz += 1;
-      if (k['KeyA'] || k['ArrowLeft']) mx -= 1;
-      if (k['KeyD'] || k['ArrowRight']) mx += 1;
+      if (k['KeyW'] || k['ArrowUp']) mz += 1;
+      if (k['KeyS'] || k['ArrowDown']) mz -= 1;
+      if (k['KeyA'] || k['ArrowLeft']) mx += 1;
+      if (k['KeyD'] || k['ArrowRight']) mx -= 1;
     }
     let moving = (mx !== 0 || mz !== 0);
     if (moving) this.walkTarget = null;

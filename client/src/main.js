@@ -22,6 +22,8 @@ const canvas = $('#game-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#9fd8e8');
 const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.1, 2200);
@@ -73,9 +75,10 @@ function startGame() {
     onAnnounce: (c) => { if (net.roomCode) net.sendCatch(c); },
   });
 
-  // camera controls
+  // camera controls — rotating is allowed while the line is out (waiting/bite),
+  // blocked only while charging a hold-cast or reeling (pointer means something else)
   input.onDrag = (dx, dy) => {
-    if (fishing.active) return;
+    if (fishing.phase === 'reeling' || (fishing.phase === 'casting' && fishing.castMode === 'hold')) return;
     player.camYaw -= dx * 0.008;
     player.camPitch = clamp(player.camPitch + dy * 0.005, 0.08, 1.25);
   };
@@ -111,10 +114,11 @@ function startGame() {
     if (code === 'Space' && fishing.phase === 'idle' && !dialogueNpc) fishing.tryStartCast();
   };
 
-  canvas.addEventListener('pointerdown', () => {
-    if (!running || hud.chatFocused || currentWindow() || dialogueNpc) return;
-    if (fishing.phase === 'idle') fishing.tryStartCast();
-  });
+  // click (not drag) starts a click-cast; a second click releases it
+  input.onPointerUp = (wasDrag) => {
+    if (wasDrag || !running || hud.chatFocused || currentWindow() || dialogueNpc) return;
+    if (fishing.phase === 'idle' && fishing.tryStartCast('click')) input.consumeClick();
+  };
 
   // bait pill → quick bait switcher
   $('#bait-pill').addEventListener('click', () => openBaitSwitcher());

@@ -8,10 +8,11 @@ const SHOP_ANCHORS = {
   bait: { x: -60, z: 118 }, attachments: { x: 60, z: 122 }, potions: { x: -20, z: 176 },
   general: { x: -34, z: 46 }, rods: { x: 52, z: 118 },
 };
+// most folk hang around the square; a few wander the wider town
 const TOWN_SPOTS = [
-  { x: 32, z: 80 }, { x: -40, z: 108 }, { x: 38, z: 148 }, { x: -52, z: 66 },
-  { x: 78, z: 66 }, { x: 30, z: 192 }, { x: -84, z: 148 }, { x: 96, z: 134 },
-  { x: 52, z: 36 }, { x: -38, z: 32 }, { x: 60, z: 176 }, { x: 118, z: 74 },
+  { x: 26, z: 72 }, { x: 46, z: 76 }, { x: 30, z: 92 }, { x: 50, z: 64 },
+  { x: 24, z: 90 }, { x: 52, z: 92 }, { x: 78, z: 66 }, { x: -40, z: 108 },
+  { x: 96, z: 134 }, { x: 52, z: 36 }, { x: 60, z: 176 }, { x: 118, z: 74 },
 ];
 const ZONE_ANCHORS = { docks: { x: 478, z: 444 }, rig: { x: 6, z: 6 } };
 
