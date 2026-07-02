@@ -94,7 +94,11 @@ function startGame() {
       if (fishing.active) return fishing.cancel();
       return openWindow('settings', { net });
     }
-    if (currentWindow()) { if (windowKeys[code]) closeWindow(); return; }
+    if (currentWindow()) {
+      if (!windowKeys[code]) return;
+      if (currentWindow() === windowKeys[code] || (code === 'KeyI' && currentWindow() === 'island')) { closeWindow(); return; }
+      closeWindow(); // fall through: switch to the requested window
+    }
     if (windowKeys[code]) {
       if (code === 'KeyI') return openIslandWindow();
       if (code === 'KeyM') return openWindow('map', { playerPos: { x: player.x, z: player.z }, mapId: world.mapId });

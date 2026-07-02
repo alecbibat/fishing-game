@@ -18,7 +18,7 @@ function flatMap({ id, groundY = 2, waterY = 0, biome, spawn, size = 90 }) {
     id,
     ground: () => groundY,
     water: () => waterY,
-    biome: () => biome,
+    biome: (x, z) => (typeof biome === 'function' ? biome(x, z) : biome),
     inBounds: (x, z) => Math.abs(x) < size && Math.abs(z) < size,
     spawn,
     interactables: [],

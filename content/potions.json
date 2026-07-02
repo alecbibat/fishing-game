@@ -1,0 +1,182 @@
+{
+  "potions": [
+    {
+      "id": "pond_scum_pep",
+      "name": "Pond Scum Pep",
+      "color": "#7fb95c",
+      "flavor": "Technically it's algae tea, but the Brewer insists on calling it 'wetland espresso'. Fish find your hook noticeably more interesting; friends find your breath noticeably less.",
+      "ingredients": [{ "kind": "rarity", "value": "common", "n": 4 }],
+      "duration": 10,
+      "effects": { "biteRate": 0.15 }
+    },
+    {
+      "id": "tiny_fry_tonic",
+      "name": "Tiny Fry Tonic",
+      "color": "#c9e265",
+      "flavor": "Six very small fish, one very small cauldron, one surprisingly large lesson about patience. Tastes like childhood summers and faintly of minnow.",
+      "ingredients": [{ "kind": "sizeClass", "value": "tiny", "n": 6 }],
+      "duration": 15,
+      "effects": { "xpBonus": 0.15 }
+    },
+    {
+      "id": "river_runners_brew",
+      "name": "River Runner's Brew",
+      "color": "#5aa9d6",
+      "flavor": "Brewed at a rolling simmer because the river never sits still and neither should the pot. Drink it and the current starts whispering where the fish are hiding.",
+      "ingredients": [{ "kind": "biome", "value": "river", "n": 4 }],
+      "duration": 15,
+      "effects": { "biteRate": 0.25 }
+    },
+    {
+      "id": "steady_sipping_syrup",
+      "name": "Steady Sipping Syrup",
+      "color": "#6bc4a6",
+      "flavor": "Thick as lake fog and twice as calm. The Brewer stirs it exactly once an hour, on principle, and your reeling hand learns the same restraint.",
+      "ingredients": [
+        { "kind": "biome", "value": "lake", "n": 3 },
+        { "kind": "rarity", "value": "common", "n": 2 }
+      ],
+      "duration": 15,
+      "effects": { "stability": 0.25 }
+    },
+    {
+      "id": "brackish_broth",
+      "name": "Brackish Broth",
+      "color": "#6b7a3f",
+      "flavor": "Smells like a swamp because it is, in every meaningful sense, a swamp. Somehow it settles the nerves the way only a warm bog can.",
+      "ingredients": [{ "kind": "biome", "value": "swamp", "n": 4 }],
+      "duration": 20,
+      "effects": { "stability": 0.2, "biteRate": 0.1 }
+    },
+    {
+      "id": "sewer_sheen",
+      "name": "Sewer Sheen",
+      "color": "#9da34b",
+      "flavor": "The Potion Brewer swears the shimmer is 'mostly minerals'. Whatever swims through the undercity apparently knows where all the loose coins settle.",
+      "ingredients": [{ "kind": "biome", "value": "sewer", "n": 3 }],
+      "duration": 15,
+      "effects": { "goldBonus": 0.25 }
+    },
+    {
+      "id": "salt_spray_cordial",
+      "name": "Salt Spray Cordial",
+      "color": "#4fc3d9",
+      "flavor": "Bottled at high tide with a pinch of gull feather for luck. One sip and the catch bar stretches out like a lazy cat in a sunbeam.",
+      "ingredients": [
+        { "kind": "biome", "value": "coast", "n": 4 },
+        { "kind": "rarity", "value": "uncommon", "n": 2 }
+      ],
+      "duration": 20,
+      "effects": { "barSize": 0.2 }
+    },
+    {
+      "id": "glacier_glaze",
+      "name": "Glacier Glaze",
+      "color": "#a8dcef",
+      "flavor": "Served cold, obviously; the Brewer once tried it warm and would rather not discuss it. Your hands go still as old ice and the fish stop noticing you're there.",
+      "ingredients": [
+        { "kind": "biome", "value": "glacier", "n": 4 },
+        { "kind": "sizeClass", "value": "medium", "n": 2 }
+      ],
+      "duration": 20,
+      "effects": { "stability": 0.35, "barSize": 0.1 }
+    },
+    {
+      "id": "reef_rainbow_reduction",
+      "name": "Reef Rainbow Reduction",
+      "color": "#e86fa4",
+      "flavor": "Five reef fish, simmered until the pot starts humming in color. It never comes out the same shade twice, and neither does whatever bites next.",
+      "ingredients": [
+        { "kind": "biome", "value": "reef", "n": 5 },
+        { "kind": "rarity", "value": "uncommon", "n": 3 }
+      ],
+      "duration": 20,
+      "effects": { "rareLuck": 0.15, "biteRate": 0.1 }
+    },
+    {
+      "id": "lanternlight_cordial",
+      "name": "Lanternlight Cordial",
+      "color": "#b47fe0",
+      "flavor": "Glows softly in the dark, like a nightlight for your stomach. Cave fish brewed with a rare catch teach your eyes to find what hides at the edges.",
+      "ingredients": [
+        { "kind": "biome", "value": "cave", "n": 3 },
+        { "kind": "rarity", "value": "rare", "n": 1 }
+      ],
+      "duration": 20,
+      "effects": { "barSize": 0.3, "rareLuck": 0.1 }
+    },
+    {
+      "id": "big_fish_bisque",
+      "name": "Big Fish Bisque",
+      "color": "#d98e4a",
+      "flavor": "A hearty soup for anglers with hearty ambitions. Eat a big fish, become the kind of person big fish want to meet — the food chain is mostly confidence anyway.",
+      "ingredients": [
+        { "kind": "sizeClass", "value": "large", "n": 3 },
+        { "kind": "rarity", "value": "rare", "n": 1 }
+      ],
+      "duration": 20,
+      "effects": { "sizeBonus": 0.3 }
+    },
+    {
+      "id": "harbormasters_grog",
+      "name": "Harbormaster's Grog",
+      "color": "#caa64e",
+      "flavor": "The recipe is stamped, notarized, and slightly illegal in three ports. Everything you haul up afterwards seems to have a price tag and occasionally a padlock.",
+      "ingredients": [
+        { "kind": "biome", "value": "harbor", "n": 4 },
+        { "kind": "rarity", "value": "rare", "n": 2 }
+      ],
+      "duration": 25,
+      "effects": { "goldBonus": 0.4, "treasure": 0.1 }
+    },
+    {
+      "id": "double_hook_decoction",
+      "name": "Double Hook Decoction",
+      "color": "#e0637a",
+      "flavor": "Brewed from fish that never learned to travel alone. Drink up and neither will your catches — the Brewery does not offer refunds for tangled lines.",
+      "ingredients": [
+        { "kind": "rarity", "value": "epic", "n": 2 },
+        { "kind": "sizeClass", "value": "small", "n": 4 }
+      ],
+      "duration": 15,
+      "effects": { "multiCatch": 0.15, "biteRate": 0.15 }
+    },
+    {
+      "id": "abyssal_ink_elixir",
+      "name": "Abyssal Ink Elixir",
+      "color": "#3b2d5e",
+      "flavor": "It drinks you back, a little. The trench keeps its secrets in the dark, and for twenty-five minutes the dark decides you're trustworthy.",
+      "ingredients": [
+        { "kind": "biome", "value": "abyss", "n": 3 },
+        { "kind": "rarity", "value": "epic", "n": 2 }
+      ],
+      "duration": 25,
+      "effects": { "rareLuck": 0.3, "treasure": 0.2 }
+    },
+    {
+      "id": "calderas_kiss",
+      "name": "Caldera's Kiss",
+      "color": "#e8542f",
+      "flavor": "Legendary scales dissolved in hot spring water, still gently boiling in the bottle. Whatever takes your hook afterwards will be built to match your new opinion of yourself.",
+      "ingredients": [
+        { "kind": "biome", "value": "volcanic", "n": 3 },
+        { "kind": "rarity", "value": "legendary", "n": 1 }
+      ],
+      "duration": 25,
+      "effects": { "sizeBonus": 0.45, "rareLuck": 0.2 }
+    },
+    {
+      "id": "leviathans_lullaby",
+      "name": "Leviathan's Lullaby",
+      "color": "#46f0d2",
+      "flavor": "One mythic catch, two colossal ones, and a Brewer who didn't sleep for a week. The sea goes quiet when you uncork it — not empty, listening.",
+      "ingredients": [
+        { "kind": "rarity", "value": "mythic", "n": 1 },
+        { "kind": "sizeClass", "value": "colossal", "n": 2 },
+        { "kind": "rarity", "value": "legendary", "n": 2 }
+      ],
+      "duration": 30,
+      "effects": { "rareLuck": 0.5, "multiCatch": 0.25 }
+    }
+  ]
+}

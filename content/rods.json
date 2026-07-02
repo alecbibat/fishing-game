@@ -1,0 +1,256 @@
+{
+  "rods": [
+    {
+      "id": "rod_t1",
+      "tier": 1,
+      "name": "Willow Switch",
+      "flavor": "A bendy stick, a length of string, and boundless optimism. The fish are not intimidated, which is exactly how you'll catch them.",
+      "cost": {
+        "coins": 0,
+        "fish": []
+      },
+      "stats": {
+        "power": 1,
+        "biteRate": 0,
+        "rareLuck": 0,
+        "barSize": 0,
+        "stability": 0,
+        "slots": 1
+      }
+    },
+    {
+      "id": "rod_t2",
+      "tier": 2,
+      "name": "Ashwood Angler",
+      "flavor": "Sanded smooth by someone who clearly cared, then sold to you by someone who clearly didn't. Smells faintly of campfires and second chances.",
+      "cost": {
+        "coins": 200,
+        "fish": [
+          { "kind": "rarity", "value": "common", "n": 5 }
+        ]
+      },
+      "stats": {
+        "power": 2,
+        "biteRate": 0.05,
+        "rareLuck": 0.02,
+        "barSize": 0.04,
+        "stability": 0.03,
+        "slots": 1
+      }
+    },
+    {
+      "id": "rod_t3",
+      "tier": 3,
+      "name": "Riverwarden's Cane",
+      "flavor": "Copper-ferruled and river-tested by three generations of wardens who all retired happy. The current whispers to it, and it politely whispers back.",
+      "cost": {
+        "coins": 600,
+        "fish": [
+          { "kind": "rarity", "value": "common", "n": 10 },
+          { "kind": "biome", "value": "river", "n": 3 }
+        ]
+      },
+      "stats": {
+        "power": 3,
+        "biteRate": 0.1,
+        "rareLuck": 0.04,
+        "barSize": 0.08,
+        "stability": 0.06,
+        "slots": 2
+      }
+    },
+    {
+      "id": "rod_t4",
+      "tier": 4,
+      "name": "Lakekeeper's Longpole",
+      "flavor": "Long enough to reach the deep middle water where the smug fish live. Comes with a small brass bell that rings only when it feels like it.",
+      "cost": {
+        "coins": 1500,
+        "fish": [
+          { "kind": "rarity", "value": "uncommon", "n": 5 },
+          { "kind": "biome", "value": "lake", "n": 4 }
+        ]
+      },
+      "stats": {
+        "power": 4,
+        "biteRate": 0.14,
+        "rareLuck": 0.07,
+        "barSize": 0.12,
+        "stability": 0.1,
+        "slots": 2
+      }
+    },
+    {
+      "id": "rod_t5",
+      "tier": 5,
+      "name": "Saltspray Longcast",
+      "flavor": "Whip it forward and the line sails clean past the breakers, humming a sailor's tune. The salt has cured the wood into something that no longer fears weather, or much of anything.",
+      "cost": {
+        "coins": 4000,
+        "fish": [
+          { "kind": "rarity", "value": "uncommon", "n": 8 },
+          { "kind": "biome", "value": "coast", "n": 5 }
+        ]
+      },
+      "stats": {
+        "power": 5,
+        "biteRate": 0.18,
+        "rareLuck": 0.1,
+        "barSize": 0.16,
+        "stability": 0.14,
+        "slots": 2
+      }
+    },
+    {
+      "id": "rod_t6",
+      "tier": 6,
+      "name": "Coralsong Spire",
+      "flavor": "Grown, not built, in a reef garden where the polyps hum in harmony. Cast it and the water blooms with colour, as if the ocean is showing off for you.",
+      "cost": {
+        "coins": 9000,
+        "fish": [
+          { "kind": "rarity", "value": "rare", "n": 3 },
+          { "kind": "biome", "value": "reef", "n": 6 }
+        ]
+      },
+      "stats": {
+        "power": 5,
+        "biteRate": 0.22,
+        "rareLuck": 0.14,
+        "barSize": 0.2,
+        "stability": 0.18,
+        "slots": 3
+      }
+    },
+    {
+      "id": "rod_t7",
+      "tier": 7,
+      "name": "Marshlight Snare",
+      "flavor": "Lacquered in swamp-witch resin and strung with sewer-silk, it glows a gentle green wherever honest light refuses to go. The murk holds no secrets from it, only appointments.",
+      "cost": {
+        "coins": 20000,
+        "fish": [
+          { "kind": "rarity", "value": "rare", "n": 6 },
+          { "kind": "biome", "value": "swamp", "n": 5 },
+          { "kind": "biome", "value": "sewer", "n": 3 }
+        ]
+      },
+      "stats": {
+        "power": 6,
+        "biteRate": 0.27,
+        "rareLuck": 0.18,
+        "barSize": 0.25,
+        "stability": 0.22,
+        "slots": 3
+      }
+    },
+    {
+      "id": "rod_t8",
+      "tier": 8,
+      "name": "Glacierheart Rod",
+      "flavor": "Its core is a sliver of thousand-year ice that refuses to melt out of sheer stubbornness. Hold it steady and the whole world seems to slow down and breathe.",
+      "cost": {
+        "coins": 45000,
+        "fish": [
+          { "kind": "rarity", "value": "epic", "n": 2 },
+          { "kind": "biome", "value": "glacier", "n": 6 }
+        ]
+      },
+      "stats": {
+        "power": 7,
+        "biteRate": 0.32,
+        "rareLuck": 0.23,
+        "barSize": 0.3,
+        "stability": 0.27,
+        "slots": 3
+      }
+    },
+    {
+      "id": "rod_t9",
+      "tier": 9,
+      "name": "Rigline Colossus",
+      "flavor": "Welded from salvaged derrick steel and enough cable to moor a small nation. It doesn't cast so much as launch, and the deep sea has learned to take it seriously.",
+      "cost": {
+        "coins": 90000,
+        "fish": [
+          { "kind": "rarity", "value": "epic", "n": 4 },
+          { "kind": "biome", "value": "rig", "n": 5 },
+          { "kind": "biome", "value": "deepsea", "n": 8 }
+        ]
+      },
+      "stats": {
+        "power": 8,
+        "biteRate": 0.38,
+        "rareLuck": 0.28,
+        "barSize": 0.35,
+        "stability": 0.32,
+        "slots": 3
+      }
+    },
+    {
+      "id": "rod_t10",
+      "tier": 10,
+      "name": "Abysscaller",
+      "flavor": "Its line vanishes into black water and keeps going long after the ocean should have ended. Sometimes, when the night is very quiet, something at the other end tugs first.",
+      "cost": {
+        "coins": 180000,
+        "fish": [
+          { "kind": "rarity", "value": "legendary", "n": 1 },
+          { "kind": "biome", "value": "abyss", "n": 6 }
+        ]
+      },
+      "stats": {
+        "power": 9,
+        "biteRate": 0.44,
+        "rareLuck": 0.34,
+        "barSize": 0.4,
+        "stability": 0.38,
+        "slots": 4
+      }
+    },
+    {
+      "id": "rod_t11",
+      "tier": 11,
+      "name": "Calderaforged Fang",
+      "flavor": "Quenched in a volcanic spring and cooled in a glacier lake, it still can't decide which one it prefers. The grip stays warm as fresh bread, even in a blizzard.",
+      "cost": {
+        "coins": 350000,
+        "fish": [
+          { "kind": "rarity", "value": "legendary", "n": 3 },
+          { "kind": "rarity", "value": "epic", "n": 10 },
+          { "kind": "biome", "value": "volcanic", "n": 8 }
+        ]
+      },
+      "stats": {
+        "power": 9,
+        "biteRate": 0.52,
+        "rareLuck": 0.42,
+        "barSize": 0.45,
+        "stability": 0.44,
+        "slots": 4
+      }
+    },
+    {
+      "id": "rod_t12",
+      "tier": 12,
+      "name": "The Leviathan's Toothpick",
+      "flavor": "Carved from a single rib of something the charts only call HERE BE, strung with a filament of dawn. When you cast it, the horizon leans in to watch.",
+      "cost": {
+        "coins": 700000,
+        "fish": [
+          { "kind": "rarity", "value": "mythic", "n": 1 },
+          { "kind": "rarity", "value": "legendary", "n": 5 },
+          { "kind": "biome", "value": "abyss", "n": 10 }
+        ]
+      },
+      "stats": {
+        "power": 10,
+        "biteRate": 0.6,
+        "rareLuck": 0.5,
+        "barSize": 0.5,
+        "stability": 0.5,
+        "slots": 4
+      }
+    }
+  ]
+}

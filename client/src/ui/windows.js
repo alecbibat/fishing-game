@@ -128,7 +128,7 @@ function buildBank(bodyEl) {
 let dexFilter = { q: '', biome: 'all', rarity: 'all', caught: false };
 function buildDex(bodyEl) {
   const caughtN = dexSpeciesCount();
-  titleEl().textContent = `📖 Fish Dex — ${caughtN}/${FISH.length} discovered`;
+  titleEl().textContent = `📖 Fish Dex — ${caughtN}/${FISH.length + TRANSCENDENT.length} discovered`;
   const header = el('div', { class: 'dex-header' });
   const search = el('input', { placeholder: '🔍 Search fish…', value: dexFilter.q });
   search.addEventListener('input', () => { dexFilter.q = search.value.toLowerCase(); renderGrid(); });

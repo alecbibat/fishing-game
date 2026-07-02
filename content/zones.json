@@ -1,0 +1,116 @@
+{
+  "zones": {
+    "town": {
+      "displayName": "Willowbrook",
+      "tagline": "Where every road smells faintly of bait",
+      "sign": "Welcome to Willowbrook! Please do not fish in the fountain. Again.",
+      "description": "A drowsy market town stitched together by rope bridges, tackle shops, and at least three competing chowder recipes. Everyone here fishes, used to fish, or married someone who won't stop talking about fishing. The fountain in the square is strictly ornamental, no matter what the ripples suggest.",
+      "secretHint": "They drained the fountain once, years ago, and whatever they saw down there made them fill it back up in a hurry."
+    },
+    "pond": {
+      "displayName": "Dapplebrim Pond",
+      "tagline": "Small water, big beginnings",
+      "sign": "Dapplebrim Pond. Beginners welcome. Frogs judgemental.",
+      "description": "A meadow pond ringed by buttercups, dozing dragonflies, and the gentle plop of first casts. Every legend in Willowbrook caught their first minnow here, and most of them still sneak back on quiet mornings. The water is shallow, warm, and far more patient than it has any right to be.",
+      "secretHint": "On misty dawns the lilypads drift into a circle, and something old and golden surfaces to remember being small."
+    },
+    "river": {
+      "displayName": "The Tumblesong River",
+      "tagline": "Never fishes the same twice",
+      "sign": "The Tumblesong. Mind the current, mind the otters, mind your footing. Mostly the otters.",
+      "description": "A bright, chattering river that hurries down from the hills as if late for something important. Trout hang in the eddies like commuters, and the otters have unionised. Locals swear the water sings a different tune depending on what's biting.",
+      "secretHint": "Follow the river's song upstream until it goes quiet; the silence is where the silver king holds court."
+    },
+    "lake": {
+      "displayName": "Mirrormere",
+      "tagline": "The sky's favourite fishing spot",
+      "sign": "Mirrormere. Please do not skip stones at the reflection. It skips back.",
+      "description": "A lake so still it borrows the sky and forgets to return it, doubling every cloud and every heron. Rowboats drift here for hours while their owners insist they're 'strategising'. The deep middle is colder than it should be, and the fish there are older than the town.",
+      "secretHint": "Cast at your own reflection on a moonless night and you may hook what the lake keeps on the other side."
+    },
+    "coast": {
+      "displayName": "Saltwhistle Shore",
+      "tagline": "Wind, waves, and wet boots",
+      "sign": "Saltwhistle Shore. The gulls have learned to open bait boxes. You have been warned.",
+      "description": "A long crescent of pale sand and grumbling surf where the wind whistles through the sea stacks like a kettle that never boils. Beachcombers trade driftwood, sea glass, and outrageous lies about wave height. At low tide the rock pools hold entire tiny kingdoms, each with its own tiny politics.",
+      "secretHint": "Once a season the tide pulls back further than the maps allow, and footprints appear that walk into the sea."
+    },
+    "docks": {
+      "displayName": "Driftwood Docks",
+      "tagline": "All journeys start here, eventually",
+      "sign": "Driftwood Docks — Ferries to Everywhere. Timetable approximate. Captain's mood decisive.",
+      "description": "The great ferry hub of the isles: a creaking sprawl of piers, cranes, crab pots, and sailors who all claim to have seen the abyss and blinked first. Every plank was salvaged from a different wreck, which the harbourmaster insists is charming rather than concerning. If you stand still too long, someone will hand you a rope and expect you to pull.",
+      "secretHint": "Pier Thirteen isn't on the timetable, but a ferry still leaves from it when the fog is thick enough to knock on."
+    },
+    "swamp": {
+      "displayName": "Gurglemire Fen",
+      "tagline": "Squelchy, smelly, secretly splendid",
+      "sign": "Gurglemire Fen. If the water blinks at you, blink back slowly.",
+      "description": "A warm green labyrinth of cypress knees, curtain moss, and mud with opinions. Fireflies run the night shift, frogs run the choir, and something large runs the deeper channels, though it keeps to itself. Bring boots you're willing to lose and bait you're willing to apologise for.",
+      "secretHint": "The old lantern in the dead tree lights itself for one angler a year, and the mud parts politely for whoever it chooses."
+    },
+    "glacier": {
+      "displayName": "Shiverpane Tarn",
+      "tagline": "Fishing at the world's cold edge",
+      "sign": "Shiverpane Tarn. Ice thickness: probably fine. Signed, the previous sign-writer.",
+      "description": "A glacier-fed lake the colour of held breath, ringed by blue ice cliffs that groan like old floorboards. The fish here move slowly and think deeply, preserved in cold like memories. Auroras visit most nights, apparently just to watch people shiver.",
+      "secretHint": "Deep in the clearest ice hangs a fish that predates the glacier, and some nights its eye follows your lantern."
+    },
+    "volcanic": {
+      "displayName": "Emberkettle Springs",
+      "tagline": "The water bites back warmly",
+      "sign": "Emberkettle Springs. Water temperature: soup. Fish temperament: spicy.",
+      "description": "Steaming turquoise pools terraced down the flank of a politely smoldering volcano. The fish here have adapted to heat the way blacksmiths do: with thick skins and short tempers. Bathing is permitted, encouraged, and occasionally interrupted by something with fins nibbling your toes experimentally.",
+      "secretHint": "When the mountain clears its throat, a fish of living ember rises through the hottest pool to breathe the smoke."
+    },
+    "sewer": {
+      "displayName": "The Willowbrook Underworks",
+      "tagline": "One town's loss, your catch",
+      "sign": "The Underworks. Abandon smell, all ye who enter here.",
+      "description": "Beneath Willowbrook's cobbles runs a brick-vaulted maze of canals, valves, and echoes that answer slightly too late. Generations of lost rings, keys, and secrets have washed down here, and the fish have grown strange and prosperous on them. The rats charge a toll, but they take buttons.",
+      "secretHint": "Somewhere down here swims a pale fish wearing the mayor's great-grandmother's wedding ring, and it is not keen to give it back."
+    },
+    "cave": {
+      "displayName": "Glimmerdeep Hollows",
+      "tagline": "The dark keeps beautiful things",
+      "sign": "Glimmerdeep Hollows. Mind your head. Mind the glow. The glow minds you back.",
+      "description": "A cathedral of caverns where every pool shines with its own soft blue-green light, cast by fish that never learned about the sun and frankly aren't missing much. Crystals chime when the water moves, which is how the caves applaud a good catch. Whispering is customary; the echoes collect anything louder.",
+      "secretHint": "Snuff your lantern completely and count to a hundred; whatever lights the hundredth second is willing to be caught."
+    },
+    "reef": {
+      "displayName": "Coralcrown Shallows",
+      "tagline": "A garden that swims",
+      "sign": "Coralcrown Shallows. Look, marvel, catch — but leave the coral its crown.",
+      "description": "A sunlit reef of impossible colour, as if a rainbow ran aground and decided to stay. Parrotfish gossip, anemones wave at passing boats, and the coral towers are older than every kingdom that ever claimed them. Even the barracudas seem to be on holiday.",
+      "secretHint": "The reef's oldest coral tower is hollow, and at high noon its shadow points to a fish wearing colours the sea hasn't invented yet."
+    },
+    "deepsea": {
+      "displayName": "The Sunless Reach",
+      "tagline": "Where daylight pays no visits",
+      "sign": "The Sunless Reach. Last daylight for several fathoms. Wave goodbye to the surface.",
+      "description": "Open ocean over water so deep the charts just write 'yes'. Down in the dark, lanternfish hold their tiny vigils and larger things pass beneath the boat like weather. Every angler comes back from the Reach a little quieter, and none of them will say whether that's fear or reverence.",
+      "secretHint": "Sailors say a light rises to meet lonely boats out here, and that it looks exactly like whatever you miss most."
+    },
+    "rig": {
+      "displayName": "Old Gertrude",
+      "tagline": "Rust never sleeps, neither here",
+      "sign": "Old Gertrude — Decommissioned Rig. Structurally sound-ish. Fishing excellent. Ladders optional.",
+      "description": "A retired oil rig gone gloriously feral: barnacles on the ladders, cormorants in the crane, and an artificial reef of machinery blooming below the waterline. The fish love the wreckage the way children love a climbing frame. Somewhere in her rusted heart, Gertrude's old generator still hums a note nobody's been able to find.",
+      "secretHint": "The maintenance hatch on sublevel three was welded shut from the inside, and on stormy nights something rings the shift bell."
+    },
+    "abyss": {
+      "displayName": "The Hushing Trench",
+      "tagline": "The sea's held breath",
+      "sign": "The Hushing Trench. Silence appreciated. Silence, in fact, insisted upon.",
+      "description": "A wound in the seafloor so deep that light gave up generations ago and pressure took over the lease. What lives here has never heard of the sun and has grown magnificent in its absence. Your line will run out long before the trench does, and both of you will know it.",
+      "secretHint": "At the bottom of everything something vast is sleeping, and the rarest catch in the world is one of its dreams."
+    },
+    "island": {
+      "displayName": "Keelhaven",
+      "tagline": "Your very own somewhere",
+      "sign": "Keelhaven. Population: you. Trespassers will be offered tea.",
+      "description": "A pocket of sea and sky sold to you by the Island Broker with a firm handshake and a suspiciously knowing smile. Every dock plank, garden bed, and lantern here is yours to place, and the fish seem to swim a little closer for it. The portal home always smells faintly of whichever supper you're most homesick for.",
+      "secretHint": "The Broker never explained the locked chest buried under the oldest palm, or why the deed lists a previous owner as 'the sea'."
+    }
+  }
+}

@@ -317,7 +317,7 @@ export class Fishing {
         g.tension = Math.max(0, g.tension - dt * 0.06);
       } else {
         g.progress -= dt * 0.085;
-        g.tension += dt * (0.075 + g.diff * 0.009) * (1 - clamp(fx.tension, 0, 0.75));
+        g.tension += dt * (0.045 + g.diff * 0.012) * (1 - clamp(fx.tension, 0, 0.75));
       }
       g.progress = clamp(g.progress, 0, 1);
 

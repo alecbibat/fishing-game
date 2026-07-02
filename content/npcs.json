@@ -1,0 +1,416 @@
+{
+  "npcs": [
+    {
+      "id": "mayor-marigold",
+      "name": "Mayor Bea Marigold",
+      "role": "Mayor of Willowbrook",
+      "personality": "Warm, relentlessly civic-minded, and one ribbon-cutting away from carpal tunnel.",
+      "appearance": {
+        "shirt": "#7b3f9e",
+        "pants": "#3a3a4a",
+        "hat": "#e8c547",
+        "skin": "#d9a06b",
+        "hair": "#c0c0c8"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "Willowbrook was founded on three things: timber, tides, and a truly stubborn refusal to move somewhere drier.",
+        "I've proposed a Founders' Day fishing derby every year for nine years. This year the budget committee finally blinked. It's happening.",
+        "If anyone asks, the statue in the square is holding a sword. It is absolutely not a very large herring.",
+        "The bakery says something keeps rattling the grate out back at night. I told them it's raccoons. Please let it be raccoons.",
+        "Between us? The town charter has a clause about a 'glowing grotto' up past the falls. Nobody's amended it out. Nobody's dared.",
+        "A mayor's job is ninety percent handshakes and ten percent apologizing to the lighthouse keeper.",
+        "Catch something record-worthy and I'll shake your hand at the derby. Around here, that's basically knighthood."
+      ],
+      "greeting": "Welcome to Willowbrook! Mind the gulls — they're bolder than the tax code."
+    },
+    {
+      "id": "banker-sterling",
+      "name": "Prudence Sterling",
+      "role": "Vault Keeper, Willowbrook Bank",
+      "personality": "Precise, dry as a receipt, and secretly sentimental about her regulars.",
+      "appearance": {
+        "shirt": "#2e4a3d",
+        "pants": "#1f2430",
+        "hat": null,
+        "skin": "#8a5a38",
+        "hair": "#1a1a1a"
+      },
+      "zone": "town",
+      "shop": null,
+      "banker": true,
+      "lines": [
+        "The vault is carved into the old harbor bedrock. Nothing gets in, nothing gets out. Mostly nothing gets out.",
+        "Deposit your earnings before you sail. The sea holds a well-documented lien on optimists.",
+        "I once appraised a pearl from the abyssal trench. I still keep the lights on at home. All of them.",
+        "Compound interest is like fishing: patience, discipline, and knowing when something is too good to be a real bite.",
+        "Chowder sat on my ledger for three hours yesterday. The numbers balanced for the first time all month. I have questions.",
+        "Old Halbert deposits the same lucky coin every spring and withdraws it every autumn. I've stopped charging him the fee.",
+        "No, I will not accept fish as collateral. Again."
+      ],
+      "greeting": "Welcome to the Willowbrook Vault. Your coin is safe. Your secrets, safer."
+    },
+    {
+      "id": "broker-marlowe",
+      "name": "Marlowe Keys",
+      "role": "Island Broker",
+      "personality": "Fast-talking portal realtor who genuinely believes every view can be improved.",
+      "appearance": {
+        "shirt": "#e07b39",
+        "pants": "#4a3728",
+        "hat": "#f5f0e6",
+        "skin": "#c68e5e",
+        "hair": "#5a3a22"
+      },
+      "zone": "town",
+      "shop": null,
+      "broker": true,
+      "lines": [
+        "Your island, anywhere you like. Meadow pond sunrise? Glacier lake hush? Volcanic hot spring with complimentary steam? Say the word.",
+        "Relocation is painless. The portal does all the work. Well — painless for you. The portal complains constantly.",
+        "Hot tip: island plots near the coral reef appreciate every time somebody catches something iridescent.",
+        "I once moved a client's island out to the trench overlook. He moved back within the week. Said the dark kept looking at him.",
+        "Location, location, migration. Fish move with the seasons — the smart angler's island moves with the fish.",
+        "Between us, there's a plot registered near a 'luminous cavern' upriver. The paperwork's older than the town. I'd kill to broker it.",
+        "No refunds on ocean views. The ocean was there when you signed.",
+        "The sewer-adjacent plots are shockingly affordable. Shockingly."
+      ],
+      "greeting": "Marlowe Keys, island relocation! Tired of your view? I can fix your view."
+    },
+    {
+      "id": "bait-maude",
+      "name": "Maude Grubb",
+      "role": "Bait Shop Owner",
+      "personality": "Gruffly practical worm merchant with dirt under her nails and gossip behind her teeth.",
+      "appearance": {
+        "shirt": "#8a6d3b",
+        "pants": "#5c4a2e",
+        "hat": "#3e5c3a",
+        "skin": "#b07a4f",
+        "hair": "#7a5230"
+      },
+      "zone": "town",
+      "shop": "bait",
+      "lines": [
+        "A worm on the hook is worth two in the compost. That's free wisdom. The worms are not free.",
+        "Deep-sea fish won't look twice at a garden worm. You want glowshrimp for that. Don't ask where I get glowshrimp.",
+        "The kids keep buying my cheapest maggots and 'racing' them. I don't have the heart to explain maggots.",
+        "Something in the harbor canals has been stripping hooks clean all week. Whatever it is, it's picky and it's smart.",
+        "Swamp leeches: horrible to handle, irresistible to catfish. Life's about tradeoffs.",
+        "I sell bait to the sewer hermit at a discount. Partly kindness, partly because he pays in coins from centuries I don't recognize.",
+        "You didn't hear it from me, but chum works wonders off the old rig. The foreman pretends to disapprove."
+      ],
+      "greeting": "Fresh worms, day-old worms, and worms of mysterious provenance. What'll it be?"
+    },
+    {
+      "id": "rods-castwell",
+      "name": "Reed Castwell",
+      "role": "Rod Dealer",
+      "personality": "Reverent craftsman who treats every rod like a rescue animal looking for the right home.",
+      "appearance": {
+        "shirt": "#3a5f8a",
+        "pants": "#2b2b2b",
+        "hat": null,
+        "skin": "#e8b88a",
+        "hair": "#8a3b1e"
+      },
+      "zone": "town",
+      "shop": "rods",
+      "lines": [
+        "A rod should feel like an argument you're winning. If it feels like an argument you're losing, that's a snapped rod.",
+        "Willow heartwood for rivers, whale-bone core for the deep. Anything abyssal, you want something that doesn't mind the pressure. Or the whispers.",
+        "Halbert's old rod hangs on my wall. He won't sell it and I won't stop asking. It's tradition now.",
+        "Did a repair for the lighthouse keeper once. The rod came back smelling of storms and never cast straight in fair weather again.",
+        "Test your drag before the glacier lakes. The fish up there fight cold and quiet, then all at once.",
+        "Someone brought me a rod they fished out of the grate behind the bakery. Fine craftsmanship. Older than the bakery. Older than bread, possibly.",
+        "The reef will eat cheap tackle alive. Coral has opinions.",
+        "I name every rod I sell. The warranty is void if you rename them something stupid."
+      ],
+      "greeting": "Every rod in here has a soul. Some have two. Browse gently."
+    },
+    {
+      "id": "tinker-tilly",
+      "name": "Tilly Sprocket",
+      "role": "Attachment Tinkerer",
+      "personality": "Caffeinated inventor whose workshop failures are at least as popular as her successes.",
+      "appearance": {
+        "shirt": "#b8452e",
+        "pants": "#6e5a3a",
+        "hat": "#8f7635",
+        "skin": "#f2c9a1",
+        "hair": "#d97b28"
+      },
+      "zone": "town",
+      "shop": "attachments",
+      "lines": [
+        "Lures, bobbers, sonar bells, hook-warmers for the glacier lakes — if it clips onto a line, I've built it. Or exploded it.",
+        "My depth-gauge works perfectly all the way down to the trench. Past that, it just displays a tiny picture of a question mark.",
+        "The glow-lure was inspired by moss from a cave upriver. I only ever got one sample. I would pay handsomely for more. HANDSOMELY.",
+        "Fishing the rig? Take the magnet clamp. Metal fish, metal debris, metal everything out there. Half of it's still warm.",
+        "Don't buy the self-hooking hook. I mean, it's for sale, but don't buy it. We've lost three ceiling fans.",
+        "The sewer hermit trades me the strangest little gears. Pre-Willowbrook make. Whoever built down there was better at this than me. Don't tell him I said that.",
+        "A bell attachment that only rings for rare fish! Current version rings for rare fish and also gulls. Working on it."
+      ],
+      "greeting": "Careful where you step — half my inventions are on the floor and a third of those bite."
+    },
+    {
+      "id": "brewer-nettle",
+      "name": "Sage Nettle",
+      "role": "Potion Brewer",
+      "personality": "Serene herbalist who speaks about volatile chemistry the way others discuss the weather.",
+      "appearance": {
+        "shirt": "#5a3e7a",
+        "pants": "#33402e",
+        "hat": "#2e6b4f",
+        "skin": "#9c6b43",
+        "hair": "#3b2a4a"
+      },
+      "zone": "town",
+      "shop": "potions",
+      "lines": [
+        "Bite tonic, lungroot brew for the deep dives, chill-balm for glacier work. Everything's fresh. Everything's mostly legal.",
+        "The volcanic hot springs are basically a potion I didn't have to brew. Soak there before a big catch. Trust me.",
+        "My best batch needs luminous cave moss, and I have exactly one supplier: a cat. Payment is sardines. The margins are terrible.",
+        "Do NOT drink the abyssal calm draught topside. You'll be relaxed in ways this town isn't ready for.",
+        "Swamp water is two-thirds of my ingredients and all of my complaints.",
+        "The baker swears her sourdough starter growled at her. I sold her a soothing tea. For her, not the starter. The starter is on its own.",
+        "A good potion is like a good cast: timing, patience, and being honest about what's in your bucket.",
+        "The sewer hermit's cough tincture is ready. If you're passing the grate behind the bakery, tell him. He tips in mystery."
+      ],
+      "greeting": "Come in, come in. Mind the fumes — the purple ones are friendly."
+    },
+    {
+      "id": "professor-gill",
+      "name": "Professor Finley Gill",
+      "role": "Fish Dex Professor",
+      "personality": "Boundlessly enthusiastic ichthyologist who has definitely tasted specimens he shouldn't have.",
+      "appearance": {
+        "shirt": "#c9b458",
+        "pants": "#4a4238",
+        "hat": null,
+        "skin": "#e8b88a",
+        "hair": "#8c8c94"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "Four hundred and twelve documented species in these waters, and I've eaten — catalogued! Catalogued nearly all of them.",
+        "Every fish you register in the dex is a footnote in history. Some footnotes bite.",
+        "The glowing cave upriver hosts a bioluminescent species that ignores every known lure. It responds only to... something. I've narrowed it down to 'something.'",
+        "There are sewer specimens beneath this town found nowhere else in the world. Science demands someone crawl behind that bakery. Science, notably, is not volunteering me.",
+        "The abyssal trench entries in my dex are all in Halbert's handwriting. He won't discuss numbers 388 through 391. Not even for pie.",
+        "A juvenile reef wrasse changes color eleven times before adulthood. Teenagers, eh?",
+        "If you catch anything with the wrong number of eyes, do not release it. Bring it here. Bring it here FIRST.",
+        "My rival at the capital academy insists the glacier lakes are barren. Wonderful. More lakes for us."
+      ],
+      "greeting": "Ah! An angler with functioning boots. Come, come — what have you caught? SHOW ME."
+    },
+    {
+      "id": "captain-salt",
+      "name": "Captain Ines Salt",
+      "role": "Dock Captain and Ferry Master",
+      "personality": "Unflappable ferry captain who treats the open ocean like a coworker she has learned to respect.",
+      "appearance": {
+        "shirt": "#1f3a5c",
+        "pants": "#2b2f38",
+        "hat": "#f5f0e6",
+        "skin": "#7a4b2e",
+        "hair": "#2e2e2e"
+      },
+      "zone": "docks",
+      "shop": null,
+      "lines": [
+        "Reef run's calm, deep sea's honest, the rig's ugly, and the trench... the trench is on the menu because people keep asking.",
+        "I've crossed the trench route ninety times. On the ninetieth I stopped counting. Felt like it was counting back.",
+        "The rig foreman's good people. Strange people, but good. Bring her coffee and she'll tell you where the metal-eaters school.",
+        "Weather out here has moods, not patterns. Anyone who tells you otherwise sells umbrellas.",
+        "Morag's light has saved my hull more times than my own steering has. Never sail on a night she's grumpy.",
+        "A kid stowed away in my bait cooler last spring, trying to reach the reef. Fined her parents one pie. Best pie I ever confiscated.",
+        "The deep sea doesn't hate you. It just doesn't know you're there. Keep it that way.",
+        "You want a real secret? The sea is mostly water. The rest of it, you earn."
+      ],
+      "greeting": "Ferry leaves when I finish this coffee. Reef, deep sea, the rig, or the trench — pick your poison."
+    },
+    {
+      "id": "legend-halbert",
+      "name": "Halbert 'The Hook' Grey",
+      "role": "Retired Fishing Legend, General Store Owner",
+      "personality": "Living legend gone pleasantly rusty, equal parts tall tales and hard-won silence.",
+      "appearance": {
+        "shirt": "#6e7b6a",
+        "pants": "#4f463a",
+        "hat": "#4a5c38",
+        "skin": "#b07a4f",
+        "hair": "#e8e8e8"
+      },
+      "zone": "town",
+      "shop": "general",
+      "lines": [
+        "Forty years on the water and the fish still surprise me. That's not humility, that's fish for you.",
+        "I sell rope, tinned beans, lamp oil, and boot wax. Everything a body needs, nothing a body doesn't.",
+        "The Great Marlin of '88? True story. The size grows a little every year, but so do I, sideways.",
+        "There's a fish in the abyssal trench I hooked once and let go on purpose. Some doors you're glad you didn't open all the way.",
+        "The glowing cave? Aye, I've been. Went in with a lantern, came out not needing one. Never told a soul what does the glowing. Won't start today.",
+        "Reed keeps trying to buy my old rod off his own wall. Boy, I gave it to the wall.",
+        "Fish the hot springs at dawn once in your life. The steam comes off the water like the world's still being decided.",
+        "Retirement's fine. The store is quiet, the pension is beans, and the sea and I wave at each other from a respectful distance."
+      ],
+      "greeting": "Shop's open. Stories are free with any purchase, and honestly, free without one."
+    },
+    {
+      "id": "registrar-quill",
+      "name": "Registrar Ambrose Quill",
+      "role": "Registrar of Titles",
+      "personality": "Fastidious bureaucrat who wields an embossing stamp with the gravity of a crown.",
+      "appearance": {
+        "shirt": "#403a5c",
+        "pants": "#26222e",
+        "hat": null,
+        "skin": "#f2c9a1",
+        "hair": "#4a3626"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "Titles are earned, notarized, and permanent. Except 'Pondmaster.' We revoke Pondmaster constantly.",
+        "Yes, 'Grand Wormwrangler' is a real title. No, I don't make the rules. I merely emboss them.",
+        "Someone filed for 'Trench Whisperer' last month. The paperwork came back damp. I approved it immediately and asked no questions.",
+        "The rarest title on record is held by a cat. I've said too much.",
+        "Every title has requirements. 'Sewer Sovereign,' for instance, requires deeds performed beneath the bakery that I am legally discouraged from describing.",
+        "Halbert holds eleven titles and uses none of them. Some men waste greatness on modesty.",
+        "Correct posture, correct forms, correct fish. In that order, and no other order will do.",
+        "I once held the title 'Junior Assistant Registrar.' We all start somewhere."
+      ],
+      "greeting": "Willowbrook Registrar of Titles. State your achievement and I'll see if it's earned you a name."
+    },
+    {
+      "id": "cat-chowder",
+      "name": "Chowder",
+      "role": "Cat (Allegedly)",
+      "personality": "Inscrutable, well-fed, and rumored to hold strong opinions about the trench.",
+      "appearance": {
+        "shirt": "#d9863f",
+        "pants": "#d9863f",
+        "hat": null,
+        "skin": "#e8a05c",
+        "hair": "#c96f2e"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "Mrow.",
+        "...",
+        "Prrrrrb.",
+        "The grate behind the bakery opens at low tide. Anyway. Meow.",
+        "Mrrp?",
+        "*stares at the harbor with the expression of something owed money*",
+        "*sits on the registrar's paperwork, radiating authority*",
+        "Mao."
+      ],
+      "greeting": "Mrrp."
+    },
+    {
+      "id": "kids-pip-nan",
+      "name": "Pip & Nan",
+      "role": "Local Kids",
+      "personality": "Inseparable twin menaces powered by rumors, dares, and exactly nine coins.",
+      "appearance": {
+        "shirt": "#d94f4f",
+        "pants": "#3a5f8a",
+        "hat": "#e8c547",
+        "skin": "#e8b88a",
+        "hair": "#5a3a22"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "Nan says there's a monster in the canal by the fish market. I say it's TWO monsters. We're doing research.",
+        "We found a glowy rock upriver! Pip licked it. Pip is fine. Mostly fine. His tongue glows a little.",
+        "The baker chased us off the grate out back AGAIN. Which means there's DEFINITELY treasure down there.",
+        "Captain Salt let us ring the ferry bell once. Best day of my LIFE.",
+        "Old Halbert says the trench fish have their own kings. Nan didn't sleep for a week. Worth it.",
+        "We're saving up for a rod from Mr. Castwell. So far we have nine coins and a really good button.",
+        "Chowder talked to me once. Everyone says I dreamed it. Chowder knows what he said."
+      ],
+      "greeting": "Race you to the docks! Okay, you won. Rematch!"
+    },
+    {
+      "id": "keeper-morag",
+      "name": "Keeper Morag",
+      "role": "Lighthouse Keeper",
+      "personality": "Weathered sentinel who talks to the fog and, worryingly, gets answers.",
+      "appearance": {
+        "shirt": "#8f8f5a",
+        "pants": "#3c3c46",
+        "hat": "#2b3a4a",
+        "skin": "#c68e5e",
+        "hair": "#d8d8d8"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "The light's turned every night for a hundred and six years. Sixty of those were mine. The lens and I are in a committed relationship.",
+        "On clear nights I can see the rig burning its little lights out there like a rude constellation.",
+        "Storms don't sneak. They announce. You just have to be high enough up to hear the invitation.",
+        "There's a green glow up the river valley some nights. Not fire, not foxfire. The lens shows me everything and explains nothing.",
+        "The mayor asked if I get lonely. I said I have the gulls, the light, and a strongly worded relationship with the fog.",
+        "Ships used to wreck on the reef before my grandmother took this post. Her logbook's last line reads: 'Not on my watch.' Runs in the family.",
+        "Some nights something big passes the harbor mouth, below the waterline, running dark. It never comes in. Manners, I suppose."
+      ],
+      "greeting": "You climbed all this way? Then you can help me polish the lens. Talk while you buff."
+    },
+    {
+      "id": "hermit-dregs",
+      "name": "Dregs",
+      "role": "Sewer Hermit",
+      "personality": "Cheerfully subterranean recluse who considers the entire town his ceiling.",
+      "appearance": {
+        "shirt": "#4a4a3a",
+        "pants": "#3a332a",
+        "hat": "#5c5244",
+        "skin": "#9c6b43",
+        "hair": "#6e6e66"
+      },
+      "zone": "town",
+      "shop": null,
+      "lines": [
+        "The tunnels under Willowbrook are older than Willowbrook. Somebody fished down there before there was an 'up here.'",
+        "Best way in? Grate behind the bakery, at low tide. Bring a light, and mind the third rung — it's decorative.",
+        "The fish down there have adapted. To what, I've stopped asking.",
+        "I pay Maude for bait in old coins. She thinks they're strange. They think SHE'S strange. Coins talk more than you'd think.",
+        "The bakery drops day-olds through the grate on Sundays. Finest breakfast arrangement in town, and neither of us has ever said a word about it.",
+        "There's a door down deep with no handle and warm hinges. I don't knock. It hasn't either. We respect each other.",
+        "Sunlight's overrated. It's just the one light, and you can't even adjust it.",
+        "Tilly's little gears? Found 'em in the silt by the old cistern. Plenty more where those came from, for them as isn't fussy about damp."
+      ],
+      "greeting": "Eh? Oh. Surface folk. You're standing in my skylight."
+    },
+    {
+      "id": "foreman-cinder",
+      "name": "Foreman Vessa Cinder",
+      "role": "Oil Rig Foreman",
+      "personality": "Deadpan caretaker of a decommissioned rig she refuses to admit she loves.",
+      "appearance": {
+        "shirt": "#b35a2e",
+        "pants": "#3a3f4a",
+        "hat": "#e8c547",
+        "skin": "#8a5a38",
+        "hair": "#2e2620"
+      },
+      "zone": "rig",
+      "shop": null,
+      "lines": [
+        "This rig pumped oil for thirty years. Now it mostly pumps rust and attracts the weirdest fish in three seas.",
+        "Metal-eaters school under the south pylon at dusk. They like the taste of the anodes. Cheaper than repainting, honestly.",
+        "Captain Salt brings the ferry and my coffee. In that order of importance? No comment.",
+        "Something big scrapes the pilings some nights. Long, slow, patient. The rig groans back. I let them talk.",
+        "Storm season, the whole platform sings. E-flat, mostly. You get used to it. You even get to missing it.",
+        "Head office forgot this rig exists. Best thing that ever happened to it.",
+        "Drop a line down the moon pool if you're brave. Straight shot to deep water. What comes up has never once been boring.",
+        "The trench is two miles that way and about six miles down. Even my nightmares pack a lunch for that trip."
+      ],
+      "greeting": "Watch the catwalks, keep your line off the machinery, and we'll get along fine."
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "baits": [
+    {
+      "id": "garden_worm",
+      "name": "Garden Worm",
+      "category": "worm",
+      "tier": 1,
+      "price": 5,
+      "flavor": "Dug fresh from behind the Brewery, much to the worm's ongoing surprise. The classic for a reason.",
+      "effects": { "biteRate": 0.08 }
+    },
+    {
+      "id": "bakers_doughball",
+      "name": "Baker's Doughball",
+      "category": "dough",
+      "tier": 1,
+      "price": 8,
+      "flavor": "Day-old bread rolled with a little honey. Pond fish adore it; the baker pretends not to know where his scraps go.",
+      "effects": { "biteRate": 0.1 }
+    },
+    {
+      "id": "meadow_cricket",
+      "name": "Meadow Cricket",
+      "category": "insect",
+      "tier": 1,
+      "price": 12,
+      "flavor": "Chirps right up until the cast, then goes professionally quiet. River fish consider it fine dining.",
+      "effects": { "biteRate": 0.12 }
+    },
+    {
+      "id": "flash_minnow",
+      "name": "Flash Minnow",
+      "category": "minnow",
+      "tier": 2,
+      "price": 40,
+      "flavor": "A little silver show-off that catches the light on purpose. Bigger fish take it personally.",
+      "effects": { "biteRate": 0.16 }
+    },
+    {
+      "id": "brine_shrimp",
+      "name": "Brine Shrimp",
+      "category": "shrimp",
+      "tier": 2,
+      "price": 55,
+      "flavor": "Salted, curled, and irresistible to anything with gills and ambition. Sold by the scoop at the harbor stall.",
+      "effects": { "biteRate": 0.15, "rareLuck": 0.05 }
+    },
+    {
+      "id": "tin_spinner",
+      "name": "Tin Spinner",
+      "category": "spinner",
+      "tier": 3,
+      "price": 130,
+      "flavor": "Hammered from an old kettle by the isle's tinker. It wobbles like injured prey and outlasts every worm you've ever loved.",
+      "effects": { "biteRate": 0.2, "rareLuck": 0.08 }
+    },
+    {
+      "id": "inkwell_squid",
+      "name": "Inkwell Squid",
+      "category": "squid",
+      "tier": 3,
+      "price": 220,
+      "flavor": "Leaves a dramatic little plume on the way down. Deep-sea hunters follow the ink like gossip.",
+      "effects": { "biteRate": 0.24, "rareLuck": 0.1 }
+    },
+    {
+      "id": "royal_nightcrawler",
+      "name": "Royal Nightcrawler",
+      "category": "worm",
+      "tier": 4,
+      "price": 600,
+      "flavor": "A worm of considerable breeding, raised on compost from the manor gardens. It expects to be taken by something impressive, and usually is.",
+      "effects": { "biteRate": 0.3, "rareLuck": 0.12 }
+    },
+    {
+      "id": "thunder_beetle",
+      "name": "Thunder Beetle",
+      "category": "insect",
+      "tier": 4,
+      "price": 800,
+      "flavor": "Carries a static charge that makes the water tingle for yards around. Fish arrive angry, which is convenient.",
+      "effects": { "biteRate": 0.34, "rareLuck": 0.1 }
+    },
+    {
+      "id": "gilded_krill",
+      "name": "Gilded Krill",
+      "category": "shrimp",
+      "tier": 5,
+      "price": 2800,
+      "flavor": "Each one is hand-brushed with edible gold leaf by a merchant who refuses to explain why it works. It works.",
+      "effects": { "biteRate": 0.42, "rareLuck": 0.2 }
+    },
+    {
+      "id": "glowgrub",
+      "name": "Glowgrub",
+      "category": "grub",
+      "tier": 3,
+      "farmOnly": true,
+      "flavor": "Raised in the Bait Farm's mushroom beds until it glows a gentle cave-green. Fat, luminous, and deeply persuasive in dark water.",
+      "effects": { "biteRate": 0.26, "rareLuck": 0.12 }
+    },
+    {
+      "id": "prism_minnow",
+      "name": "Prism Minnow",
+      "category": "minnow",
+      "tier": 4,
+      "farmOnly": true,
+      "flavor": "Bred in the Bait Farm's rainbow tanks; its scales split sunlight into colors that don't have names yet. Rare fish cross entire biomes to investigate.",
+      "effects": { "biteRate": 0.32, "rareLuck": 0.18 }
+    },
+    {
+      "id": "moonlit_mayfly",
+      "name": "Moonlit Mayfly",
+      "category": "magic",
+      "tier": 4,
+      "farmOnly": true,
+      "flavor": "Hatches only under a full moon in the Bait Farm's night garden and lives for one perfect cast. Make it count.",
+      "effects": { "biteRate": 0.36, "rareLuck": 0.22 }
+    },
+    {
+      "id": "wisp_in_a_jar",
+      "name": "Wisp in a Jar",
+      "category": "magic",
+      "tier": 5,
+      "farmOnly": true,
+      "flavor": "The Bait Farm's crowning oddity: a coaxed sliver of marsh-light that sings underwater. Legends rise to hear the end of the song.",
+      "effects": { "biteRate": 0.48, "rareLuck": 0.32 }
+    }
+  ]
+}
