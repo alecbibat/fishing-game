@@ -1,0 +1,238 @@
+{
+  "attachments": [
+    {
+      "id": "cork-bobber",
+      "name": "Cork Bobber",
+      "slot": "bobber",
+      "rarity": "common",
+      "price": 180,
+      "flavor": "A stopper from a bottle of Harbor Red, sanded smooth by someone's thumb. It still smells faintly of celebration.",
+      "effects": { "biteRate": 0.08 }
+    },
+    {
+      "id": "owl-feather-bobber",
+      "name": "Owl Feather Bobber",
+      "slot": "bobber",
+      "rarity": "uncommon",
+      "price": 950,
+      "flavor": "Shed by something enormous that patrols the meadow ponds at dusk. It refuses to bob loudly out of professional respect for silence.",
+      "effects": { "stability": 0.15, "biteRate": 0.05 }
+    },
+    {
+      "id": "glowshroom-bobber",
+      "name": "Glowshroom Bobber",
+      "slot": "bobber",
+      "rarity": "uncommon",
+      "price": 1200,
+      "flavor": "A hollowed cave mushroom that never stopped glowing, or complaining about the damp. Fish drift toward it like moths that forgot they were fish.",
+      "effects": { "biteRate": 0.12 }
+    },
+    {
+      "id": "chime-bobber",
+      "name": "Chime Bobber",
+      "slot": "bobber",
+      "rarity": "rare",
+      "price": 3400,
+      "flavor": "A tiny glass bell that rings a note only fish can hear. The tinkerer hums along anyway, out of politeness.",
+      "effects": { "biteRate": 0.2, "rareLuck": 0.08 }
+    },
+    {
+      "id": "storm-glass-bobber",
+      "name": "Storm Glass Bobber",
+      "slot": "bobber",
+      "rarity": "epic",
+      "price": 14500,
+      "flavor": "Blown from lightning-fused sand off the trench coast, it sits level in any swell. The sea has tried everything; the sea is embarrassed.",
+      "effects": { "stability": 0.3, "tension": 0.2, "rareLuck": 0.1 }
+    },
+    {
+      "id": "will-o-wisp-bobber",
+      "name": "Will-o'-Wisp Bobber",
+      "slot": "bobber",
+      "rarity": "legendary",
+      "price": 62000,
+      "flavor": "A swamp light coaxed into a lantern the size of a plum, still sulking about it. Things that have never been catalogued rise just to look.",
+      "effects": { "rareLuck": 0.25, "biteRate": 0.3 }
+    },
+    {
+      "id": "moonpool-bobber",
+      "name": "Moonpool Bobber",
+      "slot": "bobber",
+      "rarity": "mythic",
+      "price": 260000,
+      "flavor": "A droplet of the moon's reflection, skimmed from a glacier lake on the one night it held still. Where it floats, the water remembers being sky.",
+      "effects": { "rareLuck": 0.4, "biteRate": 0.35, "sizeBonus": 0.25 }
+    },
+    {
+      "id": "barbed-hook",
+      "name": "Barbed Hook",
+      "slot": "hook",
+      "rarity": "common",
+      "price": 260,
+      "flavor": "It holds on the way your grandmother holds your cheek at harvest festival. The fish do not find this comparison comforting.",
+      "effects": { "stability": 0.1 }
+    },
+    {
+      "id": "sewer-grate-hook",
+      "name": "Sewer Grate Hook",
+      "slot": "hook",
+      "rarity": "common",
+      "price": 170,
+      "flavor": "Bent from a city sewer grate by someone with strong opinions and stronger pliers. Whatever lives down there considers it local cuisine.",
+      "effects": { "biteRate": 0.06, "goldBonus": 0.05 }
+    },
+    {
+      "id": "twin-prong-hook",
+      "name": "Twin Prong Hook",
+      "slot": "hook",
+      "rarity": "rare",
+      "price": 3900,
+      "flavor": "Two hooks welded into an argument. Occasionally both of them win.",
+      "effects": { "multiCatch": 0.08 }
+    },
+    {
+      "id": "gilded-hook",
+      "name": "Gilded Hook",
+      "slot": "hook",
+      "rarity": "rare",
+      "price": 4800,
+      "flavor": "Gold leaf over good steel, commissioned by a harbor merchant who believed fish respect wealth. Insultingly, he was right.",
+      "effects": { "goldBonus": 0.25, "treasure": 0.05 }
+    },
+    {
+      "id": "hydra-hook",
+      "name": "Hydra Hook",
+      "slot": "hook",
+      "rarity": "epic",
+      "price": 16000,
+      "flavor": "Cut one barb off and the smith swears two grew back. Nobody has tested this a third time.",
+      "effects": { "multiCatch": 0.15, "biteRate": 0.1 }
+    },
+    {
+      "id": "abyssal-hook",
+      "name": "Abyssal Hook",
+      "slot": "hook",
+      "rarity": "legendary",
+      "price": 68000,
+      "flavor": "Forged from trench iron that has never seen daylight and would rather keep it that way. It curves like a question the deep intends to answer.",
+      "effects": { "rareLuck": 0.3, "tension": 0.25, "sizeBonus": 0.2 }
+    },
+    {
+      "id": "oiled-crank-reel",
+      "name": "Oiled Crank Reel",
+      "slot": "reel",
+      "rarity": "common",
+      "price": 320,
+      "flavor": "Squeaks in E flat, then in nothing, thanks to a generous helping of rig grease. The tinkerer calls this her masterpiece; she is being modest about the others.",
+      "effects": { "tension": 0.1 }
+    },
+    {
+      "id": "flywheel-reel",
+      "name": "Flywheel Reel",
+      "slot": "reel",
+      "rarity": "uncommon",
+      "price": 1300,
+      "flavor": "Salvaged from a music box that used to play sea shanties. It still keeps the rhythm, which turns out to be most of reeling.",
+      "effects": { "tension": 0.18 }
+    },
+    {
+      "id": "gyro-reel",
+      "name": "Gyro Reel",
+      "slot": "reel",
+      "rarity": "rare",
+      "price": 4200,
+      "flavor": "A spinning core keeps your rod steady through reef surge and rig-side chop. Hold it to your ear and you can hear it judging your posture.",
+      "effects": { "stability": 0.3 }
+    },
+    {
+      "id": "dozing-reel",
+      "name": "Dozing Reel",
+      "slot": "reel",
+      "rarity": "rare",
+      "price": 5600,
+      "flavor": "It sets the hook while you watch the clouds, the kettle, or the inside of your eyelids. The tinkerer built it for her nap schedule and shares it reluctantly.",
+      "effects": { "autoReel": 1, "tension": 0.1 }
+    },
+    {
+      "id": "deep-current-winch",
+      "name": "Deep Current Winch",
+      "slot": "reel",
+      "rarity": "epic",
+      "price": 18500,
+      "flavor": "Unbolted from the old oil rig's crane, where it once hauled things the crew agreed never to discuss. It treats a thrashing marlin as light paperwork.",
+      "effects": { "tension": 0.35, "sizeBonus": 0.2 }
+    },
+    {
+      "id": "tide-turner-reel",
+      "name": "Tide-Turner Reel",
+      "slot": "reel",
+      "rarity": "legendary",
+      "price": 48000,
+      "flavor": "Its gears are cut from petrified whalebone and it winds with the patience of the tide itself. Fights don't get shorter; they simply stop being fights.",
+      "effects": { "stability": 0.4, "tension": 0.3, "xpBonus": 0.15 }
+    },
+    {
+      "id": "chum-thermos",
+      "name": "Chum Thermos",
+      "slot": "gadget",
+      "rarity": "common",
+      "price": 380,
+      "flavor": "Keeps bait warm, fragrant, and deeply objectionable. Never, ever mix it up with your soup thermos.",
+      "effects": { "biteRate": 0.1 }
+    },
+    {
+      "id": "lucky-cat-figurine",
+      "name": "Lucky Cat Figurine",
+      "slot": "gadget",
+      "rarity": "uncommon",
+      "price": 850,
+      "flavor": "A little porcelain cat that waves at your line from the tackle box. Coins seem to follow it home, along with actual cats.",
+      "effects": { "goldBonus": 0.12 }
+    },
+    {
+      "id": "anglers-almanac",
+      "name": "Angler's Almanac",
+      "slot": "gadget",
+      "rarity": "uncommon",
+      "price": 1450,
+      "flavor": "Four hundred waterlogged pages of moon phases, feeding charts, and one recipe for chowder. Reading it in the rain counts as studying.",
+      "effects": { "xpBonus": 0.15 }
+    },
+    {
+      "id": "spyglass-scope",
+      "name": "Spyglass Scope",
+      "slot": "gadget",
+      "rarity": "rare",
+      "price": 2800,
+      "flavor": "Clamp a retired pirate's spyglass to your rod and suddenly the horizon is casting distance. The deep water never saw you coming, because you were on the beach.",
+      "effects": { "scope": 1 }
+    },
+    {
+      "id": "sonar-pinger",
+      "name": "Sonar Pinger",
+      "slot": "gadget",
+      "rarity": "epic",
+      "price": 12500,
+      "flavor": "Rig-salvage electronics that ping back the shape of whatever is eyeing your line. Sometimes the ping comes back nervous.",
+      "effects": { "sonar": 1, "rareLuck": 0.05 }
+    },
+    {
+      "id": "loadstone-magnet",
+      "name": "Loadstone Magnet",
+      "slot": "gadget",
+      "rarity": "epic",
+      "price": 15500,
+      "flavor": "A lodestone so opinionated it refuses to attract anything worthless. Old boots arrive as lockboxes; the boots are never mentioned again.",
+      "effects": { "magnet": 1, "treasure": 0.05 }
+    },
+    {
+      "id": "heart-of-the-trench",
+      "name": "Heart of the Trench",
+      "slot": "gadget",
+      "rarity": "mythic",
+      "price": 285000,
+      "flavor": "A fist-sized pearl that beats, slowly, in time with something far below the abyssal dark. Wear it on your belt and the ocean starts leaving you gifts, the way the sea leaves shells for children it likes.",
+      "effects": { "treasure": 0.3, "rareLuck": 0.3, "goldBonus": 0.4 }
+    }
+  ]
+}

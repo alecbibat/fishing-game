@@ -120,7 +120,7 @@ const trans = [];
     f.rodReward = raw.rodReward || null;
     f.difficulty = 10;
     f.behavior = 'burst';
-    if (!whaleFound && /whale/i.test(f.name + ' ' + (f.title || ''))) { f.isWhale = true; whaleFound = true; }
+    if (!whaleFound && /whale/i.test(f.name + ' ' + (f.title || '') + ' ' + (f.flavor || ''))) { f.isWhale = true; whaleFound = true; }
     trans.push(f);
   }
   if (!whaleFound && trans.length) { trans[0].isWhale = true; warn('no whale found; flagged first transcendent as the whale'); }
