@@ -1,0 +1,224 @@
+{
+  "fish": [
+    {
+      "name": "Solmara",
+      "rarity": "transcendent",
+      "title": "the Drowned Cathedral",
+      "flavor": "A whale so old and so vast that coral has built stained-glass windows along her flanks, and her song is the low note every sailor hears once and spends a lifetime missing. Monks of the old coast believed the sea was her dream, and that when she finally surfaces for good, the tide will simply stop. She has taken exactly one hook in recorded history, and she gave it back, politely, embedded in a pearl.",
+      "sizeClass": "colossal",
+      "colors": { "body": "#2b3a55", "belly": "#cfd9e8", "fin": "#1d2940", "accent": "#e8c877" },
+      "body": "deep",
+      "pattern": "glowspots",
+      "features": ["armor", "beard"],
+      "effect": { "type": "aurora", "color": "#8fd9c4" },
+      "depth": "deep",
+      "time": "night",
+      "baitPref": "squid",
+      "rodReward": {
+        "id": "rod_hymnkeeper",
+        "name": "The Hymnkeeper",
+        "flavor": "Sister Meridia sailed out with the whaling fleet and came home with no harpoons, no whales, and a choir. She spent forty years singing the great ones up from the deep just to say hello, and this rod still hums her favorite verse when the line goes taut.",
+        "bonus": "barSize"
+      },
+      "biome": "deepsea"
+    },
+    {
+      "name": "Nullmaw",
+      "rarity": "transcendent",
+      "title": "the Bottom of Everything",
+      "flavor": "Sonar maps of the trench all share one blank spot, and the blank spot moves. Nullmaw is not black; black is a color, and Nullmaw has firmly declined to have one. Abyssal fishers say you never feel the bite — you just notice, all at once, that your line has been going down for a very long time and something at the end of it has noticed you back.",
+      "sizeClass": "colossal",
+      "colors": { "body": "#0c0a14", "belly": "#1c1730", "fin": "#050408", "accent": "#5f4b8b" },
+      "body": "eel",
+      "pattern": "none",
+      "features": ["tentacles", "horns"],
+      "effect": { "type": "void", "color": "#2a1b4a" },
+      "depth": "deep",
+      "time": "any",
+      "baitPref": "magic",
+      "rodReward": {
+        "id": "rod_absence",
+        "name": "The Absence",
+        "flavor": "Cassian Hollow cast into the dark every night for fifty-one years, and when neighbors asked what he was fishing for, he said he'd know when it stopped being there. The rod is cold, weightless, and slightly hard to look at directly.",
+        "bonus": "rareLuck"
+      },
+      "biome": "abyss"
+    },
+    {
+      "name": "Pip",
+      "rarity": "transcendent",
+      "title": "the First Catch",
+      "flavor": "Every angler in the isles swears their very first fish was a little golden minnow they threw back, and the unsettling part is that they are all correct. Pip has been everyone's first catch for at least nine hundred years, and remembers each trembling pair of hands by name. Catching Pip a second time is considered the highest honor in the sport, mostly because Pip has to allow it.",
+      "sizeClass": "tiny",
+      "colors": { "body": "#e8b64c", "belly": "#fdf3d7", "fin": "#c98a2e", "accent": "#fff8e1" },
+      "body": "slender",
+      "pattern": "banded",
+      "features": ["bigEyes"],
+      "effect": { "type": "sparkle", "color": "#ffe9a8" },
+      "depth": "shallow",
+      "time": "day",
+      "baitPref": "worm",
+      "rodReward": {
+        "id": "rod_bramble_switch",
+        "name": "Maribel's Bramble Switch",
+        "flavor": "Granny Maribel taught three generations of the isles to fish with a bramble stick, a bent pin, and unshakable patience. She always said the rod doesn't catch the fish — it just introduces you.",
+        "bonus": "biteRate"
+      },
+      "biome": "pond"
+    },
+    {
+      "name": "The Silver Ferryman",
+      "rarity": "transcendent",
+      "title": "the Last Toll",
+      "flavor": "When something is lost to the river — a ring, a letter, a name — the Ferryman carries it upstream to the place where it was happiest, and white petals bloom in his wake the whole way. He accepts any bait as toll, weighs it solemnly, and decides whether you have paid enough to hold him for a moment. No one has ever kept him; you only get to be part of the crossing.",
+      "sizeClass": "huge",
+      "colors": { "body": "#c8ccd6", "belly": "#f4f5f8", "fin": "#8f96a8", "accent": "#e3ebe4" },
+      "body": "slender",
+      "pattern": "gradient",
+      "features": ["lure"],
+      "effect": { "type": "bloom", "color": "#f2f7ee" },
+      "depth": "mid",
+      "time": "dawnDusk",
+      "baitPref": "any",
+      "rodReward": {
+        "id": "rod_toll_pole",
+        "name": "The Toll-Keeper's Pole",
+        "flavor": "Weir the Quiet kept the river ford for sixty years and never charged a coin — only a story, told honestly. The pole remembers every one of them, and steadies itself when yours gets shaky.",
+        "bonus": "stability"
+      },
+      "biome": "river"
+    },
+    {
+      "name": "Auld Greywake",
+      "rarity": "transcendent",
+      "title": "the Lake's Long Memory",
+      "flavor": "The town records say the lake is four thousand years old; Auld Greywake's growth rings politely disagree by a wide margin. The valley flooded around him and he simply kept napping, and now the whole lake rises and falls a hand's width with his breathing. Every festival, the townsfolk set out an empty chair facing the water, just in case this is the year he feels social.",
+      "sizeClass": "huge",
+      "colors": { "body": "#556355", "belly": "#c9cfbf", "fin": "#3d4a3f", "accent": "#8ba385" },
+      "body": "deep",
+      "pattern": "banded",
+      "features": ["beard", "whiskers"],
+      "effect": { "type": "bubbles", "color": "#b8d4c8" },
+      "depth": "deep",
+      "time": "dawnDusk",
+      "baitPref": "minnow",
+      "rodReward": {
+        "id": "rod_old_tams_heirloom",
+        "name": "Old Tam's Heirloom",
+        "flavor": "Old Tam fished the same spot on the same dock for forty-one years, and when asked if he'd ever caught anything, he'd smile and say he was still deciding what to catch. Everything he learned while waiting lives in this rod.",
+        "bonus": "xpBonus"
+      },
+      "biome": "lake"
+    },
+    {
+      "name": "Kaleidra",
+      "rarity": "transcendent",
+      "title": "the Reefmother",
+      "flavor": "Where Kaleidra glides, grey coral remembers its colors, and reef-keepers follow her shadow with seed baskets like gardeners chasing spring. Her wings hold every hue the reef has ever worn, including several the reef is saving for special occasions. Hooking her feels less like a fight and more like being asked, very politely, whether you can keep up.",
+      "sizeClass": "huge",
+      "colors": { "body": "#3fb8af", "belly": "#fef6e4", "fin": "#f582ae", "accent": "#f3d34a" },
+      "body": "ray",
+      "pattern": "spots",
+      "features": ["frills"],
+      "effect": { "type": "prism", "color": "#ffd1f0" },
+      "depth": "shallow",
+      "time": "day",
+      "baitPref": "shrimp",
+      "rodReward": {
+        "id": "rod_painters_reach",
+        "name": "The Painter's Reach",
+        "flavor": "Coralie painted the reef for fifty years and insisted she was only copying someone else's work. She fished with a brush handle and a smile, and somehow always brought home two of everything.",
+        "bonus": "multiCatch"
+      },
+      "biome": "reef"
+    },
+    {
+      "name": "Glimmerwick",
+      "rarity": "transcendent",
+      "title": "the Last Candle",
+      "flavor": "When the deep mines flooded, the lamps went out one by one — except the ones that swam away. Glimmerwick drifts through the drowned galleries wearing a crown of flames that burn underwater out of pure stubbornness, lighting the way for anyone lost enough to need it. Miners' families still leave wax at the cave mouth, and by morning it is always gone.",
+      "sizeClass": "huge",
+      "colors": { "body": "#4a3b5c", "belly": "#f5e6c8", "fin": "#332845", "accent": "#ffb347" },
+      "body": "blob",
+      "pattern": "glowspots",
+      "features": ["spines"],
+      "effect": { "type": "embers", "color": "#ffc36e" },
+      "depth": "mid",
+      "time": "any",
+      "baitPref": "grub",
+      "rodReward": {
+        "id": "rod_lamplighters_crook",
+        "name": "The Lamplighter's Crook",
+        "flavor": "Foreman Dess walked out of the flooded mine three days after everyone stopped hoping, towing four rescued crewmates and refusing to say what had lit the way. She spent the rest of her life fishing the caves, paying something back.",
+        "bonus": "treasure"
+      },
+      "biome": "cave"
+    },
+    {
+      "name": "Grimebeard III",
+      "rarity": "transcendent",
+      "title": "the Sunken Landlord",
+      "flavor": "Below the city there is an older city, and Grimebeard III owns it — every flooded ballroom, every barnacled statue, every lost coin, catalogued in a beard that has its own ecosystem and, allegedly, its own weather. He collects rent in bottle caps and buttons, and evictions are conducted with tremendous dignity. Sewer-fishers tip their hats to the dark water, just in case.",
+      "sizeClass": "huge",
+      "colors": { "body": "#5c6b4f", "belly": "#c9c39a", "fin": "#43503a", "accent": "#9acd32" },
+      "body": "standard",
+      "pattern": "spots",
+      "features": ["whiskers", "beard"],
+      "effect": { "type": "toxic", "color": "#a9d94a" },
+      "depth": "shallow",
+      "time": "night",
+      "baitPref": "dough",
+      "rodReward": {
+        "id": "rod_mudlarks_cane",
+        "name": "Mudlark Nan's Cane",
+        "flavor": "Nan raised seven children on what the city dropped down its drains, and knew the sewers so well the rats asked her for directions. Her cane-rod finds value in places that have given up on having any.",
+        "bonus": "treasure"
+      },
+      "biome": "sewer"
+    },
+    {
+      "name": "Winterlong",
+      "rarity": "transcendent",
+      "title": "the Patience of Glaciers",
+      "flavor": "A thousand years ago a pike lunged at a lure, and the lake chose that exact moment to freeze solid. Winterlong finished the lunge last century and has been in a magnificent mood ever since, gliding under the glacier with frost blooming off her fins like slow lightning. Ice-fishers say if your breath stops fogging, reel in — you are the lure now.",
+      "sizeClass": "huge",
+      "colors": { "body": "#7fa8c9", "belly": "#eef7ff", "fin": "#5d84a6", "accent": "#bfeaff" },
+      "body": "slender",
+      "pattern": "banded",
+      "features": ["longSnout", "spines"],
+      "effect": { "type": "frost", "color": "#d6f2ff" },
+      "depth": "deep",
+      "time": "day",
+      "baitPref": "spinner",
+      "rodReward": {
+        "id": "rod_nine_fingers",
+        "name": "Nine-Fingers' Rod",
+        "flavor": "Hela Nine-Fingers fished the glacier for sixty winters and considered the lost finger a fair trade for the view. Her rod never shivers, because she taught it that shivering wastes time.",
+        "bonus": "stability"
+      },
+      "biome": "glacier"
+    },
+    {
+      "name": "Vesuvienne",
+      "rarity": "transcendent",
+      "title": "the Dirty Thunderstorm",
+      "flavor": "When the mountain erupts and lightning tears through the ash column, that is not weather — that is Vesuvienne breaching. She swims the boiling springs wrapped in her own private storm, and the water around her tastes faintly of struck matches and bad decisions. Hooking her is the only fight in the isles where the fish brings its own dramatic lighting.",
+      "sizeClass": "huge",
+      "colors": { "body": "#3d2f33", "belly": "#e08a4e", "fin": "#26191d", "accent": "#ff5c33" },
+      "body": "shark",
+      "pattern": "gradient",
+      "features": ["horns", "spines"],
+      "effect": { "type": "lightning", "color": "#e6d0ff" },
+      "depth": "mid",
+      "time": "night",
+      "baitPref": "insect",
+      "rodReward": {
+        "id": "rod_petras_lightning",
+        "name": "Petra's Lightning Rod",
+        "flavor": "Ash-Witch Petra fished every eruption for thirty years, insisting the bite was unbeatable if you didn't mind the sky being on fire. The rod is fused glass from root to tip and hums before something extraordinary strikes.",
+        "bonus": "rareLuck"
+      },
+      "biome": "volcanic"
+    }
+  ]
+}

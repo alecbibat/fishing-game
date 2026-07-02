@@ -47,9 +47,9 @@ export function overworldHeight(x, z) {
   h -= gauss(x, z, -425, -565, 62) * 46;
   h = lerp(h, 9, smoothstep(42, 14, dist2d(x, z, 585, -95)));
   h = lerp(h, 10, smoothstep(34, 11, dist2d(x, z, 632, -162)));
-  // town & docks flatten
+  // town & docks flatten (docks yard stays dry; the piers wade into the sea)
   h = lerp(h, 4, smoothstep(175, 95, dist2d(x, z, 0, 100)));
-  h = lerp(h, 3, smoothstep(120, 55, dist2d(x, z, 480, 420)));
+  h = lerp(h, 2.5, smoothstep(100, 45, dist2d(x, z, 480, 415)));
   // ocean to the south
   h = lerp(h, -20, smoothstep(430, 640, z));
   // river carve (keeps deeper of ocean/river)

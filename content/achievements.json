@@ -1,0 +1,644 @@
+{
+  "achievements": [
+    {
+      "id": "first_catch",
+      "name": "Hooked",
+      "desc": "Catch your very first fish, no matter how embarrassing it turns out to be.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 1 },
+      "title": { "name": "the Freshly Hooked", "rarity": "common", "color": "#9aa5b1" }
+    },
+    {
+      "id": "catch_10",
+      "name": "Small Fry",
+      "desc": "Catch 10 fish and start telling people you're 'into fishing now'.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 10 },
+      "title": null
+    },
+    {
+      "id": "catch_50",
+      "name": "Getting the Hang of It",
+      "desc": "Catch 50 fish; your cast is starting to look almost intentional.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 50 },
+      "title": null
+    },
+    {
+      "id": "catch_100",
+      "name": "Century Cast",
+      "desc": "Catch 100 fish and earn a firm nod from every dockhand on the isles.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 100 },
+      "title": { "name": "the Hundred-Handed", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "catch_250",
+      "name": "Regular at the Water",
+      "desc": "Catch 250 fish; the herons have started copying your technique.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 250 },
+      "title": null
+    },
+    {
+      "id": "catch_500",
+      "name": "Half a Thousand Tales",
+      "desc": "Catch 500 fish, each one slightly bigger in the retelling.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 500 },
+      "title": null
+    },
+    {
+      "id": "catch_1000",
+      "name": "One Thousand Splashes",
+      "desc": "Catch 1,000 fish and become a local unit of measurement.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 1000 },
+      "title": { "name": "the Thousandfold", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "catch_2500",
+      "name": "The Fish Fear You",
+      "desc": "Catch 2,500 fish; word has gotten around beneath the waves.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 2500 },
+      "title": null
+    },
+    {
+      "id": "catch_5000",
+      "name": "Do You Even Sleep?",
+      "desc": "Catch 5,000 fish, a number your friends describe as 'concerning'.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 5000 },
+      "title": { "name": "the Tireless", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "catch_10000",
+      "name": "Ten Thousand Fathoms of Patience",
+      "desc": "Catch 10,000 fish and pass quietly into shoreline folklore.",
+      "category": "catching",
+      "condition": { "type": "catch_count", "n": 10000 },
+      "title": { "name": "Scourge of the Shoals", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "species_5",
+      "name": "Starter Tank",
+      "desc": "Catch 5 unique species; a collection is just a pile with ambition.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 5 },
+      "title": null
+    },
+    {
+      "id": "species_10",
+      "name": "It Takes All Kinds",
+      "desc": "Catch 10 unique species and start judging them by personality.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 10 },
+      "title": null
+    },
+    {
+      "id": "species_25",
+      "name": "Curiosity Cabinet",
+      "desc": "Catch 25 unique species, each stranger than the last.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 25 },
+      "title": { "name": "the Curious", "rarity": "common", "color": "#9aa5b1" }
+    },
+    {
+      "id": "species_50",
+      "name": "Fifty Flavours of Fin",
+      "desc": "Catch 50 unique species and correct strangers about all of them.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 50 },
+      "title": null
+    },
+    {
+      "id": "species_100",
+      "name": "The Hundred Club",
+      "desc": "Catch 100 unique species; the field journal is getting a second volume.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 100 },
+      "title": { "name": "the Cataloguer", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "species_250",
+      "name": "Serious Scholarship",
+      "desc": "Catch 250 unique species and be cited in at least one lighthouse pamphlet.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 250 },
+      "title": null
+    },
+    {
+      "id": "species_500",
+      "name": "Living Archive",
+      "desc": "Catch 500 unique species; scholars now come to you.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 500 },
+      "title": { "name": "the Living Archive", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "species_1000",
+      "name": "One of Everything",
+      "desc": "Catch 1,000 unique species and quietly complete the ocean.",
+      "category": "collection",
+      "condition": { "type": "unique_species", "n": 1000 },
+      "title": { "name": "the Compleat Angler", "rarity": "mythic", "color": "#ff4d8f" }
+    },
+    {
+      "id": "rare_first",
+      "name": "A Cut Above",
+      "desc": "Catch your first rare fish and feel the tug of destiny (and fish).",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "rare", "n": 1 },
+      "title": null
+    },
+    {
+      "id": "rare_100",
+      "name": "An Eye for Quality",
+      "desc": "Catch 100 rare fish; at this point it's less luck and more lifestyle.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "rare", "n": 100 },
+      "title": { "name": "the Discerning", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "epic_first",
+      "name": "Purple Prose",
+      "desc": "Catch your first epic fish and struggle to describe it without gesturing.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "epic", "n": 1 },
+      "title": null
+    },
+    {
+      "id": "epic_50",
+      "name": "Taste for the Finer Fins",
+      "desc": "Catch 50 epic fish, purely for the aesthetic.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "epic", "n": 50 },
+      "title": { "name": "the Epicure", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "legendary_first",
+      "name": "Stuff of Legends",
+      "desc": "Catch your first legendary fish; the water goes quiet when you walk by.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "legendary", "n": 1 },
+      "title": { "name": "the Storied", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "legendary_10",
+      "name": "Legend Collector",
+      "desc": "Catch 10 legendary fish, which is 10 more than most bards can claim.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "legendary", "n": 10 },
+      "title": { "name": "the Legendkeeper", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "mythic_first",
+      "name": "Myth, Made Flesh",
+      "desc": "Catch a mythic fish, then try to explain it to someone afterwards.",
+      "category": "catching",
+      "condition": { "type": "rarity_count", "rarity": "mythic", "n": 1 },
+      "title": { "name": "the Mythtouched", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "transcendent_3",
+      "name": "Thrice Beyond",
+      "desc": "Catch three transcendent fish, as if one wasn't statistically offensive enough.",
+      "category": "secret",
+      "condition": { "type": "rarity_count", "rarity": "transcendent", "n": 3 },
+      "title": { "name": "Keeper of Impossible Things", "rarity": "mythic", "color": "#ff4d8f" }
+    },
+    {
+      "id": "pond_species",
+      "name": "Big Fish, Small Pond",
+      "desc": "Catch 10 unique species from the meadow ponds, frogs politely excluded.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "pond", "n": 10 },
+      "title": { "name": "the Pondlubber", "rarity": "common", "color": "#9aa5b1" }
+    },
+    {
+      "id": "river_species",
+      "name": "Go With the Flow",
+      "desc": "Catch 15 unique species from the rivers before they swim past you.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "river", "n": 15 },
+      "title": null
+    },
+    {
+      "id": "lake_species",
+      "name": "Lake Effect",
+      "desc": "Catch 15 unique species from the lakes, where everything is calmer and deeper than it looks.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "lake", "n": 15 },
+      "title": null
+    },
+    {
+      "id": "coast_species",
+      "name": "Coastal Curriculum",
+      "desc": "Catch 20 unique species along the coast, tide schedule permitting.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "coast", "n": 20 },
+      "title": null
+    },
+    {
+      "id": "reef_species",
+      "name": "Technicolor Census",
+      "desc": "Catch 25 unique species from the coral reef, sorted roughly by rainbow.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "reef", "n": 25 },
+      "title": { "name": "the Reefwarden", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "deepsea_species",
+      "name": "Pressure Tested",
+      "desc": "Catch 20 unique species from the deep sea, where sunlight is a rumour.",
+      "category": "exploration",
+      "condition": { "type": "biome_species", "biome": "deepsea", "n": 20 },
+      "title": { "name": "the Deepsworn", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "abyss_species",
+      "name": "Eyes in the Dark",
+      "desc": "Catch 12 unique species from the abyssal trench, where the fish look back.",
+      "category": "exploration",
+      "condition": { "type": "biome_species", "biome": "abyss", "n": 12 },
+      "title": { "name": "the Abyssgazer", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "cave_species",
+      "name": "Glow Getter",
+      "desc": "Catch 12 unique species from the glowing caves; bring a lantern anyway, out of respect.",
+      "category": "exploration",
+      "condition": { "type": "biome_species", "biome": "cave", "n": 12 },
+      "title": { "name": "the Glowseeker", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "sewer_species",
+      "name": "Down the Drain",
+      "desc": "Catch 10 unique species from the city sewers and never quite recover socially.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "sewer", "n": 10 },
+      "title": { "name": "the Drainspotter", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "swamp_species",
+      "name": "Knee-Deep Research",
+      "desc": "Catch 15 unique species from the swamps, boots optional but recommended.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "swamp", "n": 15 },
+      "title": { "name": "the Bogtrotter", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "glacier_species",
+      "name": "Cold Case",
+      "desc": "Catch 12 unique species from the glacier lakes before your fingers file a grievance.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "glacier", "n": 12 },
+      "title": { "name": "the Iceveined", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "harbor_species",
+      "name": "Canal Connoisseur",
+      "desc": "Catch 12 unique species from the harbor canals between passing gondolas.",
+      "category": "collection",
+      "condition": { "type": "biome_species", "biome": "harbor", "n": 12 },
+      "title": null
+    },
+    {
+      "id": "rig_species",
+      "name": "Rust Belt",
+      "desc": "Catch 10 unique species around the old oil rig, dodging drips the whole time.",
+      "category": "exploration",
+      "condition": { "type": "biome_species", "biome": "rig", "n": 10 },
+      "title": { "name": "Rig Rat", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "volcanic_species",
+      "name": "Hot Water",
+      "desc": "Catch 12 unique species from the volcanic hot springs; the fish arrive pre-poached.",
+      "category": "exploration",
+      "condition": { "type": "biome_species", "biome": "volcanic", "n": 12 },
+      "title": { "name": "the Boilborn", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "level_10",
+      "name": "Apprentice Angler",
+      "desc": "Reach fishing level 10 and stop hooking your own hat.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 10 },
+      "title": null
+    },
+    {
+      "id": "level_25",
+      "name": "Journeyfisher",
+      "desc": "Reach fishing level 25; the guild starts remembering your name.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 25 },
+      "title": null
+    },
+    {
+      "id": "level_50",
+      "name": "Halfway to Somewhere",
+      "desc": "Reach fishing level 50 and develop opinions about knots.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 50 },
+      "title": { "name": "the Adept", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "level_75",
+      "name": "Three-Quarter Time",
+      "desc": "Reach fishing level 75, where the water starts telling you things.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 75 },
+      "title": null
+    },
+    {
+      "id": "level_100",
+      "name": "The Big One-Oh-Oh",
+      "desc": "Reach fishing level 100; fireworks are traditional but not included.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 100 },
+      "title": { "name": "the Centurion", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "level_150",
+      "name": "Overachiever",
+      "desc": "Reach fishing level 150, well past where the manual stopped.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 150 },
+      "title": null
+    },
+    {
+      "id": "level_250",
+      "name": "Beyond the Manual",
+      "desc": "Reach fishing level 250 and start writing the manual instead.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 250 },
+      "title": { "name": "the Grandmaster", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "level_500",
+      "name": "Off the Charts",
+      "desc": "Reach fishing level 500; cartographers have given up plotting your progress.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 500 },
+      "title": { "name": "the Tidebound", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "level_1000",
+      "name": "Unfathomable",
+      "desc": "Reach fishing level 1,000, a number previously considered theoretical.",
+      "category": "skill",
+      "condition": { "type": "level", "n": 1000 },
+      "title": { "name": "the Unfathomable", "rarity": "mythic", "color": "#ff4d8f" }
+    },
+    {
+      "id": "coins_1k",
+      "name": "First Paycheck",
+      "desc": "Earn 1,000 coins from fishing and immediately consider spending it on bait.",
+      "category": "wealth",
+      "condition": { "type": "coins_earned", "n": 1000 },
+      "title": null
+    },
+    {
+      "id": "coins_100k",
+      "name": "Comfortable",
+      "desc": "Earn 100,000 coins; you now say 'market conditions' out loud, unprompted.",
+      "category": "wealth",
+      "condition": { "type": "coins_earned", "n": 100000 },
+      "title": null
+    },
+    {
+      "id": "coins_1m",
+      "name": "Fishillionaire",
+      "desc": "Earn 1,000,000 coins and start signing things with a flourish.",
+      "category": "wealth",
+      "condition": { "type": "coins_earned", "n": 1000000 },
+      "title": { "name": "the Millionaire", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "coins_100m",
+      "name": "Dragon's Hoard, But Damp",
+      "desc": "Earn 100,000,000 coins, all of it smelling faintly of mackerel.",
+      "category": "wealth",
+      "condition": { "type": "coins_earned", "n": 100000000 },
+      "title": { "name": "the Gilded", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "potions_10",
+      "name": "Bubbling Along",
+      "desc": "Brew 10 potions with only minor discoloration of the ceiling.",
+      "category": "skill",
+      "condition": { "type": "potions_brewed", "n": 10 },
+      "title": null
+    },
+    {
+      "id": "potions_100",
+      "name": "Master of the Cauldron",
+      "desc": "Brew 100 potions; the cauldron purrs when you approach.",
+      "category": "skill",
+      "condition": { "type": "potions_brewed", "n": 100 },
+      "title": { "name": "the Potionmonger", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "rod_tier_3",
+      "name": "Proper Kit",
+      "desc": "Upgrade to a tier 3 rod and leave the driftwood stick behind.",
+      "category": "skill",
+      "condition": { "type": "rod_tier", "n": 3 },
+      "title": null
+    },
+    {
+      "id": "rod_tier_7",
+      "name": "Serious Hardware",
+      "desc": "Upgrade to a tier 7 rod that hums quietly when the big ones are near.",
+      "category": "skill",
+      "condition": { "type": "rod_tier", "n": 7 },
+      "title": null
+    },
+    {
+      "id": "rod_tier_12",
+      "name": "The Final Rod",
+      "desc": "Wield the tier 12 rod, the last one the smiths know how to make.",
+      "category": "skill",
+      "condition": { "type": "rod_tier", "n": 12 },
+      "title": { "name": "the Rodfather", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "zones_8",
+      "name": "Restless Feet",
+      "desc": "Visit 8 different zones; your boots are developing character.",
+      "category": "exploration",
+      "condition": { "type": "zones_visited", "n": 8 },
+      "title": { "name": "the Wanderer", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "zones_16",
+      "name": "Every Horizon",
+      "desc": "Visit all 16 zones of the Driftwood Isles and run out of horizons to chase.",
+      "category": "exploration",
+      "condition": { "type": "zones_visited", "n": 16 },
+      "title": { "name": "the Horizonchaser", "rarity": "epic", "color": "#a55eea" }
+    },
+    {
+      "id": "found_sewer",
+      "name": "Grate Discovery",
+      "desc": "Find the hidden entrance to the city sewers, and never speak of the smell again.",
+      "category": "secret",
+      "condition": { "type": "flag", "flag": "found_sewer" },
+      "title": null
+    },
+    {
+      "id": "found_cave",
+      "name": "Let There Be Bio-Light",
+      "desc": "Discover the glowing caves, where the walls have better lighting than most taverns.",
+      "category": "secret",
+      "condition": { "type": "flag", "flag": "found_cave" },
+      "title": null
+    },
+    {
+      "id": "visited_abyss",
+      "name": "Descent",
+      "desc": "Descend into the abyssal trench and come back up slightly different.",
+      "category": "exploration",
+      "condition": { "type": "flag", "flag": "visited_abyss" },
+      "title": { "name": "the Descender", "rarity": "rare", "color": "#3f9bff" }
+    },
+    {
+      "id": "visited_rig",
+      "name": "Health and Safety Violation",
+      "desc": "Set foot on the rusty oil rig without signing a single waiver.",
+      "category": "exploration",
+      "condition": { "type": "flag", "flag": "visited_rig" },
+      "title": null
+    },
+    {
+      "id": "island_placed",
+      "name": "Home Is Where You Moor It",
+      "desc": "Place your floating island somewhere with a view.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "island_placed" },
+      "title": { "name": "the Homesteader", "rarity": "common", "color": "#9aa5b1" }
+    },
+    {
+      "id": "island_moved",
+      "name": "Have Island, Will Travel",
+      "desc": "Move your island to new waters, because the whole point of a floating home is the floating.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "island_moved" },
+      "title": { "name": "the Drifter", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "built_farm",
+      "name": "Green Thumb, Wet Hands",
+      "desc": "Build a farm on your island and grow something that isn't seaweed.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "built_farm" },
+      "title": null
+    },
+    {
+      "id": "built_workshop",
+      "name": "Measure Twice, Cast Once",
+      "desc": "Build a workshop on your island for all your tinkering needs.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "built_workshop" },
+      "title": null
+    },
+    {
+      "id": "built_brewery",
+      "name": "Small-Batch Operation",
+      "desc": "Build a brewery on your island; the bubbling is oddly soothing.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "built_brewery" },
+      "title": null
+    },
+    {
+      "id": "built_shrine",
+      "name": "Small Offerings",
+      "desc": "Build a shrine on your island and leave the sea something nice for once.",
+      "category": "island",
+      "condition": { "type": "flag", "flag": "built_shrine" },
+      "title": null
+    },
+    {
+      "id": "caught_transcendent",
+      "name": "The Impossible Catch",
+      "desc": "Catch a transcendent fish and briefly understand everything.",
+      "category": "secret",
+      "condition": { "type": "flag", "flag": "caught_transcendent" },
+      "title": { "name": "the Transcendent", "rarity": "mythic", "color": "#ff4d8f" }
+    },
+    {
+      "id": "caught_at_night",
+      "name": "Night Shift",
+      "desc": "Catch a fish at night, when the water keeps its best secrets.",
+      "category": "catching",
+      "condition": { "type": "flag", "flag": "caught_at_night" },
+      "title": { "name": "the Moonlit", "rarity": "common", "color": "#9aa5b1" }
+    },
+    {
+      "id": "caught_dawn",
+      "name": "Dawn Patrol",
+      "desc": "Catch a fish at dawn, before the kettle has even boiled.",
+      "category": "catching",
+      "condition": { "type": "flag", "flag": "caught_dawn" },
+      "title": null
+    },
+    {
+      "id": "chat_first",
+      "name": "Ahoy There",
+      "desc": "Send your first chat message; the isles are friendlier when you talk back.",
+      "category": "social",
+      "condition": { "type": "flag", "flag": "chat_first" },
+      "title": { "name": "the Chatterbait", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "max_backpack",
+      "name": "Bag of Holding",
+      "desc": "Fully upgrade your backpack until physics files a formal complaint.",
+      "category": "collection",
+      "condition": { "type": "flag", "flag": "max_backpack" },
+      "title": null
+    },
+    {
+      "id": "legend_whale",
+      "name": "The One That Didn't Get Away",
+      "desc": "Catch the legendary whale that every dock in the isles claims to have seen once.",
+      "category": "secret",
+      "condition": { "type": "flag", "flag": "legend_whale" },
+      "title": { "name": "Whalefriend", "rarity": "legendary", "color": "#f5a623" }
+    },
+    {
+      "id": "all_attach_slots",
+      "name": "Fully Loaded",
+      "desc": "Fill every attachment slot on your rod until it rattles pleasantly.",
+      "category": "skill",
+      "condition": { "type": "flag", "flag": "all_attach_slots" },
+      "title": null
+    },
+    {
+      "id": "first_potion_used",
+      "name": "Down the Hatch",
+      "desc": "Drink your first potion and hope the label was accurate.",
+      "category": "skill",
+      "condition": { "type": "flag", "flag": "first_potion_used" },
+      "title": null
+    },
+    {
+      "id": "broke_line_10",
+      "name": "Snap Streak",
+      "desc": "Break your fishing line 10 times; somewhere below, the fish are keeping score.",
+      "category": "secret",
+      "condition": { "type": "flag", "flag": "broke_line_10" },
+      "title": { "name": "the Snapped", "rarity": "uncommon", "color": "#57c26b" }
+    },
+    {
+      "id": "cozy_hour",
+      "name": "Golden Hour",
+      "desc": "Spend a full, cozy hour by the water doing absolutely nothing urgent.",
+      "category": "social",
+      "condition": { "type": "flag", "flag": "cozy_hour" },
+      "title": { "name": "the Cozy", "rarity": "common", "color": "#9aa5b1" }
+    }
+  ]
+}

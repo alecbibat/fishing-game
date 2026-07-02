@@ -40,8 +40,10 @@ export function openWindow(name, ctx = {}) {
   body().innerHTML = '';
   builder(body(), ctx);
 }
+let lastCustom = null;
 export function openCustom(name, title, builderFn, ctx = {}) {
   current = name;
+  lastCustom = { name, title, builderFn, ctx };
   root().classList.remove('hidden');
   titleEl().textContent = title;
   body().innerHTML = '';
@@ -50,7 +52,11 @@ export function openCustom(name, title, builderFn, ctx = {}) {
 
 $('#window-close')?.addEventListener('click', closeWindow);
 $('#window-root')?.addEventListener('click', (e) => { if (e.target.id === 'window-root') closeWindow(); });
-on('state', () => { if (current) openWindow(current); }); // live refresh
+on('state', () => { // live refresh
+  if (!current) return;
+  if (lastCustom && current === lastCustom.name) openCustom(lastCustom.name, lastCustom.title, lastCustom.builderFn, lastCustom.ctx);
+  else openWindow(current);
+});
 
 // ---------- helpers ----------
 function rarPill(rarity) {

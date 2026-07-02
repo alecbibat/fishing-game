@@ -13,7 +13,7 @@ const TOWN_SPOTS = [
   { x: 78, z: 66 }, { x: 30, z: 192 }, { x: -84, z: 148 }, { x: 96, z: 134 },
   { x: 52, z: 36 }, { x: -38, z: 32 }, { x: 60, z: 176 }, { x: 118, z: 74 },
 ];
-const ZONE_ANCHORS = { docks: { x: 474, z: 462 }, rig: { x: 6, z: 6 } };
+const ZONE_ANCHORS = { docks: { x: 478, z: 444 }, rig: { x: 6, z: 6 } };
 
 export class NPCManager {
   constructor(scene, world) {

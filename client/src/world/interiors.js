@@ -167,7 +167,7 @@ export function buildCave(group, world, H) {
 export function buildReef(group, world, H) {
   const map = flatMap({ id: 'reef', biome: () => 'reef', spawn: { x: 0, z: 30 }, size: 80 });
   map.mood = { bg: '#a8e4e0', hemi: '#d8f4f0', hemiI: 1.05, sunI: 1.3, fogNear: 80, fogFar: 420 };
-  map.returnSpawn = { x: 474, z: 480 };
+  map.returnSpawn = { x: 470, z: 462 };
   // crescent sandbar
   map.ground = (x, z) => {
     const d = dist2d(x, z, 0, 34);
@@ -219,7 +219,7 @@ export function buildReef(group, world, H) {
 export function buildDeepsea(group, world, H) {
   const map = flatMap({ id: 'deepsea', biome: () => 'deepsea', spawn: { x: 0, z: 2 }, size: 60 });
   map.mood = { bg: '#7fb8cc', hemi: '#cfe8ef', hemiI: 0.85, sunI: 1.1, fogNear: 90, fogFar: 480 };
-  map.returnSpawn = { x: 474, z: 480 };
+  map.returnSpawn = { x: 470, z: 462 };
   map.ground = () => -30;
   map.water = () => 0;
   map.platforms = [{ x1: -5, x2: 5, z1: -9, z2: 9, y: 1.3 }];
@@ -267,7 +267,7 @@ export function buildRig(group, world, H) {
   const map = flatMap({ id: 'rig', biome: () => 'rig', spawn: { x: 0, z: 10 }, size: 60 });
   map.mood = { bg: '#8a9aa4', hemi: '#b8c4cc', hemiI: 0.75, sunI: 0.7, fogNear: 70, fogFar: 380 };
   map.flag = 'visited_rig';
-  map.returnSpawn = { x: 474, z: 480 };
+  map.returnSpawn = { x: 470, z: 462 };
   map.ground = () => -40;
   map.water = () => 0;
   map.platforms = [
@@ -334,7 +334,7 @@ export function buildAbyss(group, world, H) {
   const map = flatMap({ id: 'abyss', biome: () => 'abyss', spawn: { x: 0, z: 4 }, size: 40 });
   map.mood = { bg: '#02060e', hemi: '#3a4a5c', hemiI: 0.65, sunI: 0.1, fogNear: 40, fogFar: 260 };
   map.flag = 'visited_abyss';
-  map.returnSpawn = { x: 474, z: 480 };
+  map.returnSpawn = { x: 470, z: 462 };
   map.ground = () => -120;
   map.water = () => 0;
   map.platforms = [{ x1: -7, x2: 7, z1: -7, z2: 7, y: 1.1 }];

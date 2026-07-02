@@ -259,7 +259,7 @@ function openBaitSwitcher() {
   });
 }
 // bait defs for the switcher (avoids circular import)
-import('./data/gen-items.js').then((m) => {
+import(new URL('./data/gen-items.js', import.meta.url)).then((m) => {
   window.__baitDefs = Object.fromEntries(m.BAITS.map((b) => [b.id, b]));
 });
 
@@ -310,6 +310,7 @@ function refreshRemotes() {
       scene.add(rig);
       remotes.set(id, { rig, tx: p.x || 0, tz: p.z || 0, try: 0, zone: p.zone || 'town' });
       rig.position.set(p.x || 0, 0, p.z || 0);
+      rig.visible = mapForZone(p.zone || 'town') === world.mapId && world.mapId !== 'island';
     } else {
       const r = remotes.get(id);
       attachLabel(r.rig, p.name, p.title, '#ffd9a8');
