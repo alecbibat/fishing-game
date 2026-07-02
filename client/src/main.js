@@ -10,6 +10,8 @@ import { NPCManager, npcOptions } from './npc/npc.js';
 import { HUD } from './ui/hud.js';
 import { openWindow, closeWindow, currentWindow, openCustom } from './ui/windows.js';
 import { openShop, openBroker, openFerry, openBuilding, openIslandWindow, openLobbyWindow } from './ui/shops.js';
+import { Minimap } from './ui/minimap.js';
+import { showContextMenu } from './ui/context.js';
 import { net } from './net/net.js';
 import { ZONE_LORE } from './data/gen-zones.js';
 import { FISH } from './data/gen-fish.js';
@@ -49,7 +51,7 @@ on('levelup', () => { blip(440, 0.1); setTimeout(() => blip(550, 0.1), 100); set
 on('fishing', ({ phase }) => { if (phase === 'bite') blip(980, 0.08, 'square', 0.06); });
 
 // ---------------- game objects ----------------
-let world, player, fishing, npcs, hud, input;
+let world, player, fishing, npcs, hud, input, minimap;
 let running = false;
 let lastInteractable = null;
 let dialogueNpc = null;
@@ -92,7 +94,7 @@ function startGame() {
       if (currentWindow()) return closeWindow();
       if (dialogueNpc) return closeDialogue();
       if (fishing.active) return fishing.cancel();
-      return openWindow('settings', { net });
+      return;
     }
     if (currentWindow()) {
       if (!windowKeys[code]) return;
@@ -155,9 +157,11 @@ function startGame() {
   wireNet();
 
   // enter world
+  minimap = new Minimap();
   const spawn = world.loadMap(mapForZone(S.zone), S.pos.x || S.pos.z ? { x: S.pos.x, z: S.pos.z } : null);
   player.place(spawn.x, spawn.z);
   npcs.spawnForMap(world.mapId);
+  minimap.rebuild(world);
   hud.show();
   hud.refresh(world, net);
   running = true;
@@ -176,12 +180,62 @@ const seenZones = new Set();
 function switchMap(mapId, spawnHint = null) {
   closeDialogue();
   if (fishing.active) fishing.cancel();
+  player.walkTarget = null;
   const spawn = world.loadMap(mapId, spawnHint);
   player.place(spawn.x, spawn.z);
   npcs.spawnForMap(mapId);
+  minimap?.rebuild(world);
   for (const [, r] of remotes) r.rig.visible = mapForZone(r.zone) === mapId && mapId !== 'island';
   save();
 }
+
+// ---------------- right-click Choose Option menu ----------------
+function projectToScreen(x, y, z) {
+  const v = new THREE.Vector3(x, y, z).project(camera);
+  return { x: ((v.x + 1) / 2) * innerWidth, y: ((1 - v.y) / 2) * innerHeight, behind: v.z > 1 || v.z < -1 };
+}
+canvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  if (!running || currentWindow()) return;
+  const options = [];
+  const near = (x, z, r) => dist2d(player.x, player.z, x, z) < r;
+  const tooFar = () => hud.chatLine(null, "I can't reach that!", 'system');
+  // NPCs under the cursor
+  for (const n of npcs.npcs) {
+    const s = projectToScreen(n.x, n.rig.position.y + 1.4, n.z);
+    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 55) continue;
+    options.push({ verb: 'Talk-to', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openDialogue(n) : tooFar()) });
+    if (n.def.shop) options.push({ verb: 'Trade', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openShop(n.def.shop) : tooFar()) });
+    if (n.def.banker) options.push({ verb: 'Bank', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openWindow('bank') : tooFar()) });
+    options.push({ verb: 'Examine', target: n.def.name, fn: () => hud.chatLine(null, n.def.personality || 'A fellow islander.', 'system') });
+  }
+  // interactables under the cursor
+  for (const it of world.interactables()) {
+    const y = world.surfaceYAt(it.x, it.z) + 1;
+    const s = projectToScreen(it.x, y, it.z);
+    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 60) continue;
+    options.push({ verb: it.label, object: true, fn: () => (near(it.x, it.z, it.r + 2) ? runAction(it.action) : tooFar()) });
+  }
+  // remote players: wave at them
+  for (const [, r] of remotes) {
+    if (!r.rig.visible) continue;
+    const s = projectToScreen(r.rig.position.x, r.rig.position.y + 1.4, r.rig.position.z);
+    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 50) continue;
+    const p = [...net.players.values()].find((pp) => remotes.get(pp.id) === r);
+    if (p) options.push({ verb: 'Wave at', target: p.name, fn: () => { if (net.roomCode) net.sendChat('*waves*'); } });
+  }
+  // walk here: intersect click ray with the ground plane at player height
+  const ndc = new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(ndc, camera);
+  const t = (player.y - ray.ray.origin.y) / ray.ray.direction.y;
+  if (t > 0 && t < 200) {
+    const pt = ray.ray.origin.clone().addScaledVector(ray.ray.direction, t);
+    options.push({ verb: 'Walk here', fn: () => { player.walkTarget = { x: pt.x, z: pt.z }; } });
+  }
+  options.push({ verb: 'Cancel', fn: () => {} });
+  showContextMenu(e.clientX, e.clientY, options);
+});
 
 // ---------------- interactions ----------------
 function tryInteract() {
@@ -379,6 +433,8 @@ function loop() {
     if (canFish && !hint.textContent) hint.textContent = '🎣 Hold SPACE to cast';
     else if (!canFish && hint.textContent === '🎣 Hold SPACE to cast') hint.textContent = '';
   }
+
+  minimap?.update(world, player, npcs, remotes);
 
   hudT += dt;
   if (hudT > 0.5) { hudT = 0; hud.refresh(world, net); }

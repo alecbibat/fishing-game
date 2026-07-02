@@ -245,7 +245,7 @@ export function makeCoral(seed = 1) {
 }
 
 // ---------- text sprites (names, titles, chat bubbles, signs) ----------
-export function makeTextSprite(text, { font = 'bold 28px "Trebuchet MS", sans-serif', color = '#ffffff', bg = null, pad = 8, outline = 'rgba(0,0,0,.75)', maxWidth = 420, scale = 1 } = {}) {
+export function makeTextSprite(text, { font = 'bold 26px Verdana, sans-serif', color = '#ffffff', bg = null, pad = 8, outline = 'rgba(0,0,0,.9)', maxWidth = 420, scale = 1 } = {}) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   ctx.font = font;

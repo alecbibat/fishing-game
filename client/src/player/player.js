@@ -86,8 +86,9 @@ export function attachLabel(group, name, title = null, color = '#ffffff') {
 }
 export function showBubble(group, text) {
   if (group.userData.bubble) { group.remove(group.userData.bubble); clearTimeout(group.userData.bubbleTimer); }
-  const sprite = makeTextSprite(text, { color: '#2a2418', bg: 'rgba(253,246,227,.95)', outline: null, scale: 0.9 });
-  sprite.position.y = 3.9;
+  // OSRS-style overhead chat: yellow text, black outline, no bubble
+  const sprite = makeTextSprite(text, { color: '#ffff00', outline: '#000000', bg: null, scale: 0.95 });
+  sprite.position.y = 3.8;
   group.add(sprite);
   group.userData.bubble = sprite;
   group.userData.bubbleTimer = setTimeout(() => {
@@ -106,6 +107,7 @@ export class Player {
     this.ry = 0;             // facing
     this.speed = 0;
     this.frozen = false;     // true while fishing minigame active
+    this.walkTarget = null;  // right-click "Walk here"
     this.keys = {};
     // camera orbit
     this.camYaw = 0;
@@ -128,18 +130,28 @@ export class Player {
       if (k['KeyA'] || k['ArrowLeft']) mx -= 1;
       if (k['KeyD'] || k['ArrowRight']) mx += 1;
     }
-    const moving = (mx !== 0 || mz !== 0);
+    let moving = (mx !== 0 || mz !== 0);
+    if (moving) this.walkTarget = null;
+    // right-click walk-to
+    let walkAng = null;
+    if (!moving && this.walkTarget && !this.frozen) {
+      const dx = this.walkTarget.x - this.x, dz = this.walkTarget.z - this.z;
+      const d = Math.hypot(dx, dz);
+      if (d < 0.6) this.walkTarget = null;
+      else { walkAng = Math.atan2(dx, dz); moving = true; }
+    }
     const run = k['ShiftLeft'] || k['ShiftRight'];
     const targetSpeed = moving ? (run ? 15 : 9) : 0;
     this.speed = lerp(this.speed, targetSpeed, clamp(dt * 8, 0, 1));
     if (moving) {
-      const ang = Math.atan2(mx, mz) + this.camYaw;
+      const ang = walkAng !== null ? walkAng : Math.atan2(mx, mz) + this.camYaw;
       const nx = this.x + Math.sin(ang) * this.speed * dt;
       const nz = this.z + Math.cos(ang) * this.speed * dt;
       // slide along blocked axes
       if (this.world.walkableAt(nx, nz)) { this.x = nx; this.z = nz; }
-      else if (this.world.walkableAt(nx, this.z)) { this.x = nx; }
-      else if (this.world.walkableAt(this.x, nz)) { this.z = nz; }
+      else if (this.world.walkableAt(nx, this.z)) { this.x = nx; if (walkAng !== null) this.walkTarget = null; }
+      else if (this.world.walkableAt(this.x, nz)) { this.z = nz; if (walkAng !== null) this.walkTarget = null; }
+      else if (walkAng !== null) this.walkTarget = null;
       this.ry = lerpAngle(this.ry, ang, clamp(dt * 10, 0, 1));
       this.rig.userData.setAnim('walk');
     } else if (!this.frozen) {
@@ -200,6 +212,7 @@ export class Input {
 
     let lastX = 0, lastY = 0, movedTotal = 0;
     canvas.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return; // right-click is the Choose Option menu
       this.pointerDown = true;
       this._downAt = performance.now();
       lastX = e.clientX; lastY = e.clientY; movedTotal = 0;
@@ -216,6 +229,7 @@ export class Input {
       }
     });
     canvas.addEventListener('pointerup', (e) => {
+      if (e.button !== 0) return;
       this.pointerDown = false;
       const wasDrag = this.dragging;
       this.dragging = false;

@@ -26,8 +26,10 @@ export class HUD {
     });
     on('levelup', ({ level, abilities }) => {
       this.toast(`⬆️ Fishing level ${level}!`, abilities.map((a) => `Unlocked: ${a.name}`).join(' · ') || (level > 100 ? 'Your legend grows beyond mastery.' : ''), 'level');
-      this.chatLine(null, `You reached fishing level ${level}!`, 'system');
+      this.chatLine(null, 'Congratulations, you just advanced a Fishing level.', 'system');
+      this.chatLine(null, `Your Fishing level is now ${level}.`, 'system');
     });
+    on('xp', ({ amount }) => this.xpDrop(amount));
     on('catch', ({ fish, len, record }) => {
       if (rarityRank(fish.rarity) >= 2) {
         this.chatLine(null, `You caught ${aOrAn(fish.name)} ${fish.name}! (${len} cm${record ? ' — new record!' : ''})`, 'rare');
@@ -79,6 +81,15 @@ export class HUD {
       this.els.netCount.textContent = net.players.size + 1;
       this.els.netCode.textContent = net.roomCode;
     } else this.els.netPill.classList.add('hidden');
+  }
+
+  xpDrop(amount) {
+    const box = $('#xp-drops');
+    if (!box) return;
+    const d = el('div', { class: 'xp-drop' }, `🎣 +${Math.floor(amount)} xp`);
+    box.append(d);
+    setTimeout(() => d.remove(), 1650);
+    while (box.children.length > 5) box.firstChild.remove();
   }
 
   toast(text, sub = '', kind = '') {

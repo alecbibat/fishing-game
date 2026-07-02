@@ -72,6 +72,10 @@
     <div id="active-buffs"></div>
   </div>
   <div id="hud-topright">
+    <div id="minimap-wrap">
+      <canvas id="minimap-canvas" width="152" height="152"></canvas>
+      <div id="compass">N</div>
+    </div>
     <div id="zone-banner"><span id="zone-name">Willowbrook</span><span id="zone-tagline"></span></div>
     <div class="hud-pills">
       <div class="hud-pill" id="coins-pill">🪙 <span id="coins-amt">0</span></div>
@@ -79,6 +83,7 @@
       <div class="hud-pill hidden" id="net-pill">👥 <span id="net-count">1</span> · <span id="net-code"></span></div>
     </div>
   </div>
+  <div id="xp-drops"></div>
   <div id="hud-right">
     <button class="hud-btn" data-window="backpack" title="Backpack (B)">🎒</button>
     <button class="hud-btn" data-window="dex" title="Fish Dex (F)">📖</button>
@@ -135,6 +140,7 @@
 </div>
 
 <div id="interact-prompt" class="hidden"></div>
+<div id="context-menu" class="hidden"><div id="context-header">Choose Option</div><div id="context-options"></div></div>
 <div id="loading-screen"><div class="loading-inner"><div class="loading-fish">🐟</div><div id="loading-text">Loading the isles…</div></div></div>
 
 <script type="module" src="src/main.js"></script>
