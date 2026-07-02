@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driftwood Isles — a cozy fishing adventure</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎣</text></svg>">
+</head>
+<body>
+<canvas id="game-canvas"></canvas>
+
+<!-- ============ TITLE SCREEN ============ -->
+<div id="title-screen">
+  <div class="title-card">
+    <h1 class="game-title">Driftwood Isles</h1>
+    <p class="game-subtitle">a cozy fishing adventure</p>
+    <div class="title-form">
+      <input id="title-name" type="text" maxlength="16" placeholder="Your angler name" autocomplete="off">
+      <div class="title-buttons">
+        <button id="btn-singleplayer" class="btn btn-primary">🏝️ Fish Solo</button>
+        <button id="btn-multiplayer" class="btn">🌊 Multiplayer</button>
+      </div>
+      <div id="title-continue-row" class="hidden">
+        <button id="btn-continue" class="btn btn-gold">⛵ Continue as <span id="continue-name"></span></button>
+      </div>
+    </div>
+    <!-- Lobby browser -->
+    <div id="lobby-panel" class="hidden">
+      <div class="lobby-tabs">
+        <button class="lobby-tab active" data-tab="browse">Browse Lobbies</button>
+        <button class="lobby-tab" data-tab="create">Create Lobby</button>
+        <button class="lobby-tab" data-tab="code">Join by Code</button>
+      </div>
+      <div id="lobby-browse" class="lobby-tabpage">
+        <div id="lobby-list" class="lobby-list"><div class="lobby-empty">Connecting…</div></div>
+        <button id="btn-lobby-refresh" class="btn btn-small">↻ Refresh</button>
+      </div>
+      <div id="lobby-create" class="lobby-tabpage hidden">
+        <label>Lobby name <input id="lobby-name" maxlength="24" placeholder="Cozy Pond Pals"></label>
+        <label>Visibility
+          <select id="lobby-visibility"><option value="public">Public (listed)</option><option value="private">Private (code only)</option></select>
+        </label>
+        <label>Max players <select id="lobby-max"><option>2</option><option>4</option><option selected>8</option><option>12</option><option>16</option></select></label>
+        <label>Message of the day <input id="lobby-motd" maxlength="80" placeholder="welcome, take yer shoes off"></label>
+        <label class="check-label"><input type="checkbox" id="lobby-announce" checked> Announce rare catches</label>
+        <label class="check-label"><input type="checkbox" id="lobby-chat" checked> Enable chat</label>
+        <button id="btn-lobby-create" class="btn btn-primary">Create Lobby</button>
+      </div>
+      <div id="lobby-code" class="lobby-tabpage hidden">
+        <label>Lobby code <input id="join-code" maxlength="6" placeholder="ABC123" style="text-transform:uppercase"></label>
+        <button id="btn-lobby-join" class="btn btn-primary">Join</button>
+      </div>
+      <div id="lobby-status" class="lobby-status"></div>
+      <button id="btn-lobby-back" class="btn btn-small">← Back</button>
+    </div>
+  </div>
+  <div class="title-footer">WASD move · Click to fish · A world of 1000 fish awaits</div>
+</div>
+
+<!-- ============ HUD ============ -->
+<div id="hud" class="hidden">
+  <div id="hud-topleft">
+    <div id="player-badge">
+      <div id="level-orb"><span id="level-num">1</span></div>
+      <div class="badge-text">
+        <div id="badge-name">Angler</div>
+        <div id="badge-title" class="title-text"></div>
+        <div id="xp-bar"><div id="xp-fill"></div></div>
+      </div>
+    </div>
+    <div id="active-buffs"></div>
+  </div>
+  <div id="hud-topright">
+    <div id="zone-banner"><span id="zone-name">Willowbrook</span><span id="zone-tagline"></span></div>
+    <div class="hud-pills">
+      <div class="hud-pill" id="coins-pill">🪙 <span id="coins-amt">0</span></div>
+      <div class="hud-pill" id="clock-pill">☀️ <span id="clock-time">Day</span></div>
+      <div class="hud-pill hidden" id="net-pill">👥 <span id="net-count">1</span> · <span id="net-code"></span></div>
+    </div>
+  </div>
+  <div id="hud-right">
+    <button class="hud-btn" data-window="backpack" title="Backpack (B)">🎒</button>
+    <button class="hud-btn" data-window="dex" title="Fish Dex (F)">📖</button>
+    <button class="hud-btn" data-window="skills" title="Fishing Skill (K)">🐟</button>
+    <button class="hud-btn" data-window="achievements" title="Achievements (J)">🏆</button>
+    <button class="hud-btn" data-window="rod" title="Rod &amp; Attachments (R)">🎣</button>
+    <button class="hud-btn" data-window="potions" title="Potions (P)">🧪</button>
+    <button class="hud-btn" data-window="map" title="Map (M)">🗺️</button>
+    <button class="hud-btn" data-window="island" title="My Island (I)">🏝️</button>
+    <button class="hud-btn" data-window="settings" title="Settings (Esc)">⚙️</button>
+  </div>
+  <div id="hud-bottom">
+    <div id="bait-pill" title="Click to change bait">🪱 <span id="bait-name">No bait</span> ×<span id="bait-count">0</span></div>
+    <div id="action-hint"></div>
+  </div>
+  <!-- chat -->
+  <div id="chat-box">
+    <div id="chat-log"></div>
+    <input id="chat-input" maxlength="120" placeholder="Press Enter to chat…" autocomplete="off">
+  </div>
+  <div id="toast-stack"></div>
+</div>
+
+<!-- ============ FISHING MINIGAME ============ -->
+<div id="fishing-ui" class="hidden">
+  <div id="cast-meter" class="hidden"><div id="cast-fill"></div><div class="cast-label">CAST POWER</div></div>
+  <div id="bite-alert" class="hidden">❗</div>
+  <div id="reel-panel" class="hidden">
+    <div id="fish-info-sonar" class="hidden"></div>
+    <div id="reel-track">
+      <div id="reel-fish">🐟</div>
+      <div id="reel-bar"></div>
+      <div id="reel-progress-rail"><div id="reel-progress"></div></div>
+    </div>
+    <div id="tension-rail"><div id="tension-fill"></div><span class="tension-label">line tension</span></div>
+    <div id="qte-prompt" class="hidden"></div>
+  </div>
+</div>
+<div id="catch-banner" class="hidden"></div>
+
+<!-- ============ WINDOWS ============ -->
+<div id="window-root" class="hidden">
+  <div id="window-frame">
+    <div id="window-titlebar"><span id="window-title">Window</span><button id="window-close">✕</button></div>
+    <div id="window-body"></div>
+  </div>
+</div>
+
+<!-- ============ NPC DIALOGUE ============ -->
+<div id="dialogue-box" class="hidden">
+  <div id="dialogue-name"></div>
+  <div id="dialogue-text"></div>
+  <div id="dialogue-options"></div>
+</div>
+
+<div id="interact-prompt" class="hidden"></div>
+<div id="loading-screen"><div class="loading-inner"><div class="loading-fish">🐟</div><div id="loading-text">Loading the isles…</div></div></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
