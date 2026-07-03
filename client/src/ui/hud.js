@@ -3,6 +3,7 @@ import { $, el, escapeHtml, fmtNum, RARITY_COLOR, rarityRank } from '../core/uti
 import { on, emit } from '../core/events.js';
 import { S, levelFromXp, getBaitDef, activePotionDefs } from '../core/state.js';
 import { ZONE_LORE } from '../data/gen-zones.js';
+import { icon, iconHtml, iconDataUrl } from './icons.js';
 
 export class HUD {
   constructor() {
@@ -19,13 +20,13 @@ export class HUD {
     };
     this.onChatSend = null;
 
-    on('toast', (d) => this.toast(d.text, d.sub, d.kind));
+    on('toast', (d) => this.toast(d.text, d.sub, d.kind, d.icon));
     on('achievement', ({ ach }) => {
-      this.toast(`🏆 Achievement: ${ach.name}`, ach.title ? `Claim it to earn the title "${ach.title.name}"` : 'Claim your reward in the Achievements window', 'achieve');
+      this.toast(`Achievement: ${ach.name}`, ach.title ? `Claim it to earn the title "${ach.title.name}"` : 'Claim your reward in the Achievements window', 'achieve', 'trophy');
       this.chatLine(null, `You completed "${ach.name}"!`, 'system');
     });
     on('levelup', ({ level, abilities }) => {
-      this.toast(`⬆️ Fishing level ${level}!`, abilities.map((a) => `Unlocked: ${a.name}`).join(' · ') || (level > 100 ? 'Your legend grows beyond mastery.' : ''), 'level');
+      this.toast(`Fishing level ${level}!`, abilities.map((a) => `Unlocked: ${a.name}`).join(' · ') || (level > 100 ? 'Your legend grows beyond mastery.' : ''), 'level', 'level');
       this.chatLine(null, 'Congratulations, you just advanced a Fishing level.', 'system');
       this.chatLine(null, `Your Fishing level is now ${level}.`, 'system');
     });
@@ -57,7 +58,14 @@ export class HUD {
     this.els.title.textContent = S.title || '';
     this.els.xpFill.style.width = `${Math.min(100, (into / need) * 100)}%`;
     this.els.coins.textContent = fmtNum(S.coins);
-    if (world) this.els.clock.textContent = world.clockLabel();
+    if (world) {
+      this.els.clock.textContent = world.clockLabel();
+      const ci = document.getElementById('clock-icon');
+      if (ci) {
+        const key = world.timeKey() === 'day' ? 'sun' : world.timeKey() === 'night' ? 'moon' : 'dusk';
+        if (ci.dataset.cur !== key) { ci.dataset.cur = key; ci.innerHTML = iconHtml(key, 14); }
+      }
+    }
     const lore = ZONE_LORE[S.zone];
     this.els.zone.textContent = lore?.displayName || S.zone;
     this.els.zoneTag.textContent = lore?.tagline || '';
@@ -69,11 +77,11 @@ export class HUD {
     const now = Date.now();
     for (const p of activePotionDefs()) {
       const mins = Math.ceil((p.until - now) / 60000);
-      this.els.buffs.append(el('div', { class: 'buff-chip', title: p.flavor || '' }, `🧪 ${p.name} ${mins}m`));
+      this.els.buffs.append(el('div', { class: 'buff-chip', title: p.flavor || '' }, icon('potion', 12), ` ${p.name} ${mins}m`));
     }
     if (S.island.shrineBuff && S.island.shrineBuff.until > now) {
       const mins = Math.ceil((S.island.shrineBuff.until - now) / 60000);
-      this.els.buffs.append(el('div', { class: 'buff-chip', style: 'background:rgba(63,143,139,.85)' }, `⛩️ ${S.island.shrineBuff.name} ${mins}m`));
+      this.els.buffs.append(el('div', { class: 'buff-chip', style: 'background:rgba(63,143,139,.85)' }, icon('shrine', 12), ` ${S.island.shrineBuff.name} ${mins}m`));
     }
     // net pill
     if (net?.roomCode) {
@@ -86,14 +94,17 @@ export class HUD {
   xpDrop(amount) {
     const box = $('#xp-drops');
     if (!box) return;
-    const d = el('div', { class: 'xp-drop' }, `🎣 +${Math.floor(amount)} xp`);
+    const d = el('div', { class: 'xp-drop', html: `${iconHtml('xp', 12)} +${Math.floor(amount)} xp` });
     box.append(d);
     setTimeout(() => d.remove(), 1650);
     while (box.children.length > 5) box.firstChild.remove();
   }
 
-  toast(text, sub = '', kind = '') {
-    const t = el('div', { class: `toast toast-${kind}` }, el('div', {}, text));
+  toast(text, sub = '', kind = '', iconName = null) {
+    const head = el('div', {});
+    if (iconName) head.append(icon(iconName, 16), ' ');
+    head.append(document.createTextNode(text));
+    const t = el('div', { class: `toast toast-${kind}` }, head);
     if (sub) t.append(el('div', { class: 'toast-sub' }, sub));
     this.els.toasts.append(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .4s'; }, 3400);

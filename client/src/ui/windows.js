@@ -11,7 +11,8 @@ import { FISH, FISH_BY_ID, TRANSCENDENT } from '../data/gen-fish.js';
 import { ATTACHMENTS, BAITS, POTIONS, RODS } from '../data/gen-items.js';
 import { ACHIEVEMENTS } from '../data/gen-achievements.js';
 import { ZONE_LORE } from '../data/gen-zones.js';
-import { fishThumbnailDataUrl } from '../fishing/fishmesh.js';
+import { mountFishViewer } from './fishviewer.js';
+import { icon, iconHtml } from './icons.js';
 import { overworldHeight, overworldWaterLevel, overworldZone, HALF } from '../world/world.js';
 import { PORTAL_SPOTS } from '../data/static.js';
 
@@ -20,10 +21,15 @@ const body = () => $('#window-body');
 const titleEl = () => $('#window-title');
 
 let current = null;
+let dexViewer = null; // active 3D fish viewer in the dex detail
+function disposeDexViewer() {
+  if (dexViewer) { dexViewer.dispose(); dexViewer = null; }
+}
 export function currentWindow() { return current; }
 
 export function closeWindow() {
   current = null;
+  disposeDexViewer();
   root().classList.add('hidden');
 }
 
@@ -36,6 +42,7 @@ export function openWindow(name, ctx = {}) {
   const builder = builders[name] || ctx.builder;
   if (!builder) return;
   current = name;
+  disposeDexViewer();
   root().classList.remove('hidden');
   body().innerHTML = '';
   builder(body(), ctx);
@@ -66,25 +73,21 @@ function fishSlot(item, onClick) {
   const fish = FISH_BY_ID.get(item.fishId);
   const slot = el('div', { class: 'slot', title: fish ? `${fish.name} — ${fmtLen(item.len)}` : '?', onclick: onClick },
     el('div', { class: 'slot-rar', style: `background:${RARITY_COLOR[fish?.rarity || 'common']}` }),
-    el('div', {}, fishEmoji(fish)),
+    el('div', {}, fishIcon(fish)),
     el('div', { class: 'slot-label' }, fish?.name || '???'),
     el('div', { class: 'slot-count' }, fmtLen(item.len)));
   return slot;
 }
-function fishEmoji(fish) {
-  if (!fish) return '🐟';
-  if (fish.rarity === 'transcendent') return '🐋';
-  if (fish.body === 'eel') return '🪱';
-  if (fish.body === 'shark') return '🦈';
-  if (fish.body === 'blob') return '🐡';
-  if (fish.body === 'ray') return '🛸';
-  if (rarityRank(fish.rarity) >= 4) return '🐠';
-  return '🐟';
+function fishIcon(fish, size = 22) {
+  if (!fish) return icon('fish', size);
+  if (fish.rarity === 'transcendent') return icon('whale', size);
+  if (rarityRank(fish.rarity) >= 3) return icon('fish_rare', size);
+  return icon('fish', size);
 }
 
 // ---------- backpack ----------
 function buildBackpack(bodyEl) {
-  titleEl().textContent = `🎒 Backpack — ${S.inventory.length}/${backpackSlots()} (${BACKPACK_TIERS[S.backpackTier].name})`;
+  titleEl().textContent = `Backpack — ${S.inventory.length}/${backpackSlots()} (${BACKPACK_TIERS[S.backpackTier].name})`;
   const grid = el('div', { class: 'grid-slots' });
   S.inventory.forEach((item, i) => {
     grid.append(fishSlot(item, () => showFishActions(bodyEl, item, i, false)));
@@ -102,7 +105,7 @@ function showFishActions(bodyEl, item, idx, fromBank) {
     el('div', { class: 'row-main' },
       el('div', { class: 'row-name' }, `${fish.name} `, rarPill(fish.rarity)),
       el('div', { class: 'row-desc' }, `${fmtLen(item.len)} · ${fmtWt(item.wt)} — ${fish.flavor}`)),
-    el('button', { class: 'btn btn-small btn-gold', onclick: () => { sellFish(idx, fromBank); } }, `Sell ${val} 🪙`));
+    el('button', { class: 'btn btn-small btn-gold', onclick: () => { sellFish(idx, fromBank); } }, `Sell ${val} `, icon('coin', 13)));
   bodyEl.querySelector('.fish-actions')?.remove();
   panel.classList.add('fish-actions');
   bodyEl.append(panel);
@@ -110,8 +113,8 @@ function showFishActions(bodyEl, item, idx, fromBank) {
 
 // ---------- bank ----------
 function buildBank(bodyEl) {
-  titleEl().textContent = `🏦 Bank of Willowbrook — ${S.bank.length}/${BANK_SLOTS} stored`;
-  bodyEl.append(el('div', { class: 'muted' }, 'Click backpack items to deposit ⬇ · Click vault items to withdraw ⬆'));
+  titleEl().textContent = `Bank of Willowbrook — ${S.bank.length}/${BANK_SLOTS} stored`;
+  bodyEl.append(el('div', { class: 'muted' }, 'Click backpack items to deposit · Click vault items to withdraw'));
   bodyEl.append(el('div', { class: 'win-section-title' }, `Backpack (${S.inventory.length}/${backpackSlots()})`));
   const inv = el('div', { class: 'grid-slots' });
   S.inventory.forEach((item, i) => inv.append(fishSlot(item, () => { bankDeposit(i); })));
@@ -128,9 +131,9 @@ function buildBank(bodyEl) {
 let dexFilter = { q: '', biome: 'all', rarity: 'all', caught: false };
 function buildDex(bodyEl) {
   const caughtN = dexSpeciesCount();
-  titleEl().textContent = `📖 Fish Dex — ${caughtN}/${FISH.length + TRANSCENDENT.length} discovered`;
+  titleEl().textContent = `Fish Dex — ${caughtN}/${FISH.length + TRANSCENDENT.length} discovered`;
   const header = el('div', { class: 'dex-header' });
-  const search = el('input', { placeholder: '🔍 Search fish…', value: dexFilter.q });
+  const search = el('input', { placeholder: 'Search fish…', value: dexFilter.q });
   search.addEventListener('input', () => { dexFilter.q = search.value.toLowerCase(); renderGrid(); });
   const biomes = ['all', ...new Set(FISH.map((f) => f.biome))];
   const bSel = el('select', {}, ...biomes.map((b) => el('option', { value: b, ...(dexFilter.biome === b ? { selected: '' } : {}) }, b === 'all' ? 'All biomes' : (ZONE_LORE[b]?.displayName || b))));
@@ -160,7 +163,7 @@ function buildDex(bodyEl) {
     for (const f of list.slice(0, 400)) {
       const seen = !!S.dex[f.id];
       const card = el('div', { class: `dex-card ${seen ? '' : 'unseen'}`, onclick: () => { if (seen) renderDetail(f); } },
-        el('div', { style: 'font-size:1.6rem' }, seen ? fishEmoji(f) : '❓'),
+        el('div', { style: 'padding:2px' }, seen ? fishIcon(f, 24) : el('span', { style: 'font-weight:900;font-size:1.3rem' }, '?')),
         el('div', { class: 'dex-name', style: seen ? `color:${RARITY_COLOR[f.rarity]}` : '' }, seen ? f.name : '???'),
         el('div', { class: 'dex-sub' }, `${f.rarity}${seen ? ` · ×${S.dex[f.id].n}` : ''}`));
       grid.append(card);
@@ -171,13 +174,12 @@ function buildDex(bodyEl) {
   }
   function renderDetail(f) {
     gridWrap.innerHTML = '';
+    disposeDexViewer();
     const d = S.dex[f.id];
-    const back = el('button', { class: 'btn btn-small', onclick: renderGrid }, '← Back to dex');
+    const back = el('button', { class: 'btn btn-small', onclick: () => { disposeDexViewer(); renderGrid(); } }, '← Back to dex');
     const detail = el('div', { class: 'dex-detail', style: 'margin-top:10px' });
-    const portrait = el('div', { class: 'fish-portrait' });
-    const url = fishThumbnailDataUrl(f, 220);
-    if (url) portrait.style.cssText += `background-image:url(${url});background-size:contain;background-repeat:no-repeat;background-position:center;`;
-    else portrait.append(el('div', { style: 'font-size:4rem;text-align:center;line-height:150px' }, fishEmoji(f)));
+    const portrait = el('div', { class: 'fish-portrait', title: 'drag to rotate' });
+    dexViewer = mountFishViewer(portrait, f, { width: 280, height: 190 });
     const info = el('div', { style: 'flex:1;min-width:240px' },
       el('h3', { style: `color:${RARITY_COLOR[f.rarity]}` }, `${f.name} `, rarPill(f.rarity)),
       f.title ? el('div', { class: 'muted', style: 'font-style:italic' }, `"${f.title}"`) : null,
@@ -185,7 +187,7 @@ function buildDex(bodyEl) {
       el('div', { class: 'stat-grid' },
         stat('Caught', `×${d.n}`), stat('Longest', fmtLen(d.maxLen)), stat('Heaviest', fmtWt(d.maxWt)),
         stat('Waters', ZONE_LORE[f.biome]?.displayName || f.biome), stat('Depth', f.depth), stat('Active', f.time === 'any' ? 'all day' : f.time),
-        stat('Favors', f.baitPref === 'any' ? 'any bait' : f.baitPref + ' bait'), stat('Size class', f.sizeClass), stat('Base value', `${f.price} 🪙`)));
+        stat('Favors', f.baitPref === 'any' ? 'any bait' : f.baitPref + ' bait'), stat('Size class', f.sizeClass), stat('Base value', `${f.price} coins`)));
     detail.append(portrait, info);
     gridWrap.append(back, detail);
   }
@@ -198,16 +200,16 @@ function stat(k, v) {
 // ---------- skills ----------
 function buildSkills(bodyEl) {
   const { level, into, need } = levelFromXp(S.xp);
-  titleEl().textContent = `🐟 Fishing — Level ${level}`;
+  titleEl().textContent = `Fishing — Level ${level}`;
   bodyEl.append(el('div', { class: 'stat-grid' },
-    stat('Level', level + (level > 100 ? ' ✨' : '')),
+    stat('Level', level + (level > 100 ? ' ★' : '')),
     stat('Total XP', fmtNum(S.xp)),
     stat('To next level', need === Infinity ? 'MAX' : fmtNum(need - into)),
     stat('Lifetime catches', fmtNum(S.stats.catches))));
   if (level > 100) {
     bodyEl.append(el('div', { class: 'list-row', style: 'border-color:var(--gold)' },
       el('div', { class: 'row-main' },
-        el('div', { class: 'row-name' }, `✨ Beyond Mastery — Level ${level} / 1000`),
+        el('div', { class: 'row-name' }, `Beyond Mastery — Level ${level} / 1000`),
         el('div', { class: 'row-desc' }, `Every level past 100 grants +0.1% bite speed and +0.05% rare luck. Current bonus: +${((level - 100) * 0.1).toFixed(1)}% bite, +${((level - 100) * 0.05).toFixed(2)}% luck.`))));
   }
   const fx = getEffects();
@@ -226,7 +228,7 @@ function buildSkills(bodyEl) {
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, a.name),
         el('div', { class: 'row-desc' }, a.desc)),
-      el('div', {}, unlocked ? '✅' : '🔒')));
+      el('div', { style: 'font-weight:900' }, unlocked ? '✓' : '—')));
   }
   bodyEl.append(list);
 }
@@ -235,7 +237,7 @@ function buildSkills(bodyEl) {
 let achTab = 'all';
 function buildAchievements(bodyEl) {
   const doneN = Object.values(S.achievements).filter((a) => a.done).length;
-  titleEl().textContent = `🏆 Achievements — ${doneN}/${ACHIEVEMENTS.length}`;
+  titleEl().textContent = `Achievements — ${doneN}/${ACHIEVEMENTS.length}`;
   // titles picker
   bodyEl.append(el('div', { class: 'win-section-title' }, 'Your titles'));
   const tRow = el('div', { class: 'tab-row' });
@@ -268,13 +270,13 @@ function buildAchievements(bodyEl) {
     const st = S.achievements[a.id];
     const isSecret = a.category === 'secret' && !st?.done;
     const row = el('div', { class: `list-row ${st?.done ? '' : 'locked'}` },
-      el('div', { style: 'font-size:1.5rem' }, st?.done ? '🏆' : isSecret ? '❔' : '🔒'),
+      el('div', {}, st?.done ? icon('trophy', 22) : isSecret ? icon('secret', 22) : el('span', { class: 'muted', style: 'font-weight:900;font-size:1.2rem' }, '—')),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, isSecret ? 'Secret achievement' : a.name, ' ',
           a.title ? el('span', { class: 'pill', style: `background:${a.title.color}` }, `title: ${a.title.name}`) : ''),
-        el('div', { class: 'row-desc' }, isSecret ? 'Keep exploring…' : `${a.desc} · Reward: ${ACH_REWARD[a.tier] || 100} 🪙`)));
+        el('div', { class: 'row-desc' }, isSecret ? 'Keep exploring…' : `${a.desc} · Reward: ${ACH_REWARD[a.tier] || 100} coins`)));
     if (st?.done && !st.claimed) {
-      row.append(el('button', { class: 'btn btn-small btn-gold', onclick: () => { claimAchievement(a.id); } }, 'Turn in ✨'));
+      row.append(el('button', { class: 'btn btn-small btn-gold', onclick: () => { claimAchievement(a.id); } }, 'Turn in'));
     } else if (st?.claimed) row.append(el('span', { class: 'muted' }, 'claimed'));
     list.append(row);
   }
@@ -284,7 +286,7 @@ function buildAchievements(bodyEl) {
 // ---------- rod & attachments ----------
 function buildRod(bodyEl) {
   const rod = getRodDef();
-  titleEl().textContent = `🎣 ${rod.name}`;
+  titleEl().textContent = `Rod: ${rod.name}`;
   bodyEl.append(el('div', { class: 'muted', style: 'font-style:italic' }, rod.flavor || ''));
   bodyEl.append(el('div', { class: 'stat-grid' },
     stat('Tier', rod.hero ? '★ HERO' : rod.tier), stat('Cast power', rod.stats.power || 1),
@@ -298,7 +300,7 @@ function buildRod(bodyEl) {
   function highestOwnedTier() { return S.rodTierOwned || Math.max(1, RODS.findIndex((r) => r.id === (S.rod.kind === 'tier' ? S.rod.id : 'rod_t1')) + 1); }
   for (const r of ownedTiers) {
     rodList.append(el('div', { class: 'list-row' },
-      el('div', { style: 'font-size:1.4rem' }, '🎣'),
+      el('div', {}, icon('rod', 22)),
       el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, `${r.name} (Tier ${r.tier})`), el('div', { class: 'row-desc' }, r.flavor || '')),
       S.rod.kind === 'tier' && S.rod.id === r.id
         ? el('span', { class: 'muted' }, 'equipped')
@@ -308,7 +310,7 @@ function buildRod(bodyEl) {
     const t = TRANSCENDENT.find((f) => f.rodReward?.id === heroId);
     if (!t) continue;
     rodList.append(el('div', { class: 'list-row', style: 'border-color:var(--r-transcendent)' },
-      el('div', { style: 'font-size:1.4rem' }, '🌟'),
+      el('div', {}, icon('claim', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name rar-transcendent' }, t.rodReward.name),
         el('div', { class: 'row-desc' }, t.rodReward.flavor)),
@@ -350,7 +352,7 @@ function buildRod(bodyEl) {
     if (!a) continue;
     const isEquipped = [eq.bobber, eq.hook, eq.reel, ...eq.gadget].includes(id);
     owned.append(el('div', { class: 'list-row' },
-      el('div', { style: 'font-size:1.3rem' }, slotIcon(a.slot)),
+      el('div', {}, slotIcon(a.slot)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name', style: `color:${RARITY_COLOR[a.rarity]}` }, a.name, ' ', el('span', { class: 'muted', style: 'font-size:.75rem' }, `(${a.slot})`)),
         el('div', { class: 'row-desc' }, `${a.flavor} — ${fxDesc(a.effects)}`)),
@@ -376,7 +378,7 @@ function buildRod(bodyEl) {
     return !!eq[a.slot];
   }
 }
-function slotIcon(slot) { return { bobber: '🎈', hook: '🪝', reel: '🎡', gadget: '🧰' }[slot] || '🔧'; }
+function slotIcon(slot, size = 20) { return icon({ bobber: 'bobber', hook: 'hook', reel: 'reel', gadget: 'gadget' }[slot] || 'gadget', size); }
 function fxDesc(effects) {
   const names = {
     biteRate: 'bite speed', rareLuck: 'rare luck', barSize: 'bar size', stability: 'stability',
@@ -384,12 +386,12 @@ function fxDesc(effects) {
     multiCatch: 'double catch', treasure: 'treasure', sonar: 'SONAR', scope: 'SCOPE', magnet: 'MAGNET', autoReel: 'AUTO-HOOK',
   };
   return Object.entries(effects || {}).map(([k, v]) =>
-    ['sonar', 'scope', 'magnet', 'autoReel'].includes(k) ? `⚡${names[k]}` : `+${Math.round(v * 100)}% ${names[k] || k}`).join(', ');
+    ['sonar', 'scope', 'magnet', 'autoReel'].includes(k) ? `[${names[k]}]` : `+${Math.round(v * 100)}% ${names[k] || k}`).join(', ');
 }
 
 // ---------- potions ----------
 function buildPotions(bodyEl) {
-  titleEl().textContent = '🧪 Potions';
+  titleEl().textContent = 'Potions';
   const active = S.activePotions.filter((p) => p.until > Date.now());
   if (active.length) {
     bodyEl.append(el('div', { class: 'win-section-title' }, 'Active brews'));
@@ -398,7 +400,7 @@ function buildPotions(bodyEl) {
       const def = POTIONS.find((d) => d.id === p.id);
       if (!def) continue;
       list.append(el('div', { class: 'list-row' },
-        el('div', { style: `font-size:1.4rem;color:${def.color}` }, '🧪'),
+        el('div', {}, icon('potion', 22)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, def.name),
           el('div', { class: 'row-desc' }, `${fxDesc(def.effects)} — ${Math.ceil((p.until - Date.now()) / 60000)} min left`))));
@@ -412,7 +414,7 @@ function buildPotions(bodyEl) {
     const def = POTIONS.find((d) => d.id === id);
     if (!def) continue;
     list.append(el('div', { class: 'list-row' },
-      el('div', { style: `font-size:1.4rem` }, '🧪'),
+      el('div', {}, icon('potion', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, `${def.name} ×${S.potions[id]}`),
         el('div', { class: 'row-desc' }, `${def.flavor} — ${fxDesc(def.effects)}, ${def.duration} min`)),
@@ -424,7 +426,7 @@ function buildPotions(bodyEl) {
 
 // ---------- map ----------
 function buildMap(bodyEl, ctx) {
-  titleEl().textContent = '🗺️ The Driftwood Isles';
+  titleEl().textContent = 'The Driftwood Isles';
   const canvas = el('canvas', { id: 'world-map-canvas', width: 480, height: 480 });
   bodyEl.append(canvas);
   const g = canvas.getContext('2d');
@@ -482,18 +484,18 @@ function buildMap(bodyEl, ctx) {
     g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
   }
   bodyEl.append(el('div', { class: 'muted', style: 'margin-top:8px' },
-    ctx.mapId === 'overworld' ? '📍 You are the red dot. Teal dots are island portal anchors.' : 'You are off the map — in ' + (ZONE_LORE[S.zone]?.displayName || S.zone) + '.'));
+    ctx.mapId === 'overworld' ? 'You are the red dot. Teal dots are island portal anchors.' : 'You are off the map — in ' + (ZONE_LORE[S.zone]?.displayName || S.zone) + '.'));
   const lore = ZONE_LORE[S.zone];
   if (lore) bodyEl.append(el('div', { class: 'list-row', style: 'margin-top:8px' },
     el('div', { class: 'row-main' },
       el('div', { class: 'row-name' }, lore.displayName),
       el('div', { class: 'row-desc' }, `${lore.description} `),
-      el('div', { class: 'row-desc', style: 'font-style:italic;color:var(--teal-deep)' }, `🔮 ${lore.secretHint}`))));
+      el('div', { class: 'row-desc', style: 'font-style:italic;color:#5a3c7a' }, `Rumour: ${lore.secretHint}`))));
 }
 
 // ---------- settings ----------
 function buildSettings(bodyEl, ctx) {
-  titleEl().textContent = '⚙️ Settings';
+  titleEl().textContent = 'Settings';
   const fx = getEffects();
   const rows = el('div', { class: 'row-list' });
   const toggle = (label, desc, key, disabled = false) => {
@@ -505,7 +507,7 @@ function buildSettings(bodyEl, ctx) {
       el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, label), el('div', { class: 'row-desc' }, desc)),
       cb));
   };
-  toggle('Cozy Mode 😴', fx.cozyMode ? 'Bites hook themselves. Fewer rares, zero stress.' : 'Unlocks at fishing level 60 (Drowsy Reel).', 'cozyMode', !fx.cozyMode);
+  toggle('Cozy Mode', fx.cozyMode ? 'Bites hook themselves. Fewer rares, zero stress.' : 'Unlocks at fishing level 60 (Drowsy Reel).', 'cozyMode', !fx.cozyMode);
   toggle('Announce rare catches', 'Celebrate rare+ catches in chat.', 'announceRares');
   toggle('Sound effects', 'Chimes and splashes.', 'sfx');
   bodyEl.append(rows);
@@ -517,21 +519,21 @@ function buildSettings(bodyEl, ctx) {
       try { await navigator.clipboard.writeText(code); emit('toast', { text: 'Save copied to clipboard!' }); }
       catch { prompt('Copy your save code:', code); }
     },
-  }, '📤 Export save');
+  }, 'Export save');
   const impIn = el('input', { placeholder: 'paste save code…', style: 'flex:1;padding:.4em;border:2px solid var(--wood);border-radius:8px' });
   const imp = el('button', {
     class: 'btn btn-small', onclick: () => {
       if (importSave(impIn.value)) { emit('toast', { text: 'Save imported!' }); location.reload(); }
       else emit('toast', { text: 'Invalid save code.' });
     },
-  }, '📥 Import');
+  }, 'Import');
   bodyEl.append(el('div', { style: 'display:flex;gap:8px;align-items:center' }, exp, impIn, imp));
 
   bodyEl.append(el('div', { class: 'win-section-title' }, 'How to play'));
   bodyEl.append(el('div', { class: 'muted', html: `
-    <b>WASD</b> walk · <b>Shift</b> run · drag mouse to look · scroll to zoom<br>
-    <b>Hold SPACE / click</b> near water to charge a cast, release to cast<br>
-    When the <b>❗</b> appears — click or SPACE to hook! Then hold to keep the fish in the green bar.<br>
+    <b>WASD</b> walk · <b>Shift</b> run · scroll to zoom · right-click for options<br>
+    <b>Click the water</b> to cast at that spot (or hold SPACE to charge a cast)<br>
+    When the <b>!</b> appears — click or SPACE to hook! Then hold to keep the fish in the green bar.<br>
     <b>E</b> talk / interact · <b>Enter</b> chat · <b>B</b> backpack · <b>F</b> dex · <b>K</b> skill · <b>J</b> achievements · <b>R</b> rod · <b>P</b> potions · <b>M</b> map · <b>I</b> island<br><br>
     Find the sewer grate behind the bakery. Ride the ferry. Anchor your island. Catch all 1000.` }));
 

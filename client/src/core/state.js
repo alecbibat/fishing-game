@@ -13,7 +13,7 @@ export function defaultState(name = 'Angler') {
     version: 1,
     name,
     title: null,
-    look: { shirt: '#d9663f', pants: '#3f5d8a', hat: '#7a5230', skin: '#f0c49a' },
+    look: { shirt: '#d9663f', pants: '#3f5d8a', hat: '#7a5230', skin: '#f0c49a', hair: '#5d4430' },
     coins: 50,
     xp: 0,
     zone: 'town',

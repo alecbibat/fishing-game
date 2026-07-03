@@ -43,7 +43,7 @@ export const ABILITIES = [
 // Island buildings
 export const BUILDINGS = {
   farm: {
-    name: 'Bait Farm', icon: '🌱',
+    name: 'Bait Farm', icon: 'farm',
     desc: 'Grow rare baits over time. Upgrades add plots and speed.',
     levels: [
       { cost: 2500, plots: 2, speed: 1 },
@@ -52,7 +52,7 @@ export const BUILDINGS = {
     ],
   },
   workshop: {
-    name: 'Workshop', icon: '🔨',
+    name: 'Workshop', icon: 'workshop',
     desc: 'Upgrade your fishing rod to higher tiers. Upgrades discount crafting.',
     levels: [
       { cost: 3000, discount: 0 },
@@ -61,7 +61,7 @@ export const BUILDINGS = {
     ],
   },
   brewery: {
-    name: 'Brewery', icon: '🧪',
+    name: 'Brewery', icon: 'brewery',
     desc: 'Brew fishing potions from your catch. Upgrades brew extra doses.',
     levels: [
       { cost: 4000, doses: 1 },
@@ -70,7 +70,7 @@ export const BUILDINGS = {
     ],
   },
   shrine: {
-    name: 'Tide Shrine', icon: '⛩️',
+    name: 'Tide Shrine', icon: 'shrine',
     desc: 'Pray once a day for a random fishing blessing.',
     levels: [
       { cost: 8000, power: 0.1 },
@@ -94,16 +94,16 @@ export const PORTAL_SPOTS = [
 
 // Junk & treasure tables
 export const JUNK = [
-  { name: 'Soggy Boot', emoji: '🥾' }, { name: 'Rusty Can', emoji: '🥫' },
-  { name: 'Tangled Kelp', emoji: '🌿' }, { name: 'Broken Bottle', emoji: '🍾' },
-  { name: 'Waterlogged Plank', emoji: '🪵' }, { name: 'Old Tire', emoji: '🛞' },
+  { name: 'Soggy Boot' }, { name: 'Rusty Can' },
+  { name: 'Tangled Kelp' }, { name: 'Broken Bottle' },
+  { name: 'Waterlogged Plank' }, { name: 'Old Tire' },
 ];
 export const TREASURE = [
-  { name: 'Copper Locket', value: 120, emoji: '🧿' },
-  { name: 'Pearl', value: 400, emoji: '🫧' },
-  { name: 'Silver Compass', value: 900, emoji: '🧭' },
-  { name: 'Gold Doubloon', value: 2200, emoji: '🪙' },
-  { name: 'Sunken Crown', value: 8000, emoji: '👑' },
+  { name: 'Copper Locket', value: 120 },
+  { name: 'Pearl', value: 400 },
+  { name: 'Silver Compass', value: 900 },
+  { name: 'Gold Doubloon', value: 2200 },
+  { name: 'Sunken Crown', value: 8000 },
 ];
 
 // XP awarded per catch, by rarity (scaled by size roll and bonuses)

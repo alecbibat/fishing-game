@@ -109,15 +109,15 @@ export class NPCManager {
 // Build dialogue options for an NPC (consumed by UI layer)
 export function npcOptions(def) {
   const opts = [];
-  if (def.shop) opts.push({ label: '🛍️ Browse wares', act: { type: 'shop', shop: def.shop } });
-  if (def.banker) opts.push({ label: '🏦 Open bank vault', act: { type: 'bank' } });
-  if (def.broker) opts.push({ label: '🏝️ Discuss my island', act: { type: 'broker' } });
-  if (def.zone === 'docks') opts.push({ label: '⛵ Ferry me somewhere', act: { type: 'ferry' } });
+  if (def.shop) opts.push({ label: 'Browse wares', act: { type: 'shop', shop: def.shop } });
+  if (def.banker) opts.push({ label: 'Open bank vault', act: { type: 'bank' } });
+  if (def.broker) opts.push({ label: 'Discuss my island', act: { type: 'broker' } });
+  if (def.zone === 'docks') opts.push({ label: 'Ferry me somewhere', act: { type: 'ferry' } });
   const roleId = (def.id + ' ' + def.role).toLowerCase();
-  if (roleId.includes('registrar') || roleId.includes('title')) opts.push({ label: '🏆 Review my deeds', act: { type: 'window', window: 'achievements' } });
-  if (roleId.includes('professor') || roleId.includes('dex') || roleId.includes('scholar')) opts.push({ label: '📖 Talk fish facts', act: { type: 'window', window: 'dex' } });
-  if (roleId.includes('legend') || roleId.includes('retired')) opts.push({ label: '🐋 Ask about the legends', act: { type: 'legends' } });
-  opts.push({ label: '💬 Chat', act: { type: 'chat' } });
-  opts.push({ label: '👋 Goodbye', act: { type: 'close' } });
+  if (roleId.includes('registrar') || roleId.includes('title')) opts.push({ label: 'Review my deeds', act: { type: 'window', window: 'achievements' } });
+  if (roleId.includes('professor') || roleId.includes('dex') || roleId.includes('scholar')) opts.push({ label: 'Talk fish facts', act: { type: 'window', window: 'dex' } });
+  if (roleId.includes('legend') || roleId.includes('retired')) opts.push({ label: 'Ask about the legends', act: { type: 'legends' } });
+  opts.push({ label: 'Chat', act: { type: 'chat' } });
+  opts.push({ label: 'Goodbye', act: { type: 'close' } });
   return opts;
 }

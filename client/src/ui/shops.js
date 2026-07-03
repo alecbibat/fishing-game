@@ -7,19 +7,20 @@ import { FISH_BY_ID } from '../data/gen-fish.js';
 import { BACKPACK_TIERS, BUILDINGS, PORTAL_SPOTS } from '../data/static.js';
 import { ZONE_LORE } from '../data/gen-zones.js';
 import { openCustom, closeWindow } from './windows.js';
+import { icon } from './icons.js';
 
 const rarPill = (r) => el('span', { class: 'pill', style: `background:${RARITY_COLOR[r]}` }, r);
 
 // ---------- generic shops ----------
 export function openShop(shopId) {
   const builders = { bait: buildBaitShop, attachments: buildAttachShop, potions: (b) => buildBrewing(b, 1), general: buildGeneral, rods: (b) => buildWorkshop(b, 0) };
-  const titles = { bait: '🪱 Bait Shop', attachments: "🧰 Tinkerer's Attachments", potions: '🧪 Potion Cauldron', general: '🏪 General Store', rods: '🎣 Rod Dealer' };
+  const titles = { bait: 'Bait Shop', attachments: "Tinkerer's Attachments", potions: 'Potion Cauldron', general: 'General Store', rods: 'Rod Dealer' };
   if (!builders[shopId]) return;
   openCustom('shop:' + shopId, titles[shopId], builders[shopId]);
 }
 
 function coinsHeader(bodyEl) {
-  bodyEl.append(el('div', { class: 'muted', style: 'margin-bottom:8px' }, `You have ${fmtNum(S.coins)} 🪙`));
+  bodyEl.append(el('div', { class: 'muted', style: 'margin-bottom:8px' }, `You have ${fmtNum(S.coins)} `, icon('coin', 13)));
 }
 
 function buildBaitShop(bodyEl) {
@@ -35,14 +36,14 @@ function buildBaitShop(bodyEl) {
       emit('state');
     };
     list.append(el('div', { class: 'list-row' },
-      el('div', { style: 'font-size:1.4rem' }, '🪱'),
+      el('div', {}, icon('bait', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, `${b.name} `, el('span', { class: 'muted', style: 'font-size:.75rem' }, `tier ${b.tier} ${b.category}`)),
         el('div', { class: 'row-desc' }, `${b.flavor} — you own ×${S.baits[b.id] || 0}`)),
-      el('button', { class: 'btn btn-small', onclick: () => buy(10) }, `×10 (${fmtNum(b.price * 10)} 🪙)`),
-      el('button', { class: 'btn btn-small btn-primary', onclick: () => buy(50) }, `×50 (${fmtNum(b.price * 50)} 🪙)`)));
+      el('button', { class: 'btn btn-small', onclick: () => buy(10) }, `×10 (${fmtNum(b.price * 10)}c)`),
+      el('button', { class: 'btn btn-small btn-primary', onclick: () => buy(50) }, `×50 (${fmtNum(b.price * 50)}c)`)));
   }
-  list.append(el('div', { class: 'muted' }, '🌱 Rarer baits can only be grown on your island Bait Farm.'));
+  list.append(el('div', { class: 'muted' }, 'Rarer baits can only be grown on your island Bait Farm.'));
   bodyEl.append(list);
 }
 
@@ -52,7 +53,7 @@ function buildAttachShop(bodyEl) {
   for (const a of [...ATTACHMENTS].sort((x, y) => x.price - y.price)) {
     const owned = S.attachmentsOwned.includes(a.id);
     list.append(el('div', { class: 'list-row' },
-      el('div', { style: 'font-size:1.3rem' }, { bobber: '🎈', hook: '🪝', reel: '🎡', gadget: '🧰' }[a.slot]),
+      el('div', {}, icon({ bobber: 'bobber', hook: 'hook', reel: 'reel', gadget: 'gadget' }[a.slot], 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name', style: `color:${RARITY_COLOR[a.rarity]}` }, a.name, ' ', rarPill(a.rarity)),
         el('div', { class: 'row-desc' }, a.flavor)),
@@ -66,7 +67,7 @@ function buildAttachShop(bodyEl) {
             emit('toast', { text: `Bought ${a.name}!`, sub: 'Equip it in the Rod window (R).' });
             emit('state');
           },
-        }, `${fmtNum(a.price)} 🪙`)));
+        }, `${fmtNum(a.price)}c`)));
   }
   bodyEl.append(list);
 }
@@ -87,10 +88,10 @@ function buildGeneral(bodyEl) {
         emit('toast', { text: `Upgraded to ${t.name}!`, sub: `${t.slots} slots` });
         emit('state');
       },
-    }, `${fmtNum(t.price)} 🪙`);
-    else btn = el('span', { class: 'muted' }, '🔒');
+    }, `${fmtNum(t.price)}c`);
+    else btn = el('span', { class: 'muted', style: 'font-weight:900' }, '—');
     list.append(el('div', { class: `list-row ${i > S.backpackTier + 1 ? 'locked' : ''}` },
-      el('div', { style: 'font-size:1.3rem' }, '🎒'),
+      el('div', {}, icon('backpack', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, t.name),
         el('div', { class: 'row-desc' }, `${t.slots} slots`)),
@@ -126,13 +127,13 @@ export function buildWorkshop(bodyEl, discount = 0) {
           S.rodTierOwned = r.tier;
           S.rod = { kind: 'tier', id: r.id };
           checkAchievements();
-          emit('toast', { text: `🎣 Crafted the ${r.name}!`, sub: r.flavor, kind: 'achieve' });
+          emit('toast', { text: `Crafted the ${r.name}!`, sub: r.flavor, kind: 'achieve', icon: 'rod' });
           emit('state');
         },
-      }, `Craft ${fmtNum(cost)} 🪙`);
-    } else btn = el('span', { class: 'muted' }, '🔒');
+      }, `Craft — ${fmtNum(cost)}c`);
+    } else btn = el('span', { class: 'muted', style: 'font-weight:900' }, '—');
     list.append(el('div', { class: `list-row ${!owned && !isNext ? 'locked' : ''}` },
-      el('div', { style: 'font-size:1.3rem' }, owned ? '✅' : '🎣'),
+      el('div', {}, owned ? el('span', { style: 'font-weight:900' }, '✓') : icon('rod', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, `T${r.tier} — ${r.name}`),
         el('div', { class: 'row-desc' }, `${r.flavor || ''}${(!owned && (r.cost.fish || []).length) ? ` · Needs: ${needsTxt}` : ''}`),
@@ -175,7 +176,7 @@ export function buildBrewing(bodyEl, doses = 1) {
     const ok = needs.every((x) => x.have >= x.n);
     const needsTxt = needs.map((x) => `${x.n}× ${x.value}${x.kind === 'rarity' ? ' fish' : x.kind === 'biome' ? ' catch' : ''} (${x.have}/${x.n})`).join(' · ');
     list.append(el('div', { class: `list-row ${ok ? '' : 'locked'}` },
-      el('div', { style: `font-size:1.4rem;filter:drop-shadow(0 0 4px ${p.color})` }, '🧪'),
+      el('div', { style: `filter:drop-shadow(0 0 4px ${p.color})` }, icon('brewery', 22)),
       el('div', { class: 'row-main' },
         el('div', { class: 'row-name' }, `${p.name} `, el('span', { class: 'muted', style: 'font-size:.75rem' }, `${p.duration} min`)),
         el('div', { class: 'row-desc' }, p.flavor),
@@ -188,7 +189,7 @@ export function buildBrewing(bodyEl, doses = 1) {
           S.potions[p.id] = (S.potions[p.id] || 0) + doses;
           S.stats.potionsBrewed += doses;
           checkAchievements();
-          emit('toast', { text: `🧪 Brewed ${p.name}${doses > 1 ? ` ×${doses}` : ''}!`, sub: 'Drink it from the Potions window (P).', kind: 'achieve' });
+          emit('toast', { text: `Brewed ${p.name}${doses > 1 ? ` ×${doses}` : ''}!`, sub: 'Drink it from the Potions window (P).', kind: 'achieve', icon: 'brewery' });
           emit('state');
         },
       }, 'Brew')));
@@ -198,18 +199,18 @@ export function buildBrewing(bodyEl, doses = 1) {
 
 // ---------- island broker ----------
 export function openBroker() {
-  openCustom('broker', '🏝️ The Island Broker', (bodyEl) => {
+  openCustom('broker', 'The Island Broker', (bodyEl) => {
     const placed = !!S.island.spot;
     const cost = placed ? 250 : 500;
     bodyEl.append(el('div', { class: 'muted' },
       placed
-        ? `Your island portal is anchored at ${PORTAL_SPOTS.find((p) => p.id === S.island.spot)?.name}. Relocating costs ${cost} 🪙. Your island's waters take after wherever it anchors!`
-        : `Every angler deserves an island. First anchoring costs ${cost} 🪙 — choose wisely, or don't; I do relocations.`));
+        ? `Your island portal is anchored at ${PORTAL_SPOTS.find((p) => p.id === S.island.spot)?.name}. Relocating costs ${cost} coins. Your island's waters take after wherever it anchors!`
+        : `Every angler deserves an island. First anchoring costs ${cost} coins — choose wisely, or don't; I do relocations.`));
     const list = el('div', { class: 'row-list', style: 'margin-top:10px' });
     for (const spot of PORTAL_SPOTS) {
       const active = S.island.spot === spot.id;
       list.append(el('div', { class: 'list-row' },
-        el('div', { style: 'font-size:1.3rem' }, active ? '🌀' : '⭕'),
+        el('div', {}, icon(active ? 'portal' : 'sign', 22)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, spot.name),
           el('div', { class: 'row-desc' }, `Island waters will fish as: ${islandBiomeFor(spot.id)}`)),
@@ -221,11 +222,11 @@ export function openBroker() {
               const wasPlaced = !!S.island.spot;
               S.island.spot = spot.id;
               setFlag(wasPlaced ? 'island_moved' : 'island_placed');
-              emit('toast', { text: wasPlaced ? '🌀 Island portal relocated!' : '🏝️ Your island awaits!', sub: `Anchored at ${spot.name}. Look for the glowing stone circle.`, kind: 'achieve' });
+              emit('toast', { text: wasPlaced ? 'Island portal relocated!' : 'Your island awaits!', sub: `Anchored at ${spot.name}. Look for the glowing stone circle.`, kind: 'achieve', icon: 'portal' });
               emit('game:portal-moved');
               emit('state');
             },
-          }, `${cost} 🪙`)));
+          }, `${cost}c`)));
     }
     bodyEl.append(list);
   });
@@ -237,24 +238,24 @@ function islandBiomeFor(spotId) {
 // ---------- ferry ----------
 export function openFerry(onTravel) {
   const fx = getEffects();
-  openCustom('ferry', '⛵ Driftwood Ferry', (bodyEl) => {
+  openCustom('ferry', 'Driftwood Ferry', (bodyEl) => {
     bodyEl.append(el('div', { class: 'muted' }, '"Where to, angler? Mind the spray."'));
     const list = el('div', { class: 'row-list', style: 'margin-top:10px' });
     const dests = [
-      { id: 'reef', icon: '🪸', need: null },
-      { id: 'deepsea', icon: '🌊', need: null },
-      { id: 'rig', icon: '🏗️', need: null },
-      { id: 'abyss', icon: '🕳️', need: fx.abyss ? null : 'Requires fishing level 70 (Abyss License)' },
-      { id: 'overworld', icon: '🏘️', label: 'Back to Driftwood Docks', need: null },
+      { id: 'reef', icon: 'fish_rare', need: null },
+      { id: 'deepsea', icon: 'ferry', need: null },
+      { id: 'rig', icon: 'workshop', need: null },
+      { id: 'abyss', icon: 'moon', need: fx.abyss ? null : 'Requires fishing level 70 (Abyss License)' },
+      { id: 'overworld', icon: 'sign', label: 'Back to Driftwood Docks', need: null },
     ];
     for (const d of dests) {
       const lore = ZONE_LORE[d.id];
       list.append(el('div', { class: `list-row ${d.need ? 'locked' : ''}` },
-        el('div', { style: 'font-size:1.4rem' }, d.icon),
+        el('div', {}, icon(d.icon, 22)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, d.label || lore?.displayName || d.id),
           el('div', { class: 'row-desc' }, d.need || lore?.tagline || '')),
-        d.need ? el('span', {}, '🔒') : el('button', {
+        d.need ? el('span', { class: 'muted', style: 'font-weight:900' }, '—') : el('button', {
           class: 'btn btn-small btn-primary',
           onclick: () => { closeWindow(); onTravel(d.id); },
         }, 'Sail')));
@@ -267,7 +268,7 @@ export function openFerry(onTravel) {
 export function openBuilding(key, onRebuild) {
   const def = BUILDINGS[key];
   const lvl = S.island.buildings[key] || 0;
-  openCustom('building:' + key, `${def.icon} ${def.name}${lvl ? ' ' + '★'.repeat(lvl) : ''}`, (bodyEl) => {
+  openCustom('building:' + key, `${def.name}${lvl ? ' ' + '★'.repeat(lvl) : ''}`, (bodyEl) => {
     bodyEl.append(el('div', { class: 'muted' }, def.desc));
     // build / upgrade
     if (lvl < def.levels.length) {
@@ -275,14 +276,14 @@ export function openBuilding(key, onRebuild) {
       bodyEl.append(el('div', { class: 'list-row', style: 'margin-top:10px' },
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, lvl === 0 ? `Build ${def.name}` : `Upgrade to ${'★'.repeat(lvl + 1)}`),
-          el('div', { class: 'row-desc' }, `Cost: ${fmtNum(next.cost)} 🪙`)),
+          el('div', { class: 'row-desc' }, `Cost: ${fmtNum(next.cost)} coins`)),
         el('button', {
           class: 'btn btn-small btn-gold', onclick: () => {
             if (!canAfford(next.cost)) return emit('toast', { text: 'Not enough coins!' });
             addCoins(-next.cost, false);
             S.island.buildings[key] = lvl + 1;
             setFlag('built_' + key);
-            emit('toast', { text: `${def.icon} ${def.name} ${lvl === 0 ? 'built' : 'upgraded'}!`, kind: 'achieve' });
+            emit('toast', { text: `${def.name} ${lvl === 0 ? 'built' : 'upgraded'}!`, kind: 'achieve', icon: key });
             onRebuild?.();
             emit('state');
             closeWindow();
@@ -305,7 +306,7 @@ function buildFarm(bodyEl, lvlDef, onRebuild) {
     const plot = S.island.farm[i];
     if (!plot) {
       const row = el('div', { class: 'list-row' },
-        el('div', { style: 'font-size:1.3rem' }, '🟫'),
+        el('div', {}, icon('seed', 22)),
         el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, `Plot ${i + 1} — empty`)));
       for (const b of farmBaits) {
         row.append(el('button', {
@@ -314,14 +315,14 @@ function buildFarm(bodyEl, lvlDef, onRebuild) {
             S.island.farm[i] = { baitId: b.id, ready: Date.now() + mins * 60000 };
             emit('state');
           },
-        }, `🌱 ${b.name}`));
+        }, `Plant ${b.name}`));
       }
       list.append(row);
     } else {
       const b = BAITS.find((x) => x.id === plot.baitId);
       const ready = plot.ready <= Date.now();
       list.append(el('div', { class: 'list-row' },
-        el('div', { style: 'font-size:1.3rem' }, ready ? '🌾' : '🌱'),
+        el('div', {}, icon(ready ? 'harvest' : 'farm', 22)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, `Plot ${i + 1} — ${b?.name || plot.baitId}`),
           el('div', { class: 'row-desc' }, ready ? 'Ready to harvest!' : `Ready in ${Math.ceil((plot.ready - Date.now()) / 60000)} min`)),
@@ -330,7 +331,7 @@ function buildFarm(bodyEl, lvlDef, onRebuild) {
             const qty = 4 + Math.floor(Math.random() * 5);
             S.baits[plot.baitId] = (S.baits[plot.baitId] || 0) + qty;
             S.island.farm[i] = null;
-            emit('toast', { text: `🌾 Harvested ${qty}× ${b?.name}!` });
+            emit('toast', { text: `Harvested ${qty}× ${b?.name}!`, icon: 'harvest' });
             onRebuild?.();
             emit('state');
           },
@@ -352,7 +353,7 @@ function buildShrine(bodyEl, lvlDef) {
     { name: 'Deep Knowledge', fx: { xpBonus: lvlDef.power * 2 } },
   ];
   bodyEl.append(el('div', { class: 'list-row' },
-    el('div', { style: 'font-size:1.4rem' }, '⛩️'),
+    el('div', {}, icon('shrine', 22)),
     el('div', { class: 'row-main' },
       el('div', { class: 'row-name' }, 'Pray at the Tide Shrine'),
       el('div', { class: 'row-desc' }, ready ? 'The water in the basin trembles, waiting.' : `The shrine rests. Return in ${Math.ceil((readyAt - Date.now()) / 60000)} min.`)),
@@ -361,22 +362,22 @@ function buildShrine(bodyEl, lvlDef) {
         const b = blessings[Math.floor(Math.random() * blessings.length)];
         S.island.lastShrine = Date.now();
         S.island.shrineBuff = { name: b.name, fx: b.fx, until: Date.now() + 30 * 60000 };
-        emit('toast', { text: `⛩️ Blessing: ${b.name}`, sub: '30 minutes of favor from the tide.', kind: 'achieve' });
+        emit('toast', { text: `Blessing: ${b.name}`, sub: '30 minutes of favor from the tide.', kind: 'achieve', icon: 'shrine' });
         emit('state');
         closeWindow();
       },
-    }, 'Pray') : el('span', {}, '⏳')));
+    }, 'Pray') : el('span', { class: 'muted' }, 'resting')));
 }
 
 // ---------- island overview ----------
 export function openIslandWindow() {
-  openCustom('island', '🏝️ Your Island', (bodyEl) => {
+  openCustom('island', 'Your Island', (bodyEl) => {
     if (!S.island.spot) {
       bodyEl.append(el('div', { class: 'list-row' },
-        el('div', { style: 'font-size:2rem' }, '🏝️'),
+        el('div', {}, icon('island', 26)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, 'You don\'t have an island yet!'),
-          el('div', { class: 'row-desc' }, 'Talk to the Island Broker in Willowbrook (near the square) to anchor your very own island for 500 🪙. You can move it anytime — your island\'s waters take after wherever it anchors.'))));
+          el('div', { class: 'row-desc' }, 'Talk to the Island Broker in Willowbrook (near the square) to anchor your very own island for 500 coins. You can move it anytime — your island\'s waters take after wherever it anchors.'))));
       return;
     }
     const spot = PORTAL_SPOTS.find((p) => p.id === S.island.spot);
@@ -386,11 +387,11 @@ export function openIslandWindow() {
     for (const [key, def] of Object.entries(BUILDINGS)) {
       const lvl = S.island.buildings[key] || 0;
       list.append(el('div', { class: `list-row ${lvl ? '' : 'locked'}` },
-        el('div', { style: 'font-size:1.4rem' }, def.icon),
+        el('div', {}, icon(key, 22)),
         el('div', { class: 'row-main' },
           el('div', { class: 'row-name' }, `${def.name} ${lvl ? '★'.repeat(lvl) : '(not built)'}`),
           el('div', { class: 'row-desc' }, def.desc)),
-        el('span', { class: 'muted' }, lvl ? '' : `${fmtNum(def.levels[0].cost)} 🪙 on-site`)));
+        el('span', { class: 'muted' }, lvl ? '' : `${fmtNum(def.levels[0].cost)}c on-site`)));
     }
     bodyEl.append(list);
     // farm status glance
@@ -400,7 +401,7 @@ export function openIslandWindow() {
       for (const plot of growing) {
         const b = BAITS.find((x) => x.id === plot.baitId);
         const ready = plot.ready <= Date.now();
-        bodyEl.append(el('div', { class: 'muted' }, `${ready ? '🌾' : '🌱'} ${b?.name}: ${ready ? 'ready!' : Math.ceil((plot.ready - Date.now()) / 60000) + ' min'}`));
+        bodyEl.append(el('div', { class: 'muted' }, icon(ready ? 'harvest' : 'farm', 13), ` ${b?.name}: ${ready ? 'ready!' : Math.ceil((plot.ready - Date.now()) / 60000) + ' min'}`));
       }
     }
   });
@@ -408,7 +409,7 @@ export function openIslandWindow() {
 
 // ---------- multiplayer lobby manager ----------
 export function openLobbyWindow(net) {
-  openCustom('lobby', `🌊 Lobby ${net.roomCode || ''}`, (bodyEl) => {
+  openCustom('lobby', `Lobby ${net.roomCode || ''}`, (bodyEl) => {
     if (!net.roomCode) {
       bodyEl.append(el('div', { class: 'muted' }, 'Not in a lobby. Return to the title screen to join one.'));
       return;
@@ -418,19 +419,19 @@ export function openLobbyWindow(net) {
     bodyEl.append(el('div', { class: 'win-section-title' }, `Anglers (${net.players.size + 1}/${st.maxPlayers || '?'})`));
     const list = el('div', { class: 'row-list' });
     list.append(el('div', { class: 'list-row' },
-      el('div', {}, '🧑‍🦱'),
-      el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, `${S.name} (you)${net.isHost ? ' 👑' : ''}`))));
+      el('div', {}, icon('lobby', 20)),
+      el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, `${S.name} (you)${net.isHost ? ' [host]' : ''}`))));
     for (const [id, p] of net.players) {
       const row = el('div', { class: 'list-row' },
-        el('div', {}, '🧑‍🦱'),
+        el('div', {}, icon('lobby', 20)),
         el('div', { class: 'row-main' },
-          el('div', { class: 'row-name' }, `${p.name}${p.muted ? ' 🔇' : ''}`),
+          el('div', { class: 'row-name' }, `${p.name}${p.muted ? ' [muted]' : ''}`),
           el('div', { class: 'row-desc' }, `Lv ${p.level || '?'}${p.title ? ' · ' + p.title : ''} · ${ZONE_LORE[p.zone]?.displayName || p.zone || ''}`)));
       if (net.isHost) {
         row.append(
-          el('button', { class: 'btn btn-small', onclick: () => { net.mod(p.muted ? 'unmute' : 'mute', id); setTimeout(() => openLobbyWindow(net), 300); } }, p.muted ? '🔊 Unmute' : '🔇 Mute'),
-          el('button', { class: 'btn btn-small', onclick: () => { net.mod('kick', id); setTimeout(() => openLobbyWindow(net), 300); } }, '👢 Kick'),
-          el('button', { class: 'btn btn-small btn-danger', onclick: () => { net.mod('ban', id); setTimeout(() => openLobbyWindow(net), 300); } }, '🚫 Ban'));
+          el('button', { class: 'btn btn-small', onclick: () => { net.mod(p.muted ? 'unmute' : 'mute', id); setTimeout(() => openLobbyWindow(net), 300); } }, p.muted ? 'Unmute' : 'Mute'),
+          el('button', { class: 'btn btn-small', onclick: () => { net.mod('kick', id); setTimeout(() => openLobbyWindow(net), 300); } }, 'Kick'),
+          el('button', { class: 'btn btn-small btn-danger', onclick: () => { net.mod('ban', id); setTimeout(() => openLobbyWindow(net), 300); } }, 'Ban'));
       }
       list.append(row);
     }

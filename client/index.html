@@ -18,11 +18,11 @@
     <div class="title-form">
       <input id="title-name" type="text" maxlength="16" placeholder="Your angler name" autocomplete="off">
       <div class="title-buttons">
-        <button id="btn-singleplayer" class="btn btn-primary">🏝️ Fish Solo</button>
-        <button id="btn-multiplayer" class="btn">🌊 Multiplayer</button>
+        <button id="btn-singleplayer" class="btn btn-primary">Fish Solo</button>
+        <button id="btn-multiplayer" class="btn">Multiplayer</button>
       </div>
       <div id="title-continue-row" class="hidden">
-        <button id="btn-continue" class="btn btn-gold">⛵ Continue as <span id="continue-name"></span></button>
+        <button id="btn-continue" class="btn btn-gold">Continue as <span id="continue-name"></span></button>
       </div>
     </div>
     <!-- Lobby browser -->
@@ -34,7 +34,7 @@
       </div>
       <div id="lobby-browse" class="lobby-tabpage">
         <div id="lobby-list" class="lobby-list"><div class="lobby-empty">Connecting…</div></div>
-        <button id="btn-lobby-refresh" class="btn btn-small">↻ Refresh</button>
+        <button id="btn-lobby-refresh" class="btn btn-small">Refresh</button>
       </div>
       <div id="lobby-create" class="lobby-tabpage hidden">
         <label>Lobby name <input id="lobby-name" maxlength="24" placeholder="Cozy Pond Pals"></label>
@@ -78,25 +78,25 @@
     </div>
     <div id="zone-banner"><span id="zone-name">Willowbrook</span><span id="zone-tagline"></span></div>
     <div class="hud-pills">
-      <div class="hud-pill" id="coins-pill">🪙 <span id="coins-amt">0</span></div>
-      <div class="hud-pill" id="clock-pill">☀️ <span id="clock-time">Day</span></div>
-      <div class="hud-pill hidden" id="net-pill">👥 <span id="net-count">1</span> · <span id="net-code"></span></div>
+      <div class="hud-pill" id="coins-pill"><span data-icon="coin"></span> <span id="coins-amt">0</span></div>
+      <div class="hud-pill" id="clock-pill"><span id="clock-icon" data-icon="sun"></span> <span id="clock-time">Day</span></div>
+      <div class="hud-pill hidden" id="net-pill"><span data-icon="lobby"></span> <span id="net-count">1</span> · <span id="net-code"></span></div>
     </div>
   </div>
   <div id="xp-drops"></div>
   <div id="hud-right">
-    <button class="hud-btn" data-window="backpack" title="Backpack (B)">🎒</button>
-    <button class="hud-btn" data-window="dex" title="Fish Dex (F)">📖</button>
-    <button class="hud-btn" data-window="skills" title="Fishing Skill (K)">🐟</button>
-    <button class="hud-btn" data-window="achievements" title="Achievements (J)">🏆</button>
-    <button class="hud-btn" data-window="rod" title="Rod &amp; Attachments (R)">🎣</button>
-    <button class="hud-btn" data-window="potions" title="Potions (P)">🧪</button>
-    <button class="hud-btn" data-window="map" title="Map (M)">🗺️</button>
-    <button class="hud-btn" data-window="island" title="My Island (I)">🏝️</button>
-    <button class="hud-btn" data-window="settings" title="Settings (Esc)">⚙️</button>
+    <button class="hud-btn" data-window="backpack" data-icon="backpack" title="Backpack (B)"></button>
+    <button class="hud-btn" data-window="dex" data-icon="dex" title="Fish Dex (F)"></button>
+    <button class="hud-btn" data-window="skills" data-icon="skill" title="Fishing Skill (K)"></button>
+    <button class="hud-btn" data-window="achievements" data-icon="trophy" title="Achievements (J)"></button>
+    <button class="hud-btn" data-window="rod" data-icon="rod" title="Rod &amp; Attachments (R)"></button>
+    <button class="hud-btn" data-window="potions" data-icon="potion" title="Potions (P)"></button>
+    <button class="hud-btn" data-window="map" data-icon="map" title="Map (M)"></button>
+    <button class="hud-btn" data-window="island" data-icon="island" title="My Island (I)"></button>
+    <button class="hud-btn" data-window="settings" data-icon="settings" title="Settings (Esc)"></button>
   </div>
   <div id="hud-bottom">
-    <div id="bait-pill" title="Click to change bait">🪱 <span id="bait-name">No bait</span> ×<span id="bait-count">0</span></div>
+    <div id="bait-pill" title="Click to change bait"><span data-icon="bait"></span> <span id="bait-name">No bait</span> ×<span id="bait-count">0</span></div>
     <div id="action-hint"></div>
   </div>
   <!-- chat -->
@@ -110,11 +110,11 @@
 <!-- ============ FISHING MINIGAME ============ -->
 <div id="fishing-ui" class="hidden">
   <div id="cast-meter" class="hidden"><div id="cast-fill"></div><div class="cast-label">CAST POWER</div></div>
-  <div id="bite-alert" class="hidden">❗</div>
+  <div id="bite-alert" class="hidden">!</div>
   <div id="reel-panel" class="hidden">
     <div id="fish-info-sonar" class="hidden"></div>
     <div id="reel-track">
-      <div id="reel-fish">🐟</div>
+      <div id="reel-fish"></div>
       <div id="reel-bar"></div>
       <div id="reel-progress-rail"><div id="reel-progress"></div></div>
     </div>
@@ -141,7 +141,7 @@
 
 <div id="interact-prompt" class="hidden"></div>
 <div id="context-menu" class="hidden"><div id="context-header">Choose Option</div><div id="context-options"></div></div>
-<div id="loading-screen"><div class="loading-inner"><div class="loading-fish">🐟</div><div id="loading-text">Loading the isles…</div></div></div>
+<div id="loading-screen"><div class="loading-inner"><div class="loading-fish">~&gt;&lt;(((*&gt;</div><div id="loading-text">Loading the isles…</div></div></div>
 
 <script type="module" src="src/main.js"></script>
 </body>

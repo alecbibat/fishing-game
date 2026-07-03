@@ -1,9 +1,9 @@
-// Driftwood Isles — boot, title screen, game loop, and glue.
-import * as THREE from '../vendor/three.module.js';
-import { $, el, clamp, dist2d, RARITY_COLOR, rarityRank } from './core/util.js';
+// Driftwood Isles — boot, title screen, game loop, and glue (2D pixel edition).
+import { $, el, clamp, dist2d, rarityRank } from './core/util.js';
 import { on, emit } from './core/events.js';
-import { S, save, hasSave, loadSave, newGame, getLevel, getEffects, setFlag, visitZone } from './core/state.js';
-import { World } from './world/world.js';
+import { S, save, hasSave, loadSave, newGame, getLevel, setFlag, visitZone } from './core/state.js';
+import { World2D } from './render2d/world2d.js';
+import { Renderer2D } from './render2d/renderer2d.js';
 import { Player, Input, makeHumanoid, attachLabel, showBubble } from './player/player.js';
 import { Fishing } from './fishing/fishing.js';
 import { NPCManager, npcOptions } from './npc/npc.js';
@@ -12,26 +12,21 @@ import { openWindow, closeWindow, currentWindow, openCustom } from './ui/windows
 import { openShop, openBroker, openFerry, openBuilding, openIslandWindow, openLobbyWindow } from './ui/shops.js';
 import { Minimap } from './ui/minimap.js';
 import { showContextMenu } from './ui/context.js';
+import { maybeDismissCatchCard } from './ui/catchcard.js';
 import { net } from './net/net.js';
+import { iconHtml, iconDataUrl } from './ui/icons.js';
 import { ZONE_LORE } from './data/gen-zones.js';
-import { FISH } from './data/gen-fish.js';
 import { TRANSCENDENT } from './data/gen-fish.js';
 
-// ---------------- renderer ----------------
+// ---------------- canvas + renderer ----------------
 const canvas = $('#game-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
-const scene = new THREE.Scene();
-scene.background = new THREE.Color('#9fd8e8');
-const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.1, 2200);
-addEventListener('resize', () => {
-  renderer.setSize(innerWidth, innerHeight);
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-});
+const renderer = new Renderer2D(canvas);
+
+// inject pixel icons into all [data-icon] slots + swap the favicon
+for (const slot of document.querySelectorAll('[data-icon]')) {
+  slot.innerHTML = iconHtml(slot.dataset.icon, slot.classList.contains('hud-btn') ? 24 : 14);
+}
+document.querySelector('link[rel="icon"]')?.setAttribute('href', iconDataUrl('rod'));
 
 // ---------------- tiny audio ----------------
 let audioCtx = null;
@@ -53,11 +48,14 @@ on('levelup', () => { blip(440, 0.1); setTimeout(() => blip(550, 0.1), 100); set
 on('fishing', ({ phase }) => { if (phase === 'bite') blip(980, 0.08, 'square', 0.06); });
 
 // ---------------- game objects ----------------
+const actors = new Set();
+const stage = { add: (a) => actors.add(a), remove: (a) => actors.delete(a) };
 let world, player, fishing, npcs, hud, input, minimap;
 let running = false;
 let lastInteractable = null;
 let dialogueNpc = null;
 const remotes = new Map(); // id -> {rig, tx, tz, try, zone}
+const seenZones = new Set();
 
 function mapForZone(zone) {
   return ['sewer', 'cave', 'reef', 'deepsea', 'rig', 'abyss', 'island'].includes(zone) ? zone : 'overworld';
@@ -65,29 +63,23 @@ function mapForZone(zone) {
 
 function startGame() {
   $('#title-screen').classList.add('hidden');
-  world = new World(scene);
-  player = new Player(scene, world, S.look);
+  world = new World2D();
+  player = new Player(stage, world, S.look);
   attachLabel(player.rig, S.name, S.title, '#bfffe8');
   input = new Input(canvas);
   hud = new HUD();
-  npcs = new NPCManager(scene, world);
-  fishing = new Fishing(scene, world, player, {
+  npcs = new NPCManager(stage, world);
+  fishing = new Fishing(world, player, {
     onAnnounce: (c) => { if (net.roomCode) net.sendCatch(c); },
   });
 
-  // camera controls — rotating is allowed while the line is out (waiting/bite),
-  // blocked only while charging a hold-cast or reeling (pointer means something else)
-  input.onDrag = (dx, dy) => {
-    if (fishing.phase === 'reeling' || (fishing.phase === 'casting' && fishing.castMode === 'hold')) return;
-    player.camYaw -= dx * 0.008;
-    player.camPitch = clamp(player.camPitch + dy * 0.005, 0.08, 1.25);
-  };
-  input.onWheel = (dy) => { player.camDist = clamp(player.camDist + dy * 0.02, 7, 42); };
+  input.onWheel = (dy) => { renderer.zoom = clamp(renderer.zoom - dy * 0.0015, 1.4, 3.6); };
 
   // keyboard
   input.onKey = (code, down, e) => {
     if (!down) return;
     if (hud.chatFocused) return;
+    maybeDismissCatchCard();
     if (code === 'Space') e.preventDefault();
     const windowKeys = {
       KeyB: 'backpack', KeyF: 'dex', KeyK: 'skills', KeyJ: 'achievements',
@@ -102,9 +94,10 @@ function startGame() {
     if (currentWindow()) {
       if (!windowKeys[code]) return;
       if (currentWindow() === windowKeys[code] || (code === 'KeyI' && currentWindow() === 'island')) { closeWindow(); return; }
-      closeWindow(); // fall through: switch to the requested window
+      closeWindow();
     }
     if (windowKeys[code]) {
+      closeDialogue();
       if (code === 'KeyI') return openIslandWindow();
       if (code === 'KeyM') return openWindow('map', { playerPos: { x: player.x, z: player.z }, mapId: world.mapId });
       return openWindow(windowKeys[code], { net });
@@ -114,18 +107,23 @@ function startGame() {
     if (code === 'Space' && fishing.phase === 'idle' && !dialogueNpc) fishing.tryStartCast();
   };
 
-  // click (not drag) starts a click-cast; a second click releases it
-  input.onPointerUp = (wasDrag) => {
+  // left-click: cast toward a clicked water spot (Stardew-style)
+  input.onPointerUp = (wasDrag, cx, cy) => {
     if (wasDrag || !running || hud.chatFocused || currentWindow() || dialogueNpc) return;
-    if (fishing.phase === 'idle' && fishing.tryStartCast('click')) input.consumeClick();
+    maybeDismissCatchCard();
+    if (fishing.phase !== 'idle') return;
+    const wx = renderer.wx(cx), wz = renderer.wz(cy);
+    if (world.isWaterAt(wx, wz)) {
+      if (fishing.castAt(wx, wz)) input.consumeClick();
+    }
   };
 
-  // bait pill → quick bait switcher
   $('#bait-pill').addEventListener('click', () => openBaitSwitcher());
   $('#net-pill').addEventListener('click', () => openLobbyWindow(net));
   for (const btn of document.querySelectorAll('.hud-btn')) {
     btn.addEventListener('click', () => {
       const w = btn.dataset.window;
+      closeDialogue();
       if (w === 'island') return openIslandWindow();
       if (w === 'map') return openWindow('map', { playerPos: { x: player.x, z: player.z }, mapId: world.mapId });
       if (w === 'settings') return openWindow('settings', { net });
@@ -133,7 +131,6 @@ function startGame() {
     });
   }
 
-  // chat
   hud.onChatSend = (text) => {
     setFlag('chat_first');
     if (net.roomCode) net.sendChat(text);
@@ -143,12 +140,11 @@ function startGame() {
     }
   };
 
-  // events
   on('zone', ({ zone }) => {
     const lore = ZONE_LORE[zone];
     if (lore && !seenZones.has(zone)) {
       seenZones.add(zone);
-      emit('toast', { text: `📍 ${lore.displayName}`, sub: lore.sign });
+      emit('toast', { text: lore.displayName, sub: lore.sign });
     }
   });
   on('game:portal-moved', () => { if (world.mapId === 'overworld') switchMap('overworld', { x: player.x, z: player.z }); });
@@ -166,20 +162,18 @@ function startGame() {
   player.place(spawn.x, spawn.z);
   npcs.spawnForMap(world.mapId);
   minimap.rebuild(world);
+  renderer.invalidate();
   hud.show();
   hud.refresh(world, net);
   running = true;
   $('#loading-screen').classList.add('fade');
-  // debug/testing handle
   window.__DI = {
     get world() { return world; }, get player() { return player; },
     get fishing() { return fishing; }, get npcs() { return npcs; },
-    get input() { return input; },
+    get input() { return input; }, get renderer() { return renderer; },
     switchMap, S, net,
   };
 }
-
-const seenZones = new Set();
 
 function switchMap(mapId, spawnHint = null) {
   closeDialogue();
@@ -189,54 +183,42 @@ function switchMap(mapId, spawnHint = null) {
   player.place(spawn.x, spawn.z);
   npcs.spawnForMap(mapId);
   minimap?.rebuild(world);
+  renderer.invalidate();
   for (const [, r] of remotes) r.rig.visible = mapForZone(r.zone) === mapId && mapId !== 'island';
   save();
 }
 
 // ---------------- right-click Choose Option menu ----------------
-function projectToScreen(x, y, z) {
-  const v = new THREE.Vector3(x, y, z).project(camera);
-  return { x: ((v.x + 1) / 2) * innerWidth, y: ((1 - v.y) / 2) * innerHeight, behind: v.z > 1 || v.z < -1 };
-}
 canvas.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   if (!running || currentWindow()) return;
+  maybeDismissCatchCard();
   const options = [];
   const near = (x, z, r) => dist2d(player.x, player.z, x, z) < r;
   const tooFar = () => hud.chatLine(null, "I can't reach that!", 'system');
-  // NPCs under the cursor
+  const screenDist = (x, z, off = 0) => Math.hypot(renderer.sx(x) - e.clientX, renderer.sz(z) - off - e.clientY);
   for (const n of npcs.npcs) {
-    const s = projectToScreen(n.x, n.rig.position.y + 1.4, n.z);
-    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 55) continue;
+    if (screenDist(n.x, n.z, 20 * renderer.zoom) > 55) continue;
     options.push({ verb: 'Talk-to', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openDialogue(n) : tooFar()) });
     if (n.def.shop) options.push({ verb: 'Trade', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openShop(n.def.shop) : tooFar()) });
     if (n.def.banker) options.push({ verb: 'Bank', target: n.def.name, fn: () => (near(n.x, n.z, 6.5) ? openWindow('bank') : tooFar()) });
     options.push({ verb: 'Examine', target: n.def.name, fn: () => hud.chatLine(null, n.def.personality || 'A fellow islander.', 'system') });
   }
-  // interactables under the cursor
   for (const it of world.interactables()) {
-    const y = world.surfaceYAt(it.x, it.z) + 1;
-    const s = projectToScreen(it.x, y, it.z);
-    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 60) continue;
+    if (screenDist(it.x, it.z, 8 * renderer.zoom) > 60) continue;
     options.push({ verb: it.label, object: true, fn: () => (near(it.x, it.z, it.r + 2) ? runAction(it.action) : tooFar()) });
   }
-  // remote players: wave at them
   for (const [, r] of remotes) {
     if (!r.rig.visible) continue;
-    const s = projectToScreen(r.rig.position.x, r.rig.position.y + 1.4, r.rig.position.z);
-    if (s.behind || Math.hypot(s.x - e.clientX, s.y - e.clientY) > 50) continue;
+    if (screenDist(r.rig.position.x, r.rig.position.z, 20 * renderer.zoom) > 50) continue;
     const p = [...net.players.values()].find((pp) => remotes.get(pp.id) === r);
     if (p) options.push({ verb: 'Wave at', target: p.name, fn: () => { if (net.roomCode) net.sendChat('*waves*'); } });
   }
-  // walk here: intersect click ray with the ground plane at player height
-  const ndc = new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
-  const ray = new THREE.Raycaster();
-  ray.setFromCamera(ndc, camera);
-  const t = (player.y - ray.ray.origin.y) / ray.ray.direction.y;
-  if (t > 0 && t < 200) {
-    const pt = ray.ray.origin.clone().addScaledVector(ray.ray.direction, t);
-    options.push({ verb: 'Walk here', fn: () => { player.walkTarget = { x: pt.x, z: pt.z }; } });
+  const wxp = renderer.wx(e.clientX), wzp = renderer.wz(e.clientY);
+  if (world.isWaterAt(wxp, wzp)) {
+    options.push({ verb: 'Cast here', object: true, fn: () => { if (fishing.phase === 'idle') fishing.castAt(wxp, wzp); } });
   }
+  options.push({ verb: 'Walk here', fn: () => { player.walkTarget = { x: wxp, z: wzp }; } });
   options.push({ verb: 'Cancel', fn: () => {} });
   showContextMenu(e.clientX, e.clientY, options);
 });
@@ -260,7 +242,7 @@ function runAction(action) {
   switch (action.type) {
     case 'map': return switchMap(action.target, action.spawn || null);
     case 'ferry': return openFerry((dest) => {
-      if (dest === 'overworld') switchMap('overworld', { x: 474, z: 480 });
+      if (dest === 'overworld') switchMap('overworld', { x: 474, z: 440 });
       else switchMap(dest);
     });
     case 'bank': return openWindow('bank');
@@ -297,11 +279,11 @@ function openDialogue(npc) {
 }
 function closeDialogue() {
   dialogueNpc = null;
-  hud.hideDialogue();
+  hud?.hideDialogue();
 }
 
 function openBaitSwitcher() {
-  openCustom('baits', '🪱 Choose bait', (bodyEl) => {
+  openCustom('baits', 'Choose bait', (bodyEl) => {
     const ids = Object.keys(S.baits);
     if (!ids.length) {
       bodyEl.append(el('div', { class: 'muted' }, 'No bait! Buy some at the Bait Shop in Willowbrook.'));
@@ -312,7 +294,6 @@ function openBaitSwitcher() {
       const b = (S.baits[id] || 0);
       const def = window.__baitDefs?.[id] || { name: id };
       list.append(el('div', { class: 'list-row' },
-        el('div', {}, '🪱'),
         el('div', { class: 'row-main' }, el('div', { class: 'row-name' }, `${def.name || id} ×${b}`)),
         S.activeBait === id ? el('span', { class: 'muted' }, 'active')
           : el('button', { class: 'btn btn-small btn-primary', onclick: () => { S.activeBait = id; emit('state'); closeWindow(); } }, 'Use')));
@@ -320,7 +301,6 @@ function openBaitSwitcher() {
     bodyEl.append(list);
   });
 }
-// bait defs for the switcher (avoids circular import)
 import(new URL('./data/gen-items.js', import.meta.url)).then((m) => {
   window.__baitDefs = Object.fromEntries(m.BAITS.map((b) => [b.id, b]));
 });
@@ -349,11 +329,11 @@ function wireNet() {
     }
   });
   net.on('kicked', (reason) => {
-    emit('toast', { text: `⚠️ ${reason}`, sub: 'You are back in single-player.' });
+    emit('toast', { text: reason, sub: 'You are back in single-player.' });
     refreshRemotes();
   });
   net.on('muted', ({ self, muted }) => {
-    if (self) emit('toast', { text: muted ? '🔇 You were muted by the host.' : '🔊 You were unmuted.' });
+    if (self) emit('toast', { text: muted ? 'You were muted by the host.' : 'You were unmuted.' });
   });
   net.on('disconnect', () => {
     emit('toast', { text: 'Lost connection to the lobby.', sub: 'Continuing in single-player.' });
@@ -363,13 +343,13 @@ function wireNet() {
 function refreshRemotes() {
   const ids = new Set(net.players.keys());
   for (const [id, r] of remotes) {
-    if (!ids.has(id)) { scene.remove(r.rig); remotes.delete(id); }
+    if (!ids.has(id)) { stage.remove(r.rig); remotes.delete(id); }
   }
   for (const [id, p] of net.players) {
     if (!remotes.has(id)) {
       const rig = makeHumanoid(p.look || {});
       attachLabel(rig, p.name, p.title, '#ffd9a8');
-      scene.add(rig);
+      stage.add(rig);
       remotes.set(id, { rig, tx: p.x || 0, tz: p.z || 0, try: 0, zone: p.zone || 'town' });
       rig.position.set(p.x || 0, 0, p.z || 0);
       rig.visible = mapForZone(p.zone || 'town') === world.mapId && world.mapId !== 'island';
@@ -389,28 +369,32 @@ function loop() {
   const now = performance.now();
   const dt = Math.min(0.05, (now - lastT) / 1000);
   lastT = now;
-  if (!running) { renderer.render(scene, camera); return; }
+  if (!running) return;
   const t = now / 1000;
 
   input.typing = hud.chatFocused;
   world.update(dt, t);
+  const wasMoving = player.speed > 1;
   player.update(dt, input);
-  player.updateCamera(camera, dt);
   fishing.update(dt, t, input);
   npcs.update(dt, t, player);
   input.consumeClick();
+
+  // dialogue auto-dismiss: walking away or doing anything else closes it
+  if (dialogueNpc) {
+    const d = dist2d(player.x, player.z, dialogueNpc.x, dialogueNpc.z);
+    if (d > 7.5 || player.speed > 2 || fishing.active) closeDialogue();
+  }
+  if (player.speed > 2) maybeDismissCatchCard();
 
   // remote players interpolation
   for (const [, r] of remotes) {
     if (!r.rig.visible) continue;
     r.rig.position.x += (r.tx - r.rig.position.x) * Math.min(1, dt * 8);
     r.rig.position.z += (r.tz - r.rig.position.z) * Math.min(1, dt * 8);
-    const targetY = world.surfaceYAt(r.rig.position.x, r.rig.position.z);
-    r.rig.position.y += (targetY - r.rig.position.y) * Math.min(1, dt * 8);
     r.rig.rotation.y = r.try || 0;
     r.rig.userData.animate(t, dt);
   }
-  // net position updates
   if (net.roomCode) {
     net.sendPos(player.x, player.z, player.ry, S.zone,
       fishing.active ? 'fish' : player.rig.userData.getAnim());
@@ -425,27 +409,31 @@ function loop() {
     if (promptText) hud.showPrompt(promptText);
     else hud.hidePrompt();
   }
-  // zone tracking
   const zone = world.zoneAt(player.x, player.z);
   if (zone !== S.zone) visitZone(zone);
   S.pos = { x: player.x, z: player.z };
 
-  // fishing affordance hint
   if (!fishing.active && !npc && !it && !currentWindow()) {
     const canFish = fishing.canFishHere();
     const hint = $('#action-hint');
-    if (canFish && !hint.textContent) hint.textContent = '🎣 Hold SPACE to cast';
-    else if (!canFish && hint.textContent === '🎣 Hold SPACE to cast') hint.textContent = '';
+    if (canFish && !hint.textContent) hint.textContent = 'Click the water (or hold SPACE) to cast';
+    else if (!canFish && hint.textContent === 'Click the water (or hold SPACE) to cast') hint.textContent = '';
   }
 
+  // camera follows player; render
+  renderer.camX = player.x;
+  renderer.camZ = player.z;
+  renderer.render(world, actors, {
+    bobber: fishing.bobber,
+    lineFrom: { x: player.x, z: player.z },
+    t,
+  });
   minimap?.update(world, player, npcs, remotes);
 
   hudT += dt;
   if (hudT > 0.5) { hudT = 0; hud.refresh(world, net); }
   saveT += dt;
   if (saveT > 5) { saveT = 0; S.stats.playSeconds += 5; }
-
-  renderer.render(scene, camera);
 }
 loop();
 
@@ -471,7 +459,6 @@ function initTitle() {
     startGame();
   });
 
-  // multiplayer
   $('#btn-multiplayer').addEventListener('click', async () => {
     $('#lobby-panel').classList.remove('hidden');
     status.textContent = '';
@@ -488,7 +475,7 @@ function initTitle() {
   $('#btn-lobby-back').addEventListener('click', () => $('#lobby-panel').classList.add('hidden'));
   for (const tab of document.querySelectorAll('.lobby-tab')) {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.lobby-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.lobby-tab').forEach((tt) => tt.classList.remove('active'));
       tab.classList.add('active');
       for (const page of document.querySelectorAll('.lobby-tabpage')) page.classList.add('hidden');
       $('#lobby-' + tab.dataset.tab).classList.remove('hidden');
@@ -520,8 +507,8 @@ function initTitle() {
       startGame();
       hud.chatLine(null, `Joined lobby ${net.roomCode}. Say hi!`, 'system');
       if (net.settings?.motd) hud.chatLine(null, `MOTD: ${net.settings.motd}`, 'system');
-    } catch (e) {
-      status.textContent = e.message || 'Could not join.';
+    } catch (err) {
+      status.textContent = err.message || 'Could not join.';
     }
   }
   function prepareState() {
@@ -546,8 +533,8 @@ function initTitle() {
       });
       startGame();
       hud.chatLine(null, `Lobby created! Code: ${net.roomCode} — share it with friends.`, 'system');
-    } catch (e) {
-      status.textContent = e.message || 'Could not create lobby.';
+    } catch (err) {
+      status.textContent = err.message || 'Could not create lobby.';
     }
   });
 }

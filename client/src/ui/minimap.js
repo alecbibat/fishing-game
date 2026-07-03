@@ -79,7 +79,7 @@ export class Minimap {
     ctx.fillRect(0, 0, SIZE, SIZE);
     // rotate with camera: up = camera forward
     ctx.translate(SIZE / 2, SIZE / 2);
-    ctx.rotate(player.camYaw + Math.PI);
+    ctx.rotate((player.camYaw ?? -Math.PI) + Math.PI);
     const scale = SIZE / VIEW_UNITS;          // px per world unit
     const imgScale = (span / res);            // units per img px
     ctx.imageSmoothingEnabled = false;
@@ -113,7 +113,7 @@ export class Minimap {
     ctx.strokeRect(SIZE / 2 - 2.5, SIZE / 2 - 2.5, 5, 5);
     // compass rotates around the rim
     if (this.compass) {
-      const a = player.camYaw + Math.PI;      // map rotation
+      const a = (player.camYaw ?? -Math.PI) + Math.PI; // map rotation (north-up in 2D)
       const r = 70;
       const cx = Math.sin(a) * r, cy = -Math.cos(a) * r;
       this.compass.style.left = '0';

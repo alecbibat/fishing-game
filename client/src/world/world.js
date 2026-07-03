@@ -15,7 +15,7 @@ const RIVER = [
   [-420, -500], [-300, -350], [-180, -260], [-60, -180], [20, -40],
   [0, 100], [-30, 300], [-10, 520], [0, 700],
 ];
-function distToRiver(x, z) {
+export function distToRiver(x, z) {
   let best = 1e9;
   for (let i = 0; i < RIVER.length - 1; i++) {
     const [ax, az] = RIVER[i], [bx, bz] = RIVER[i + 1];
@@ -35,7 +35,7 @@ const PATHS = [
   [[8, 44], [-50, -6], [-130, -50], [-240, -10], [-360, 40], [-440, 70]],          // town → swamp
   [[-24, -110], [-90, -170], [-180, -250], [-280, -360], [-330, -440]],            // bridge → mountains/cave
 ];
-function distToPaths(x, z) {
+export function distToPaths(x, z) {
   let best = 1e9;
   for (const path of PATHS) {
     for (let i = 0; i < path.length - 1; i++) {
