@@ -270,16 +270,19 @@ function drTreePalm(g, r, W, H) {
     rec(g, x, y, 2, 1, '#b98d5c');
     if (y % 2) px(g, x + 1, y, '#96703f');
   }
-  const fr = [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]];
-  for (const f of fr) {
-    let x = 15, y = 12;
-    const len = 5 + ((r() * 2) | 0);
-    for (let k = 0; k < len; k++) {
-      x += f[0];
-      y += k < 2 ? f[1] : (k > 3 ? 1 : 0);
-      rec(g, x - (f[0] < 0 ? 1 : 0), y, 2, 1, k >= len - 2 ? LEAF_D : '#3f9448');
-    }
+  const P1 = '#3f9448', P2 = '#35803c';
+  const fronds = [
+    [14, 10, 9, 6], [16, 10, 21, 6],
+    [13, 11, 6, 14], [17, 11, 23, 14],
+    [14, 12, 10, 17], [16, 12, 20, 17],
+  ];
+  for (const f of fronds) {
+    const dy = (r() * 2) | 0;
+    line(g, f[0], f[1], f[2], f[3] + dy, P1);
+    line(g, f[0], f[1] + 1, f[2], f[3] + 1 + dy, P2);
+    px(g, f[2], f[3] + dy, LEAF_D);
   }
+  rec(g, 14, 11, 3, 2, P1);
   px(g, 14, 13, '#6b4226'); px(g, 16, 13, '#6b4226'); px(g, 15, 14, '#57351d');
 }
 
@@ -331,14 +334,16 @@ function drGrassTuft(g, r, W, H) {
 
 function drFlowers(g, r, W, H) {
   const cols = ['#e85a5a', '#f2d04a', '#e88ac9', '#f4f4e8', '#9a6ae8'];
-  rec(g, 1, 8, 3, 2, LEAF); rec(g, 5, 9, 3, 1, LEAF_D); rec(g, 9, 8, 2, 2, LEAF);
-  const heads = [[2, 3], [5, 1], [8, 4]];
+  rec(g, 1, 8, 4, 2, LEAF); rec(g, 5, 9, 3, 1, LEAF_D); rec(g, 8, 8, 3, 2, LEAF);
+  const heads = [[1, 2], [5, 0], [8, 3]];
   for (const hd of heads) {
-    const hx = hd[0] + ((r() * 2) | 0) - 0, hy = hd[1] + ((r() * 2) | 0);
-    rec(g, hx + 1, hy + 2, 1, 8 - hy, '#4a8038'); // stem
+    const hx = hd[0], hy = hd[1] + ((r() * 2) | 0);
+    rec(g, hx + 1, hy + 3, 1, 6 - hy, '#4a8038'); // stem
     const c = cols[(r() * cols.length) | 0];
-    rec(g, hx, hy, 2, 2, c);
-    px(g, hx + 1, hy, '#fff2c9');
+    // plus-shaped 3x3 head
+    rec(g, hx, hy + 1, 3, 1, c);
+    rec(g, hx + 1, hy, 1, 3, c);
+    px(g, hx + 1, hy + 1, '#fff2c9');
   }
 }
 
@@ -400,21 +405,24 @@ function drCrystal(g, r, W, H) {
   g.fillStyle = alphaCol(c1, 0.22);
   g.fillRect(1, 8, 14, 11);
   ell(g, 8, 17, 6, 2, STONE_D);
-  // main shard
-  for (let y = 2; y <= 16; y++) {
-    const hw = Math.min(3, Math.round((y - 2) * 0.45));
+  // main shard: sharp tip, faceted sides, slight taper at the base
+  for (let y = 1; y <= 17; y++) {
+    let hw;
+    if (y < 11) hw = Math.min(3, Math.round((y - 1) * 0.4));
+    else hw = y >= 16 ? 2 : 3;
     rec(g, 6 - hw, y, hw * 2 + 1, 1, c1);
-    px(g, 6 - hw, y, shade(c1, 1.4));
-    px(g, 6 + hw, y, shade(c1, 0.62));
+    px(g, 6 - Math.max(0, hw - 1), y, shade(c1, 1.45));
+    px(g, 6 + hw, y, shade(c1, 0.6));
   }
+  px(g, 6, 1, '#ffffff'); px(g, 5, 3, '#ffffff');
   // side shard
-  for (let y = 8; y <= 16; y++) {
-    const hw = Math.min(2, Math.round((y - 8) * 0.4));
+  for (let y = 7; y <= 17; y++) {
+    const hw = Math.min(2, Math.round((y - 7) * 0.45));
     rec(g, 12 - hw, y, hw * 2 + 1, 1, c2);
-    px(g, 12 + hw, y, shade(c2, 0.62));
+    px(g, 12 + hw, y, shade(c2, 0.6));
   }
+  px(g, 12, 7, shade(c2, 1.4));
   px(g, 2, 13, c2); px(g, 2, 14, shade(c2, 0.7)); px(g, 2, 15, shade(c2, 0.7));
-  px(g, 5, 4, '#ffffff');
 }
 
 function drHouse(g, r, W, H) {
@@ -844,14 +852,15 @@ function drPortal(g, r, W, H, off) {
   rec(g, 5, 26, 18, 4, STONE);
   rec(g, 5, 28, 18, 2, STONE_D);
   ell(g, 14, 14, 11, 13, off ? '#847e76' : STONE);
-  ell(g, 14, 14, 7, 9, off ? '#2e2e34' : '#0f3a3a');
+  ell(g, 14, 14, 7, 9, off ? '#44444e' : '#0f3a3a');
   if (!off) {
     ell(g, 14, 14, 6, 8, glowC);
     ell(g, 14, 14, 3, 5, '#7ef2e8');
     px(g, 12, 9, '#c8fcf6'); px(g, 16, 12, '#c8fcf6');
     px(g, 13, 18, '#c8fcf6'); px(g, 15, 15, '#c8fcf6');
   } else {
-    px(g, 13, 12, '#3c3c44'); px(g, 15, 16, '#3c3c44');
+    ell(g, 14, 14, 5, 7, '#38383f');
+    px(g, 13, 12, '#50505c'); px(g, 15, 16, '#50505c'); px(g, 12, 17, '#50505c');
   }
   // Stone block chunks on the ring
   const blocks = [[3, 12, 2, 3], [23, 12, 2, 3], [13, 1, 3, 2], [7, 4, 2, 2], [19, 4, 2, 2], [6, 23, 2, 2], [20, 23, 2, 2]];
@@ -929,9 +938,10 @@ function drPlotPegs(g, r, W, H) {
 function drBuildingFarm(g, r, W, H) {
   rec(g, 1, 7, 22, 18, '#7a5a3e');
   for (let y = 8; y < 25; y += 3) rec(g, 2, y, 20, 1, '#654a30');
-  for (let i = 0; i < 7; i++) {
-    const sx = 3 + ((r() * 18) | 0), sy = 9 + 3 * ((r() * 5) | 0);
+  for (let i = 0; i < 11; i++) {
+    const sx = 3 + ((r() * 18) | 0), sy = 10 + 3 * ((r() * 5) | 0);
     px(g, sx, sy, '#5e9c4e'); px(g, sx, sy - 1, '#74b45e');
+    if (r() < 0.5) px(g, sx + 1, sy, '#4a8038');
   }
   // Tiny shed
   rec(g, 24, 7, 9, 17, '#a87c48');
@@ -1061,20 +1071,24 @@ function drBeacon(g, r, W, H) {
 function drCoral(g, r, W, H) {
   const cols = ['#e86a8a', '#f2914a', '#a86ae8', '#4ee0d8', '#f2c94a'];
   const pick = () => cols[(r() * cols.length) | 0];
-  const c1 = pick(), c2 = pick(), c3 = pick();
-  for (let i = 0; i < 5; i++) px(g, (r() * 16) | 0, 10 + ((r() * 2) | 0), '#e0cf9a');
-  // Branching coral
-  rec(g, 3, 4 + ((r() * 2) | 0), 2, 7, c1);
-  rec(g, 1, 5, 2, 2, c1);
-  rec(g, 5, 3, 2, 3, c1);
-  px(g, 3, 3, shade(c1, 1.3)); px(g, 6, 2, shade(c1, 1.3));
+  const c1 = pick();
+  let c2 = pick(); if (c2 === c1) c2 = cols[(cols.indexOf(c1) + 2) % cols.length];
+  let c3 = pick(); if (c3 === c1 || c3 === c2) c3 = cols[(cols.indexOf(c1) + 1) % cols.length];
+  rec(g, 0, 10, 16, 2, '#e0cf9a');
+  for (let i = 0; i < 4; i++) px(g, (r() * 16) | 0, 10 + ((r() * 2) | 0), '#c9b47e');
+  // Candelabra branch coral
+  rec(g, 3, 4, 2, 7, c1);
+  rec(g, 1, 3, 1, 4, c1); px(g, 2, 6, c1);
+  rec(g, 6, 2, 1, 5, c1); px(g, 5, 7, c1);
+  px(g, 3, 3, shade(c1, 1.35)); px(g, 1, 2, shade(c1, 1.35)); px(g, 6, 1, shade(c1, 1.35));
   // Brain blob
   ell(g, 10, 8, 3, 3, c2);
-  px(g, 9, 7, shade(c2, 0.7)); px(g, 11, 9, shade(c2, 0.7)); px(g, 10, 6, shade(c2, 1.3));
-  // Fan
-  rec(g, 13, 5 + ((r() * 2) | 0), 2, 6, c3);
-  px(g, 12, 4, c3); px(g, 15, 4, c3);
-  px(g, 13, 3, shade(c3, 1.3)); px(g, 14, 3, shade(c3, 1.3));
+  px(g, 9, 7, shade(c2, 0.7)); px(g, 11, 9, shade(c2, 0.7));
+  px(g, 10, 8, shade(c2, 0.7)); px(g, 10, 5, shade(c2, 1.3)); px(g, 9, 6, shade(c2, 1.3));
+  // Fan coral
+  rec(g, 13, 4 + ((r() * 2) | 0), 2, 7, c3);
+  px(g, 12, 4, c3); px(g, 15, 4, c3); px(g, 12, 3, shade(c3, 1.3)); px(g, 15, 3, shade(c3, 1.3));
+  px(g, 13, 3, shade(c3, 1.3)); px(g, 14, 2, shade(c3, 1.35));
 }
 
 // ---------------------------------------------------------------------------
