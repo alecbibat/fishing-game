@@ -61,7 +61,7 @@
       "id": "salt_spray_cordial",
       "name": "Salt Spray Cordial",
       "color": "#4fc3d9",
-      "flavor": "Bottled at high tide with a pinch of gull feather for luck. One sip and the catch bar stretches out like a lazy cat in a sunbeam.",
+      "flavor": "Bottled at high tide with a pinch of gull feather for luck. One sip and the bite window stretches out like a lazy cat in a sunbeam.",
       "ingredients": [
         { "kind": "biome", "value": "coast", "n": 4 },
         { "kind": "rarity", "value": "uncommon", "n": 2 }

@@ -37,17 +37,16 @@ multiplayer lobbies over WebSockets. Open the URL in any modern browser.
 | **WASD** / arrows / joystick | Walk (hold **Shift** to run) |
 | Mouse wheel / pinch | Zoom |
 | **Click/tap the water** | Cast at that spot (or hold **SPACE** to charge a cast) |
-| **SPACE / click / tap** on the **!** | Hook the bite! |
-| **SPACE / click / tap** at the right moment | Catch — tap when the marker crosses the golden zone |
+| **SPACE / click / tap** on the **!** | Catch the fish! |
 | **E** / tap | Talk / interact |
 | **Enter** | Chat (appears over your head) |
 | **B F K J R P M I** | Backpack · Dex · Skill · Achievements · Rod · Potions · Map · Island |
 
-Once a fish is hooked, a timing bar appears: a marker sweeps back and forth, and
-you tap the moment it's inside the **golden zone**. Rarer fish need several
-clean hits in a row — and the zone shrinks and the marker speeds up with each
-one. Rod upgrades, bait, potions and abilities widen the zone, calm the marker,
-or forgive a mistimed tap.
+There's no minigame: when the bobber plunges and the **!** pops up, one tap
+lands the fish. The catch (pun intended): feistier, rarer fish give you a
+shorter reaction window before they slip away. Rod upgrades, bait, potions and
+abilities stretch the window — and a forgiving line will hold a missed bite
+for one more chance.
 
 ## What's in the world
 
@@ -93,7 +92,7 @@ client/            the game (plain ES modules, zero build step)
     world/         procedural terrain math (heights, biomes, zones, paths)
     render2d/      Stardew-style renderer: tiles, pixel sprites, actors
     player/        movement, input
-    fishing/       cast/bite/timing minigame, loot rolls
+    fishing/       cast/bite/catch flow, loot rolls
     npc/           wandering NPCs + dialogue
     ui/            HUD, windows, dex + catch-card 3D fish viewers, pixel icons
     net/           multiplayer client

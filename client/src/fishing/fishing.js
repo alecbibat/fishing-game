@@ -1,4 +1,4 @@
-// Fishing: cast → wait → bite → reel minigame → catch. Loot rolls, records, events.
+// Fishing: cast → wait → bite → tap → catch. Loot rolls, records, events.
 // 2D presentation: the renderer draws the bobber/line from this.bobber state.
 import { $, clamp, lerp, randRange, rarityRank, RARITY_COLOR } from '../core/util.js';
 import { emit } from '../core/events.js';
@@ -80,10 +80,7 @@ export class Fishing {
 
     this.ui = {
       root: $('#fishing-ui'), castMeter: $('#cast-meter'), castFill: $('#cast-fill'),
-      bite: $('#bite-alert'), reel: $('#timing-panel'),
-      tBar: $('#timing-bar'), tZone: $('#timing-zone'), tMarker: $('#timing-marker'),
-      tPips: $('#timing-pips'), tName: $('#timing-name'),
-      sonar: $('#fish-info-sonar'), hint: $('#action-hint'),
+      bite: $('#bite-alert'), hint: $('#action-hint'),
     };
   }
 
@@ -196,47 +193,7 @@ export class Fishing {
     this.ui.bite.classList.add('hidden');
     consumeBait();
     if (this.loot.type !== 'fish') { this.resolveNonFish(); return; }
-    const f = this.loot.fish;
-    this.phase = 'timing';
-    const diff = this.loot.transcendent ? 10 : f.difficulty;
-    const fx = this.fx;
-    const rank = rarityRank(f.rarity);
-    const rounds = this.loot.transcendent ? 4 : rank >= 4 ? 3 : rank >= 2 ? 2 : 1;
-    this.game = {
-      pos: 0, dir: 1,
-      speed: (0.85 + diff * 0.13) * (1 - clamp(fx.stability, 0, 0.6) * 0.5),
-      zoneC: randRange(0.2, 0.8),
-      zoneW: clamp(0.34 * (1 + fx.barSize) - diff * 0.014, 0.1, 0.55),
-      round: 1, rounds,
-      grace: fx.tension >= 0.2 ? 1 : 0,
-      roundT: 0,
-      flash: 0,
-      prevPress: true, // require a fresh press after hooking
-      diff,
-    };
-    this.ui.reel.classList.remove('hidden');
-    this.renderTiming(f);
-    if (fx.sonar) {
-      this.ui.sonar.classList.remove('hidden');
-      this.ui.sonar.textContent = `${f.rarity.toUpperCase()} · ${f.sizeClass}`;
-      this.ui.sonar.style.color = RARITY_COLOR[f.rarity];
-    } else this.ui.sonar.classList.add('hidden');
-    this.ui.hint.textContent = 'Tap when the marker crosses the golden zone!';
-    emit('fishing', { phase: 'timing' });
-  }
-
-  renderTiming(f) {
-    const g = this.game;
-    this.ui.tName.textContent = this.fx.sonar || g.round > 1 ? f.name : 'Something on the line…';
-    this.ui.tName.style.color = this.fx.sonar || g.round > 1 ? RARITY_COLOR[f.rarity] : '#f2ead4';
-    this.ui.tZone.style.left = `${(g.zoneC - g.zoneW / 2) * 100}%`;
-    this.ui.tZone.style.width = `${g.zoneW * 100}%`;
-    this.ui.tPips.innerHTML = '';
-    for (let i = 0; i < g.rounds; i++) {
-      const pip = document.createElement('span');
-      pip.className = 'timing-pip' + (i < g.round - 1 ? ' filled' : '');
-      this.ui.tPips.append(pip);
-    }
+    this.land();
   }
 
   resolveNonFish() {
@@ -279,6 +236,12 @@ export class Fishing {
       if (this.waitT > this.biteAt) {
         this.phase = 'bite';
         this.biteT = 0;
+        // reaction window: feistier fish give you less time; gear buys it back
+        const fx = this.fx;
+        const diff = this.loot.type === 'fish' ? (this.loot.transcendent ? 10 : this.loot.fish.difficulty) : 2;
+        const base = this.loot.transcendent ? 1.7 : clamp(1.35 - diff * 0.08, 0.55, 1.35);
+        this.biteWindow = base * (1 + fx.barSize + fx.stability * 0.5);
+        this.biteGrace = fx.tension >= 0.2 || Math.random() < fx.tension * 2 ? 1 : 0;
         this.ui.bite.classList.remove('hidden');
         if (this.loot.transcendent) {
           this.ui.bite.textContent = '!!';
@@ -292,10 +255,20 @@ export class Fishing {
     if (this.phase === 'bite') {
       this.biteT += dt;
       this.bobber.dip = -2 + Math.sin(t * 18) * 0.8;
-      const windowLen = this.loot.transcendent ? 1.4 : 1.0;
       if (this.fx.autoReel && this.biteT > 0.4) { this.hook(); return; }
       if (hold || input.consumeClick()) { this.hook(); return; }
-      if (this.biteT > windowLen) {
+      if (this.biteT > this.biteWindow) {
+        if (this.biteGrace > 0) {
+          this.biteGrace--;
+          this.biteT = 0;
+          this.ui.hint.textContent = 'The line holds! It’s still on…';
+          return;
+        }
+        const wasTranscendent = !!this.loot.transcendent;
+        if (this.loot.type === 'fish') {
+          S.stats.linesBroken++;
+          if (S.stats.linesBroken >= 10) setFlag('broke_line_10');
+        }
         this.ui.bite.classList.add('hidden');
         this.phase = 'waiting';
         this.waitT = 0;
@@ -303,66 +276,10 @@ export class Fishing {
         this.biteAt = randRange(4, 12) / (1 + this.fx.biteRate);
         this.nibbleAt = this.biteAt * 0.5;
         this.nibbled = false;
-        this.ui.hint.textContent = 'It slipped away…';
+        this.ui.hint.textContent = wasTranscendent ? 'The vast shape sinks back into the dark…' : 'It slipped away…';
       }
       return;
     }
-
-    if (this.phase === 'timing') {
-      const g = this.game;
-      const f = this.loot.fish;
-      // sweep the marker (triangle wave)
-      g.pos += g.dir * g.speed * dt;
-      if (g.pos > 1) { g.pos = 1; g.dir = -1; }
-      if (g.pos < 0) { g.pos = 0; g.dir = 1; }
-      g.roundT += dt;
-      g.flash = Math.max(0, g.flash - dt * 3);
-
-      // fresh press detection (tap / click / space)
-      const pressNow = hold;
-      const clicked = input.consumeClick();
-      const press = (pressNow && !g.prevPress) || clicked;
-      g.prevPress = pressNow;
-
-      const inZone = Math.abs(g.pos - g.zoneC) < g.zoneW / 2;
-      const auto = this.fx.autoReel && inZone && Math.abs(g.pos - g.zoneC) < g.zoneW * 0.3;
-
-      if (press || auto) {
-        if (inZone) {
-          g.round++;
-          if (g.round > g.rounds) { this.land(); return; }
-          // next round: new zone, tighter and faster
-          g.zoneC = randRange(0.15, 0.85);
-          g.zoneW = Math.max(0.07, g.zoneW * 0.85);
-          g.speed *= 1.18;
-          g.roundT = 0;
-          g.flash = 1;
-          this.renderTiming(f);
-          emit('toast', { text: `Hooked! ${g.rounds - g.round + 1} more…`, sub: 'keep your rhythm' });
-        } else if (g.grace > 0) {
-          g.grace--;
-          this.ui.hint.textContent = 'The line holds! One more chance…';
-        } else {
-          this.escape();
-          return;
-        }
-      }
-      // a fish won't wait forever
-      if (g.roundT > 14) { this.escape(); return; }
-
-      this.ui.tMarker.style.left = `${g.pos * 100}%`;
-      this.ui.tBar.classList.toggle('zone-hot', inZone);
-      this.ui.tBar.style.boxShadow = g.flash > 0 ? `0 0 ${18 * g.flash}px rgba(255,220,90,.8)` : '';
-      this.bobber.dip = -1 + Math.sin(t * 14) * 0.8;
-    }
-  }
-
-  escape() {
-    S.stats.linesBroken++;
-    if (S.stats.linesBroken >= 10) setFlag('broke_line_10');
-    this.ui.reel.classList.add('hidden');
-    emit('toast', { text: 'Snap! It got away…', sub: this.loot.transcendent ? 'The legend sinks back into the dark.' : 'Your line broke.' });
-    this.finish();
   }
 
   land() {
@@ -428,8 +345,6 @@ export class Fishing {
     this.bobber.visible = false;
     this.ui.castMeter.classList.add('hidden');
     this.ui.bite.classList.add('hidden');
-    this.ui.reel.classList.add('hidden');
-    this.ui.sonar.classList.add('hidden');
     this.ui.root.classList.add('hidden');
     this.ui.hint.textContent = '';
     emit('fishing', { phase: 'idle' });

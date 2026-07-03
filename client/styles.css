@@ -282,39 +282,6 @@ input, select { font-family: inherit; font-size: .95rem; }
   animation: bite-pulse .35s ease-in-out infinite alternate;
 }
 @keyframes bite-pulse { from { transform: translate(-50%,-50%) scale(1);} to { transform: translate(-50%,-50%) scale(1.35);} }
-#timing-panel {
-  bottom: 170px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  width: min(520px, 86vw);
-}
-#timing-name {
-  font-weight: 700; font-size: 1rem; color: #f2ead4; text-shadow: 1px 1px 0 #000;
-  background: rgba(25, 20, 16, .8); padding: 4px 14px; border-radius: 3px; border: 1px solid #000;
-}
-#timing-bar {
-  position: relative; width: 100%; height: 34px;
-  background: linear-gradient(180deg, #77b8c4, #275e78);
-  border: 3px solid var(--frame); outline: 2px solid #191410; border-radius: 4px;
-  overflow: hidden; box-shadow: var(--bevel-in);
-}
-#timing-zone {
-  position: absolute; top: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(255, 220, 90, .95), rgba(230, 170, 40, .95));
-  border-left: 2px solid #7a4b12; border-right: 2px solid #7a4b12;
-}
-#timing-marker {
-  position: absolute; top: -2px; bottom: -2px; width: 5px; margin-left: -2.5px;
-  background: #fff; border: 1px solid #000; box-shadow: 0 0 8px rgba(255,255,255,.9);
-}
-#timing-bar.zone-hot #timing-marker { background: #ffe27a; }
-#timing-pips { display: flex; gap: 8px; }
-.timing-pip {
-  width: 14px; height: 14px; border-radius: 50%;
-  background: #191410; border: 2px solid var(--frame); box-shadow: var(--bevel-in);
-}
-.timing-pip.filled { background: radial-gradient(circle at 35% 30%, #ffe27a, var(--gold)); }
-.timing-hint { color: var(--white); font-size: .78rem; font-weight: 700; text-shadow: 1px 1px 0 #000; }
-
 /* catch banner */
 #catch-banner {
   position: fixed; top: 18%; left: 50%; transform: translateX(-50%); z-index: 32;
@@ -475,7 +442,6 @@ input, select { font-family: inherit; font-size: .95rem; }
   #player-badge { padding: 5px 9px 5px 5px; }
   #level-orb { width: 36px; height: 36px; font-size: .95rem; }
   #xp-bar { width: 100px; }
-  #timing-panel { bottom: 150px; }
   #window-frame { width: 96vw; max-height: 92vh; }
   #chat-box { bottom: 8px; left: 8px; }
   #hud-bottom { bottom: 8px; }

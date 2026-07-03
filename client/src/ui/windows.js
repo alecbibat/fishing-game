@@ -216,7 +216,7 @@ function buildSkills(bodyEl) {
   bodyEl.append(el('div', { class: 'win-section-title' }, 'Current fishing power'));
   bodyEl.append(el('div', { class: 'stat-grid' },
     stat('Bite speed', `+${Math.round(fx.biteRate * 100)}%`), stat('Rare luck', `+${Math.round(fx.rareLuck * 100)}%`),
-    stat('Catch zone', `+${Math.round(fx.barSize * 100)}%`), stat('Marker calm', `+${Math.round(fx.stability * 100)}%`),
+    stat('Bite window', `+${Math.round((fx.barSize + fx.stability * 0.5) * 100)}%`), stat('Second chance', `${fx.tension >= 0.2 ? '100' : Math.round(fx.tension * 200)}%`),
     stat('Cast power', fx.power.toFixed(0)), stat('XP bonus', `+${Math.round(fx.xpBonus * 100)}%`),
     stat('Gold bonus', `+${Math.round(fx.goldBonus * 100)}%`), stat('Double catch', `${Math.round(fx.multiCatch * 100)}%`)));
   bodyEl.append(el('div', { class: 'win-section-title' }, 'Abilities'));
@@ -381,8 +381,8 @@ function buildRod(bodyEl) {
 function slotIcon(slot, size = 20) { return icon({ bobber: 'bobber', hook: 'hook', reel: 'reel', gadget: 'gadget' }[slot] || 'gadget', size); }
 function fxDesc(effects) {
   const names = {
-    biteRate: 'bite speed', rareLuck: 'rare luck', barSize: 'catch zone', stability: 'marker calm',
-    tension: 'forgiveness', xpBonus: 'XP', goldBonus: 'gold', sizeBonus: 'fish size',
+    biteRate: 'bite speed', rareLuck: 'rare luck', barSize: 'bite window', stability: 'calm bite',
+    tension: 'second chance', xpBonus: 'XP', goldBonus: 'gold', sizeBonus: 'fish size',
     multiCatch: 'double catch', treasure: 'treasure', sonar: 'SONAR', scope: 'SCOPE', magnet: 'MAGNET', autoReel: 'AUTO-HOOK',
   };
   return Object.entries(effects || {}).map(([k, v]) =>
@@ -533,7 +533,7 @@ function buildSettings(bodyEl, ctx) {
   bodyEl.append(el('div', { class: 'muted', html: `
     <b>WASD</b> walk (or the touch joystick) · <b>Shift</b> run · scroll/pinch to zoom · right-click or long-press for options<br>
     <b>Click the water</b> to cast at that spot (or hold SPACE to charge a cast)<br>
-    When the <b>!</b> appears — tap to hook! Then tap again when the sweeping marker crosses the <b>golden zone</b>. Rare fish take a few good taps.<br>
+    When the <b>!</b> appears — tap, and the fish is yours! Feisty fish give you less time to react; better gear buys it back.<br>
     <b>E</b> talk / interact · <b>Enter</b> chat · <b>B</b> backpack · <b>F</b> dex · <b>K</b> skill · <b>J</b> achievements · <b>R</b> rod · <b>P</b> potions · <b>M</b> map · <b>I</b> island<br><br>
     Find the sewer grate behind the bakery. Ride the ferry. Anchor your island. Catch all 1000.` }));
 
