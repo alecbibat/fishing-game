@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Driftwood Isles — a cozy fishing adventure</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎣</text></svg>">
@@ -111,15 +112,15 @@
 <div id="fishing-ui" class="hidden">
   <div id="cast-meter" class="hidden"><div id="cast-fill"></div><div class="cast-label">CAST POWER</div></div>
   <div id="bite-alert" class="hidden">!</div>
-  <div id="reel-panel" class="hidden">
+  <div id="timing-panel" class="hidden">
     <div id="fish-info-sonar" class="hidden"></div>
-    <div id="reel-track">
-      <div id="reel-fish"></div>
-      <div id="reel-bar"></div>
-      <div id="reel-progress-rail"><div id="reel-progress"></div></div>
+    <div id="timing-name">Something on the line…</div>
+    <div id="timing-bar">
+      <div id="timing-zone"></div>
+      <div id="timing-marker"></div>
     </div>
-    <div id="tension-rail"><div id="tension-fill"></div><span class="tension-label">line tension</span></div>
-    <div id="qte-prompt" class="hidden"></div>
+    <div id="timing-pips"></div>
+    <div class="timing-hint">tap when the marker hits the gold!</div>
   </div>
 </div>
 <div id="catch-banner" class="hidden"></div>
@@ -140,6 +141,7 @@
 </div>
 
 <div id="interact-prompt" class="hidden"></div>
+<div id="joystick" class="hidden"><div id="joystick-thumb"></div></div>
 <div id="context-menu" class="hidden"><div id="context-header">Choose Option</div><div id="context-options"></div></div>
 <div id="loading-screen"><div class="loading-inner"><div class="loading-fish">~&gt;&lt;(((*&gt;</div><div id="loading-text">Loading the isles…</div></div></div>
 

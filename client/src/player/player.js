@@ -36,6 +36,13 @@ export class Player {
       if (k['KeyA'] || k['ArrowLeft']) mx -= 1;
       if (k['KeyD'] || k['ArrowRight']) mx += 1;
     }
+    // virtual joystick (mobile)
+    if (!this.frozen && !input.typing && input.moveVec) {
+      if (Math.hypot(input.moveVec.x, input.moveVec.z) > 0.25) {
+        mx += input.moveVec.x;
+        mz += input.moveVec.z;
+      }
+    }
     let moving = (mx !== 0 || mz !== 0);
     if (moving) this.walkTarget = null;
     // right-click walk-to
@@ -83,8 +90,10 @@ export class Input {
     this.dragging = false;
     this.lastX = 0;
     this.lastY = 0;
+    this.moveVec = { x: 0, z: 0 }; // virtual joystick
     this._downAt = 0;
     this.onKey = null; // (code, isDown)
+    this._pointers = new Map(); // pinch tracking
 
     window.addEventListener('keydown', (e) => {
       if (this.typing) return;
@@ -97,31 +106,50 @@ export class Input {
     });
     window.addEventListener('blur', () => { this.keys = {}; this.pointerDown = false; });
 
-    let sx = 0, sy = 0, movedTotal = 0;
+    let sx = 0, sy = 0, movedTotal = 0, pinchDist = 0;
     canvas.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0) return; // right-click is the Choose Option menu
+      if (e.pointerType === 'mouse' && e.button !== 0) return; // right-click is the Choose Option menu
+      this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this._pointers.size === 2) {
+        const [a, b] = [...this._pointers.values()];
+        pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+        this.pointerDown = false; // two fingers = pinch, not a press
+        return;
+      }
       this.pointerDown = true;
       this._downAt = performance.now();
       sx = e.clientX; sy = e.clientY; movedTotal = 0;
       this.lastX = e.clientX; this.lastY = e.clientY;
-      canvas.setPointerCapture(e.pointerId);
+      try { canvas.setPointerCapture(e.pointerId); } catch { /* pointer may have already ended */ }
     });
     canvas.addEventListener('pointermove', (e) => {
+      if (this._pointers.has(e.pointerId)) this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this._pointers.size === 2) {
+        const [a, b] = [...this._pointers.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0) this.onPinch?.(d / pinchDist);
+        pinchDist = d;
+        return;
+      }
       this.lastX = e.clientX; this.lastY = e.clientY;
       if (!this.pointerDown) return;
       movedTotal += Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy);
       sx = e.clientX; sy = e.clientY;
       if (movedTotal > 8) this.dragging = true;
     });
-    canvas.addEventListener('pointerup', (e) => {
-      if (e.button !== 0) return;
+    const endPointer = (e) => {
+      this._pointers.delete(e.pointerId);
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (!this.pointerDown) return;
       this.pointerDown = false;
       this.lastX = e.clientX; this.lastY = e.clientY;
       const wasDrag = this.dragging;
       this.dragging = false;
       if (!wasDrag && performance.now() - this._downAt < 400) this.justClicked = true;
       this.onPointerUp?.(wasDrag, e.clientX, e.clientY);
-    });
+    };
+    canvas.addEventListener('pointerup', endPointer);
+    canvas.addEventListener('pointercancel', endPointer);
     canvas.addEventListener('wheel', (e) => { this.onWheel?.(e.deltaY); }, { passive: true });
   }
   consumeClick() {

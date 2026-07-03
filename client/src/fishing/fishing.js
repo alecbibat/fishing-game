@@ -80,8 +80,9 @@ export class Fishing {
 
     this.ui = {
       root: $('#fishing-ui'), castMeter: $('#cast-meter'), castFill: $('#cast-fill'),
-      bite: $('#bite-alert'), reel: $('#reel-panel'), fish: $('#reel-fish'), bar: $('#reel-bar'),
-      progress: $('#reel-progress'), tension: $('#tension-fill'), qte: $('#qte-prompt'),
+      bite: $('#bite-alert'), reel: $('#timing-panel'),
+      tBar: $('#timing-bar'), tZone: $('#timing-zone'), tMarker: $('#timing-marker'),
+      tPips: $('#timing-pips'), tName: $('#timing-name'),
       sonar: $('#fish-info-sonar'), hint: $('#action-hint'),
     };
   }
@@ -196,32 +197,46 @@ export class Fishing {
     consumeBait();
     if (this.loot.type !== 'fish') { this.resolveNonFish(); return; }
     const f = this.loot.fish;
-    this.phase = 'reeling';
+    this.phase = 'timing';
     const diff = this.loot.transcendent ? 10 : f.difficulty;
     const fx = this.fx;
+    const rank = rarityRank(f.rarity);
+    const rounds = this.loot.transcendent ? 4 : rank >= 4 ? 3 : rank >= 2 ? 2 : 1;
     this.game = {
-      fishPos: 0.5, fishTarget: 0.5, fishVel: 0,
-      barPos: 0.4, barVel: 0,
-      barSize: clamp(0.24 * (1 + fx.barSize) - diff * 0.006, 0.1, 0.5),
-      progress: 0.28, tension: 0,
+      pos: 0, dir: 1,
+      speed: (0.85 + diff * 0.13) * (1 - clamp(fx.stability, 0, 0.6) * 0.5),
+      zoneC: randRange(0.2, 0.8),
+      zoneW: clamp(0.34 * (1 + fx.barSize) - diff * 0.014, 0.1, 0.55),
+      round: 1, rounds,
+      grace: fx.tension >= 0.2 ? 1 : 0,
+      roundT: 0,
+      flash: 0,
+      prevPress: true, // require a fresh press after hooking
       diff,
-      behavior: f.behavior,
-      retargetT: 0,
-      qteT: randRange(4, 8),
-      qte: null,
     };
     this.ui.reel.classList.remove('hidden');
-    this.ui.fish.textContent = '';
-    this.ui.fish.style.background = RARITY_COLOR[f.rarity];
-    this.ui.fish.style.borderRadius = '50% 40% 40% 50%';
-    this.ui.fish.style.border = '2px solid rgba(0,0,0,.5)';
+    this.renderTiming(f);
     if (fx.sonar) {
       this.ui.sonar.classList.remove('hidden');
       this.ui.sonar.textContent = `${f.rarity.toUpperCase()} · ${f.sizeClass}`;
       this.ui.sonar.style.color = RARITY_COLOR[f.rarity];
     } else this.ui.sonar.classList.add('hidden');
-    this.ui.hint.textContent = 'Hold CLICK / SPACE to lift the bar — keep the fish inside!';
-    emit('fishing', { phase: 'reeling' });
+    this.ui.hint.textContent = 'Tap when the marker crosses the golden zone!';
+    emit('fishing', { phase: 'timing' });
+  }
+
+  renderTiming(f) {
+    const g = this.game;
+    this.ui.tName.textContent = this.fx.sonar || g.round > 1 ? f.name : 'Something on the line…';
+    this.ui.tName.style.color = this.fx.sonar || g.round > 1 ? RARITY_COLOR[f.rarity] : '#f2ead4';
+    this.ui.tZone.style.left = `${(g.zoneC - g.zoneW / 2) * 100}%`;
+    this.ui.tZone.style.width = `${g.zoneW * 100}%`;
+    this.ui.tPips.innerHTML = '';
+    for (let i = 0; i < g.rounds; i++) {
+      const pip = document.createElement('span');
+      pip.className = 'timing-pip' + (i < g.round - 1 ? ' filled' : '');
+      this.ui.tPips.append(pip);
+    }
   }
 
   resolveNonFish() {
@@ -293,89 +308,59 @@ export class Fishing {
       return;
     }
 
-    if (this.phase === 'reeling') {
+    if (this.phase === 'timing') {
       const g = this.game;
-      const fx = this.fx;
-      g.retargetT -= dt;
-      if (g.retargetT <= 0) {
-        const jump = { calm: 0.25, weave: 0.4, darter: 0.75, sinker: 0.5, burst: 0.9 }[g.behavior] || 0.4;
-        g.fishTarget = clamp(g.fishPos + (Math.random() - 0.5) * 2 * jump, 0.03, 0.97);
-        if (g.behavior === 'sinker' && Math.random() < 0.45) g.fishTarget = clamp(g.fishTarget - 0.3, 0.03, 0.9);
-        g.retargetT = { calm: randRange(1.2, 2.4), weave: randRange(0.7, 1.4), darter: randRange(0.4, 1.1), sinker: randRange(0.8, 1.6), burst: randRange(0.3, 1.6) }[g.behavior] || 1;
-      }
-      const fishSpeed = (0.35 + g.diff * 0.075) * (1 - clamp(fx.stability, 0, 0.7) * 0.55) * (g.qte ? 2 : 1);
-      g.fishPos = lerp(g.fishPos, g.fishTarget, clamp(dt * fishSpeed * 3, 0, 1));
-      if (g.behavior === 'weave') g.fishPos = clamp(g.fishPos + Math.sin(t * 5) * dt * 0.25, 0, 1);
+      const f = this.loot.fish;
+      // sweep the marker (triangle wave)
+      g.pos += g.dir * g.speed * dt;
+      if (g.pos > 1) { g.pos = 1; g.dir = -1; }
+      if (g.pos < 0) { g.pos = 0; g.dir = 1; }
+      g.roundT += dt;
+      g.flash = Math.max(0, g.flash - dt * 3);
 
-      const lift = hold ? 2.6 : -3.1;
-      g.barVel += lift * dt;
-      g.barVel *= (1 - dt * 2.2);
-      g.barPos += g.barVel * dt;
-      if (g.barPos < 0) { g.barPos = 0; g.barVel *= -0.35; }
-      if (g.barPos > 1 - g.barSize) { g.barPos = 1 - g.barSize; g.barVel *= -0.35; }
+      // fresh press detection (tap / click / space)
+      const pressNow = hold;
+      const clicked = input.consumeClick();
+      const press = (pressNow && !g.prevPress) || clicked;
+      g.prevPress = pressNow;
 
-      const inside = g.fishPos > g.barPos - 0.02 && g.fishPos < g.barPos + g.barSize + 0.02;
-      if (inside) {
-        g.progress += dt * 0.13;
-        g.tension = Math.max(0, g.tension - dt * 0.06);
-      } else {
-        g.progress -= dt * 0.085;
-        g.tension += dt * (0.045 + g.diff * 0.012) * (1 - clamp(fx.tension, 0, 0.75));
-      }
-      g.progress = clamp(g.progress, 0, 1);
+      const inZone = Math.abs(g.pos - g.zoneC) < g.zoneW / 2;
+      const auto = this.fx.autoReel && inZone && Math.abs(g.pos - g.zoneC) < g.zoneW * 0.3;
 
-      if (!g.qte && g.diff >= 5) {
-        g.qteT -= dt;
-        if (g.qteT <= 0 && Math.random() < 0.6) {
-          const kind = Math.random() < 0.55 ? 'mash' : 'flick';
-          g.qte = { kind, need: kind === 'mash' ? 4 : 1, got: 0, timer: kind === 'mash' ? 1.6 : 1.0, key: Math.random() < 0.5 ? 'KeyA' : 'KeyD' };
-          this.ui.qte.classList.remove('hidden');
-          this.ui.qte.textContent = kind === 'mash' ? 'MASH SPACE!' : (g.qte.key === 'KeyA' ? '← PRESS A!' : 'PRESS D! →');
-          this._qteSpaceWas = true;
-        } else if (g.qteT <= 0) g.qteT = randRange(4, 8);
-      }
-      if (g.qte) {
-        g.qte.timer -= dt;
-        if (g.qte.kind === 'mash') {
-          const spaceNow = !!input.keys['Space'];
-          if (spaceNow && !this._qteSpaceWas) { g.qte.got++; this.ui.qte.textContent = `MASH SPACE! ${'●'.repeat(g.qte.got)}${'○'.repeat(Math.max(0, g.qte.need - g.qte.got))}`; }
-          this._qteSpaceWas = spaceNow;
-        } else if (input.keys[g.qte.key]) g.qte.got++;
-        if (g.qte.got >= g.qte.need) {
-          g.progress = clamp(g.progress + 0.13, 0, 1);
-          g.tension = Math.max(0, g.tension - 0.18);
-          this.endQte(true);
-        } else if (g.qte.timer <= 0) {
-          g.tension += 0.2;
-          this.endQte(false);
+      if (press || auto) {
+        if (inZone) {
+          g.round++;
+          if (g.round > g.rounds) { this.land(); return; }
+          // next round: new zone, tighter and faster
+          g.zoneC = randRange(0.15, 0.85);
+          g.zoneW = Math.max(0.07, g.zoneW * 0.85);
+          g.speed *= 1.18;
+          g.roundT = 0;
+          g.flash = 1;
+          this.renderTiming(f);
+          emit('toast', { text: `Hooked! ${g.rounds - g.round + 1} more…`, sub: 'keep your rhythm' });
+        } else if (g.grace > 0) {
+          g.grace--;
+          this.ui.hint.textContent = 'The line holds! One more chance…';
+        } else {
+          this.escape();
+          return;
         }
       }
+      // a fish won't wait forever
+      if (g.roundT > 14) { this.escape(); return; }
 
-      if (g.tension >= 1) { this.escape(); return; }
-      if (g.progress >= 1) { this.land(); return; }
-
-      const trackH = 380, fishH = 34;
-      this.ui.fish.style.bottom = `${g.fishPos * (trackH - fishH - 6)}px`;
-      this.ui.bar.style.bottom = `${g.barPos * (trackH - 8) + 4}px`;
-      this.ui.bar.style.height = `${g.barSize * (trackH - 8)}px`;
-      this.ui.progress.style.height = `${g.progress * 100}%`;
-      this.ui.tension.style.height = `${g.tension * 100}%`;
+      this.ui.tMarker.style.left = `${g.pos * 100}%`;
+      this.ui.tBar.classList.toggle('zone-hot', inZone);
+      this.ui.tBar.style.boxShadow = g.flash > 0 ? `0 0 ${18 * g.flash}px rgba(255,220,90,.8)` : '';
       this.bobber.dip = -1 + Math.sin(t * 14) * 0.8;
     }
-  }
-
-  endQte(success) {
-    this.game.qte = null;
-    this.game.qteT = randRange(5, 9);
-    this.ui.qte.classList.add('hidden');
-    if (!success) emit('toast', { text: 'The line strains!', sub: 'tension surged' });
   }
 
   escape() {
     S.stats.linesBroken++;
     if (S.stats.linesBroken >= 10) setFlag('broke_line_10');
     this.ui.reel.classList.add('hidden');
-    this.ui.qte.classList.add('hidden');
     emit('toast', { text: 'Snap! It got away…', sub: this.loot.transcendent ? 'The legend sinks back into the dark.' : 'Your line broke.' });
     this.finish();
   }
@@ -444,7 +429,6 @@ export class Fishing {
     this.ui.castMeter.classList.add('hidden');
     this.ui.bite.classList.add('hidden');
     this.ui.reel.classList.add('hidden');
-    this.ui.qte.classList.add('hidden');
     this.ui.sonar.classList.add('hidden');
     this.ui.root.classList.add('hidden');
     this.ui.hint.textContent = '';

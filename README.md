@@ -26,24 +26,28 @@ multiplayer lobbies over WebSockets. Open the URL in any modern browser.
 
 - **Single-player** also works from any static file host (GitHub Pages, itch.io, …) —
   just serve the `client/` directory. Multiplayer needs the Node server.
-- Save data lives in your browser's localStorage (export/import from ⚙️ Settings).
+- Save data lives in your browser's localStorage (export/import from Settings).
+- Works on phones too: a virtual joystick appears on touch screens, tap the
+  water to cast, tap NPCs and doors to interact, pinch to zoom.
 
 ## How to play
 
 | Input | Action |
 |---|---|
-| **WASD** / arrows | Walk (hold **Shift** to run) |
-| Mouse wheel | Zoom |
-| **Click the water** | Cast at that spot (or hold **SPACE** to charge a cast) |
-| **SPACE / click** on the **!** | Hook the bite! |
-| Hold **SPACE / click** while reeling | Lift the catch bar — keep the fish inside it |
-| **E** | Talk / interact |
+| **WASD** / arrows / joystick | Walk (hold **Shift** to run) |
+| Mouse wheel / pinch | Zoom |
+| **Click/tap the water** | Cast at that spot (or hold **SPACE** to charge a cast) |
+| **SPACE / click / tap** on the **!** | Hook the bite! |
+| **SPACE / click / tap** at the right moment | Catch — tap when the marker crosses the golden zone |
+| **E** / tap | Talk / interact |
 | **Enter** | Chat (appears over your head) |
 | **B F K J R P M I** | Backpack · Dex · Skill · Achievements · Rod · Potions · Map · Island |
 
-The reel minigame mixes Stardew's follow-the-fish bar with Webfishing-style
-**QTE bursts** (mash space! flick A/D!) on tougher fish. Watch the line tension —
-if it maxes out, *snap*.
+Once a fish is hooked, a timing bar appears: a marker sweeps back and forth, and
+you tap the moment it's inside the **golden zone**. Rarer fish need several
+clean hits in a row — and the zone shrinks and the marker speeds up with each
+one. Rod upgrades, bait, potions and abilities widen the zone, calm the marker,
+or forgive a mistimed tap.
 
 ## What's in the world
 
@@ -75,7 +79,7 @@ if it maxes out, *snap*.
 Create a **public or private lobby** (code-based invites) with your own settings:
 max players, message of the day, chat on/off, rare-catch announcements. Chat appears
 over players' heads RuneScape-style. As host you can **mute, kick, or ban** anyone
-from the lobby window (click the 👥 pill).
+from the lobby window (click the player-count pill).
 
 ## Project layout
 
@@ -89,7 +93,7 @@ client/            the game (plain ES modules, zero build step)
     world/         procedural terrain math (heights, biomes, zones, paths)
     render2d/      Stardew-style renderer: tiles, pixel sprites, actors
     player/        movement, input
-    fishing/       cast/bite/reel minigame, loot rolls
+    fishing/       cast/bite/timing minigame, loot rolls
     npc/           wandering NPCs + dialogue
     ui/            HUD, windows, dex + catch-card 3D fish viewers, pixel icons
     net/           multiplayer client

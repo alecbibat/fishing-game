@@ -54,7 +54,7 @@ export function mountFishViewer(container, fishDef, { width = 280, height = 190 
   let dragging = false, px = 0, py = 0;
   const onDown = (e) => {
     dragging = true; px = e.clientX; py = e.clientY;
-    canvas.setPointerCapture(e.pointerId);
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* pointer may have already ended */ }
     canvas.style.cursor = 'grabbing';
     e.stopPropagation();
   };

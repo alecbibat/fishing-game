@@ -13,6 +13,7 @@ import { openShop, openBroker, openFerry, openBuilding, openIslandWindow, openLo
 import { Minimap } from './ui/minimap.js';
 import { showContextMenu } from './ui/context.js';
 import { maybeDismissCatchCard } from './ui/catchcard.js';
+import { initJoystick, isTouchDevice } from './ui/joystick.js';
 import { net } from './net/net.js';
 import { iconHtml, iconDataUrl } from './ui/icons.js';
 import { ZONE_LORE } from './data/gen-zones.js';
@@ -74,6 +75,8 @@ function startGame() {
   });
 
   input.onWheel = (dy) => { renderer.zoom = clamp(renderer.zoom - dy * 0.0015, 1.4, 3.6); };
+  input.onPinch = (factor) => { renderer.zoom = clamp(renderer.zoom * factor, 1.4, 3.6); };
+  initJoystick(input);
 
   // keyboard
   input.onKey = (code, down, e) => {
@@ -107,16 +110,38 @@ function startGame() {
     if (code === 'Space' && fishing.phase === 'idle' && !dialogueNpc) fishing.tryStartCast();
   };
 
-  // left-click: cast toward a clicked water spot (Stardew-style)
+  // tap/click: talk to a tapped NPC or use a tapped object; otherwise cast at tapped water
   input.onPointerUp = (wasDrag, cx, cy) => {
     if (wasDrag || !running || hud.chatFocused || currentWindow() || dialogueNpc) return;
     maybeDismissCatchCard();
     if (fishing.phase !== 'idle') return;
+    const hitR = isTouchDevice() ? 42 : 26;
+    // tapped an NPC?
+    for (const n of npcs.npcs) {
+      if (Math.hypot(renderer.sx(n.x) - cx, renderer.sz(n.z) - 20 * renderer.zoom - cy) < hitR) {
+        if (dist2d(player.x, player.z, n.x, n.z) < 6.5) { openDialogue(n); input.consumeClick(); }
+        else hud.chatLine(null, "I can't reach that!", 'system');
+        return;
+      }
+    }
+    // tapped an interactable?
+    for (const it of world.interactables()) {
+      if (Math.hypot(renderer.sx(it.x) - cx, renderer.sz(it.z) - 8 * renderer.zoom - cy) < hitR) {
+        if (dist2d(player.x, player.z, it.x, it.z) < it.r + 2) { runAction(it.action); input.consumeClick(); }
+        else hud.chatLine(null, "I can't reach that!", 'system');
+        return;
+      }
+    }
     const wx = renderer.wx(cx), wz = renderer.wz(cy);
     if (world.isWaterAt(wx, wz)) {
       if (fishing.castAt(wx, wz)) input.consumeClick();
     }
   };
+  // the interact prompt itself is tappable (mobile-friendly E)
+  document.getElementById('interact-prompt').addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    tryInteract();
+  });
 
   $('#bait-pill').addEventListener('click', () => openBaitSwitcher());
   $('#net-pill').addEventListener('click', () => openLobbyWindow(net));
@@ -405,7 +430,8 @@ function loop() {
   // interact prompt
   const npc = npcs.nearest(player.x, player.z);
   const it = npc ? null : nearestInteractable();
-  const promptText = npc ? `[E] Talk to ${npc.def.name}` : it ? `[E] ${it.label}` : null;
+  const key = isTouchDevice() ? 'Tap here:' : '[E]';
+  const promptText = npc ? `${key} Talk to ${npc.def.name}` : it ? `${key} ${it.label}` : null;
   if (promptText !== lastInteractable) {
     lastInteractable = promptText;
     if (promptText) hud.showPrompt(promptText);
@@ -418,8 +444,8 @@ function loop() {
   if (!fishing.active && !npc && !it && !currentWindow()) {
     const canFish = fishing.canFishHere();
     const hint = $('#action-hint');
-    if (canFish && !hint.textContent) hint.textContent = 'Click the water (or hold SPACE) to cast';
-    else if (!canFish && hint.textContent === 'Click the water (or hold SPACE) to cast') hint.textContent = '';
+    if (canFish && !hint.textContent) hint.textContent = isTouchDevice() ? 'Tap the water to cast' : 'Click the water (or hold SPACE) to cast';
+    else if (!canFish && (hint.textContent === 'Click the water (or hold SPACE) to cast' || hint.textContent === 'Tap the water to cast')) hint.textContent = '';
   }
 
   // camera follows player; render
