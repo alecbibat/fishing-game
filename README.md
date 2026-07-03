@@ -2,12 +2,15 @@
 
 *A cozy browser fishing adventure — Webfishing × Old School RuneScape × Stardew Valley.*
 
+Stardew-style top-down pixel world (procedurally generated tiles + sprites, zero image
+assets), OSRS-style interface, and rotatable 3D fish models in the dex and catch cards.
+
 Explore a sprawling low-poly world, catch **1000 different fish**, chat with friends in
 multiplayer lobbies with text floating over your head, bank your catch, brew potions from
 fish, upgrade your rod at your own player-owned island, and chase transcendent sea-legends
 that surface once in a blue moon carrying the rods of old heroes.
 
-![genre](https://img.shields.io/badge/genre-cozy%20fishing%20MMO-46e0d0) ![engine](https://img.shields.io/badge/engine-Three.js%20(no%20build%20step)-8a6642)
+![genre](https://img.shields.io/badge/genre-cozy%20fishing%20MMO-46e0d0) ![style](https://img.shields.io/badge/style-2D%20pixel%20%2B%203D%20fish-8a6642)
 
 ---
 
@@ -30,9 +33,9 @@ multiplayer lobbies over WebSockets. Open the URL in any modern browser.
 | Input | Action |
 |---|---|
 | **WASD** / arrows | Walk (hold **Shift** to run) |
-| Mouse drag / wheel | Orbit & zoom camera |
-| **Hold SPACE** near water | Charge your cast — release to let it fly |
-| **SPACE / click** on the ❗ | Hook the bite! |
+| Mouse wheel | Zoom |
+| **Click the water** | Cast at that spot (or hold **SPACE** to charge a cast) |
+| **SPACE / click** on the **!** | Hook the bite! |
 | Hold **SPACE / click** while reeling | Lift the catch bar — keep the fish inside it |
 | **E** | Talk / interact |
 | **Enter** | Chat (appears over your head) |
@@ -79,15 +82,16 @@ from the lobby window (click the 👥 pill).
 ```
 client/            the game (plain ES modules, zero build step)
   index.html       shell + UI scaffolding
-  styles.css       cozy UI theme
-  vendor/          three.js r185 (vendored)
+  styles.css       parchment/stone UI theme
+  vendor/          three.js r185 (vendored — used for the 3D fish viewers)
   src/
     core/          state, save system, event bus, utils
-    world/         procedural overworld, interiors, props, day cycle
-    player/        avatar rig, controls, camera
-    fishing/       cast/bite/reel minigame, loot, procedural fish meshes
+    world/         procedural terrain math (heights, biomes, zones, paths)
+    render2d/      Stardew-style renderer: tiles, pixel sprites, actors
+    player/        movement, input
+    fishing/       cast/bite/reel minigame, loot rolls
     npc/           wandering NPCs + dialogue
-    ui/            HUD, windows (dex/bank/shops/skills/…), chat
+    ui/            HUD, windows, dex + catch-card 3D fish viewers, pixel icons
     net/           multiplayer client
     data/          gen-*.js — generated from content/ (do not edit by hand)
 server/server.js   static file server + WebSocket lobby server (dep: ws)

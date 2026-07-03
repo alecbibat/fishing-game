@@ -257,6 +257,8 @@ function runAction(action) {
 // ---------------- NPC dialogue ----------------
 function openDialogue(npc) {
   dialogueNpc = npc;
+  player.speed = 0;           // stop to chat — prevents the auto-dismiss racing the open
+  player.walkTarget = null;
   const def = npc.def;
   const opts = npcOptions(def);
   hud.showDialogue(`${def.name} — ${def.role}`, def.greeting || '...', opts, (opt) => {

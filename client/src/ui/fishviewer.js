@@ -1,21 +1,38 @@
 // Interactive 3D fish viewer: drag to rotate, gentle auto-spin when idle.
-// Used in the dex detail and the catch card.
+// A single shared WebGL renderer/canvas serves all mounts (browsers cap live
+// WebGL contexts, and catch cards would otherwise burn one per catch).
 import * as THREE from '../../vendor/three.module.js';
 import { makeFishMesh, makeEffectParticles } from '../fishing/fishmesh.js';
 
-export function mountFishViewer(container, fishDef, { width = 280, height = 190 } = {}) {
+let shared = null;
+function getShared() {
+  if (shared) return shared;
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'display:block;cursor:grab;touch-action:none;';
-  container.appendChild(canvas);
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch {
+    return null;
+  }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  shared = { canvas, renderer, owner: null };
+  return shared;
+}
+
+export function mountFishViewer(container, fishDef, { width = 280, height = 190 } = {}) {
+  const sh = getShared();
+  if (!sh) {
     container.textContent = '(3D preview unavailable)';
     return { dispose() {} };
   }
+  // steal the canvas from any previous mount
+  if (sh.owner) sh.owner.dispose();
+
+  const { canvas, renderer } = sh;
   renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  container.appendChild(canvas);
+
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, width / height, 0.05, 40);
   camera.position.set(0, 0.35, 2.3);
@@ -31,27 +48,29 @@ export function mountFishViewer(container, fishDef, { width = 280, height = 190 
     const mesh = makeFishMesh(fishDef);
     pivot.add(mesh);
     if (fishDef.effect) pivot.add(makeEffectParticles(fishDef.effect, 0.75));
-  } catch { /* mesh failure — show empty */ }
+  } catch { /* mesh failure — show empty water */ }
 
   let yaw = 0.6, pitch = 0.1, autoSpin = true, lastInteract = 0;
   let dragging = false, px = 0, py = 0;
-  canvas.addEventListener('pointerdown', (e) => {
+  const onDown = (e) => {
     dragging = true; px = e.clientX; py = e.clientY;
     canvas.setPointerCapture(e.pointerId);
     canvas.style.cursor = 'grabbing';
     e.stopPropagation();
-  });
-  canvas.addEventListener('pointermove', (e) => {
+  };
+  const onMove = (e) => {
     if (!dragging) return;
     yaw += (e.clientX - px) * 0.012;
     pitch = Math.max(-1.1, Math.min(1.1, pitch + (e.clientY - py) * 0.008));
     px = e.clientX; py = e.clientY;
     lastInteract = performance.now();
     autoSpin = false;
-  });
-  const stopDrag = () => { dragging = false; canvas.style.cursor = 'grab'; };
-  canvas.addEventListener('pointerup', stopDrag);
-  canvas.addEventListener('pointercancel', stopDrag);
+  };
+  const onUp = () => { dragging = false; canvas.style.cursor = 'grab'; };
+  canvas.addEventListener('pointerdown', onDown);
+  canvas.addEventListener('pointermove', onMove);
+  canvas.addEventListener('pointerup', onUp);
+  canvas.addEventListener('pointercancel', onUp);
 
   let raf = 0, disposed = false;
   const t0 = performance.now();
@@ -69,13 +88,24 @@ export function mountFishViewer(container, fishDef, { width = 280, height = 190 
   }
   frame();
 
-  return {
+  const handle = {
     dispose() {
       if (disposed) return;
       disposed = true;
       cancelAnimationFrame(raf);
-      renderer.dispose();
+      canvas.removeEventListener('pointerdown', onDown);
+      canvas.removeEventListener('pointermove', onMove);
+      canvas.removeEventListener('pointerup', onUp);
+      canvas.removeEventListener('pointercancel', onUp);
+      // free scene resources but keep the shared renderer alive
+      scene.traverse((n) => {
+        n.geometry?.dispose?.();
+        if (n.material) (Array.isArray(n.material) ? n.material : [n.material]).forEach((m) => m.dispose?.());
+      });
       canvas.remove();
+      if (sh.owner === handle) sh.owner = null;
     },
   };
+  sh.owner = handle;
+  return handle;
 }

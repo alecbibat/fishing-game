@@ -16,7 +16,7 @@ export function showCatchCard(fish, len, wt, record, sold) {
   b.classList.remove('hidden');
   b.innerHTML = '';
   const viewerBox = el('div', { style: 'display:flex;justify-content:center;' });
-  b.append(
+  const parts = [
     el('div', { class: 'cb-name', style: `color:${RARITY_COLOR[fish.rarity]}` }, fish.name),
     el('div', { class: 'muted', style: `text-transform:uppercase;font-size:.7rem;letter-spacing:2px;color:${RARITY_COLOR[fish.rarity]}` }, fish.rarity),
     viewerBox,
@@ -25,7 +25,8 @@ export function showCatchCard(fish, len, wt, record, sold) {
     record ? el('div', { class: 'cb-record' }, 'New personal best!') : null,
     sold ? el('div', { class: 'muted' }, `Backpack full — sold for ${sold} coins`) : null,
     el('div', { class: 'muted', style: 'margin-top:6px;font-size:.72rem' }, 'drag the fish to admire it · move or click to continue'),
-  );
+  ].filter(Boolean);
+  b.append(...parts);
   viewer = mountFishViewer(viewerBox, fish, { width: 260, height: 150 });
   visible = true;
   shownAt = performance.now();

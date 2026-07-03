@@ -21,6 +21,8 @@ export class Player {
 
   place(x, z) {
     this.x = x; this.z = z;
+    this.speed = 0;
+    this.walkTarget = null;
     this.rig.position.set(this.x, 0, this.z);
   }
 
