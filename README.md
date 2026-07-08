@@ -34,15 +34,18 @@ multiplayer lobbies over WebSockets. Open the URL in any modern browser.
 
 | Input | Action |
 |---|---|
-| **WASD** / arrows / joystick | Walk (hold **Shift** to run) |
+| **Open the Map (M)** | Pick a fishing spot and travel there — locked waters open as your fishing level grows |
+| **Shops (T)** | Every shop and service — General Store, Bait, Attachments, Potions, Rod Dealer, Bank, Island Broker |
+| **WASD** / arrows / joystick | Walk the shoreline (hold **Shift** to run) |
 | Mouse wheel / pinch | Zoom |
 | **Click/tap the water** | Cast at that spot (or hold **SPACE** to charge a cast) |
 | **SPACE / click / tap** on the **!** | Catch the fish! |
-| **E** / tap | Talk / interact |
 | **Enter** | Chat (appears over your head) |
-| **B F K J R P M I** | Backpack · Dex · Skill · Achievements · Rod · Potions · Map · Island |
+| **B F K J R P T M I** | Backpack · Dex · Skill · Achievements · Rod · Potions · Shops · Map · Island |
 
-There's no minigame: when the bobber plunges and the **!** pops up, one tap
+Getting around is map-first: instead of hiking across the isles, open the **Map**
+and choose where to fish. Each spot drops you right at the water's edge, and the
+stores all live in the **Shops** menu. There's no minigame: when the bobber plunges and the **!** pops up, one tap
 lands the fish. The catch (pun intended): feistier, rarer fish give you a
 shorter reaction window before they slip away. Rod upgrades, bait, potions and
 abilities stretch the window — and a forgiving line will hold a missed bite

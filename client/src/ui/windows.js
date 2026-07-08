@@ -14,7 +14,7 @@ import { ZONE_LORE } from '../data/gen-zones.js';
 import { mountFishViewer } from './fishviewer.js';
 import { icon, iconHtml } from './icons.js';
 import { overworldHeight, overworldWaterLevel, overworldZone, HALF } from '../world/world.js';
-import { PORTAL_SPOTS } from '../data/static.js';
+import { FISHING_SPOTS, spotLockReason } from '../data/spots.js';
 
 const root = () => $('#window-root');
 const body = () => $('#window-body');
@@ -424,10 +424,23 @@ function buildPotions(bodyEl) {
   bodyEl.append(list);
 }
 
-// ---------- map ----------
+// ---------- travel map ----------
+// The map is now the way you get around: pick a fishing spot and sail/step there.
+// Locked spots (level gates, un-anchored island) are shown but can't be visited.
+const GROUP_TITLES = {
+  overworld: 'The main isle — walk the shores',
+  secret: 'Hidden waters',
+  ferry: 'By ferry — distant waters',
+  island: 'Your island',
+};
 function buildMap(bodyEl, ctx) {
-  titleEl().textContent = 'The Driftwood Isles';
-  const canvas = el('canvas', { id: 'world-map-canvas', width: 480, height: 480 });
+  titleEl().textContent = 'Travel — The Driftwood Isles';
+  const lvl = getLevel();
+  const hasIsland = !!S.island.spot;
+  const currentId = ctx.currentSpotId || null;
+
+  // --- overworld minimap with clickable markers ---
+  const canvas = el('canvas', { id: 'world-map-canvas', width: 480, height: 480, style: 'cursor:pointer' });
   bodyEl.append(canvas);
   const g = canvas.getContext('2d');
   const N = 120;
@@ -451,46 +464,72 @@ function buildMap(bodyEl, ctx) {
       g.fillRect(i * 4, j * 4, 4, 4);
     }
   }
-  // labels
-  g.font = 'bold 13px Trebuchet MS';
-  g.textAlign = 'center';
-  const label = (name, x, z) => {
-    const px = ((x + HALF) / (HALF * 2)) * 480, pz = ((z + HALF) / (HALF * 2)) * 480;
-    g.strokeStyle = 'rgba(0,0,0,.6)'; g.lineWidth = 3;
-    g.strokeText(name, px, pz);
-    g.fillStyle = '#fff';
-    g.fillText(name, px, pz);
-  };
-  label(ZONE_LORE.town?.displayName || 'Town', 0, 100);
-  label(ZONE_LORE.pond?.displayName || 'Ponds', -320, 260);
-  label(ZONE_LORE.lake?.displayName || 'Lake', 380, -320);
-  label(ZONE_LORE.swamp?.displayName || 'Swamp', -520, 60);
-  label(ZONE_LORE.glacier?.displayName || 'Glacier', -420, -500);
-  label(ZONE_LORE.volcanic?.displayName || 'Springs', 590, -110);
-  label(ZONE_LORE.coast?.displayName || 'Coast', 40, 560);
-  label(ZONE_LORE.docks?.displayName || 'Docks', 480, 400);
-  label(ZONE_LORE.river?.displayName || 'River', -140, -230);
-  // portal spots
-  for (const spot of PORTAL_SPOTS) {
-    const px = ((spot.x + HALF) / (HALF * 2)) * 480, pz = ((spot.z + HALF) / (HALF * 2)) * 480;
-    g.fillStyle = S.island.spot === spot.id ? '#46e0d0' : 'rgba(255,255,255,.5)';
-    g.beginPath(); g.arc(px, pz, 4, 0, 7); g.fill();
+  const toPx = (x, z) => [((x + HALF) / (HALF * 2)) * 480, ((z + HALF) / (HALF * 2)) * 480];
+  // clickable pins for the overworld spots
+  const pins = [];
+  for (const spot of FISHING_SPOTS) {
+    if (spot.group !== 'overworld' || !spot.anchor) continue;
+    const [px, pz] = toPx(spot.anchor.x, spot.anchor.z);
+    const locked = !!spotLockReason(spot, lvl, hasIsland);
+    const isHere = spot.id === currentId;
+    pins.push({ spot, px, pz, locked });
+    g.beginPath(); g.arc(px, pz, 7, 0, 7);
+    g.fillStyle = isHere ? '#ff5a4e' : locked ? 'rgba(60,60,60,.55)' : '#46e0d0';
+    g.fill();
+    g.lineWidth = 2; g.strokeStyle = '#fff'; g.stroke();
+    if (locked) {
+      g.fillStyle = '#fff'; g.font = 'bold 9px Trebuchet MS'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('🔒', px, pz);
+    }
+    g.font = 'bold 12px Trebuchet MS'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.6)';
+    g.strokeText(spot.name, px, pz - 11);
+    g.fillStyle = isHere ? '#ffd0c8' : '#fff';
+    g.fillText(spot.name, px, pz - 11);
   }
-  // player
-  if (ctx.playerPos && ctx.mapId === 'overworld') {
-    const px = ((ctx.playerPos.x + HALF) / (HALF * 2)) * 480, pz = ((ctx.playerPos.z + HALF) / (HALF * 2)) * 480;
-    g.fillStyle = '#ff5a4e';
-    g.beginPath(); g.arc(px, pz, 6, 0, 7); g.fill();
-    g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
-  }
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (480 / rect.width);
+    const cy = (e.clientY - rect.top) * (480 / rect.height);
+    let best = null, bd = 18;
+    for (const p of pins) {
+      const d = Math.hypot(p.px - cx, p.pz - cy);
+      if (d < bd) { bd = d; best = p; }
+    }
+    if (best) travelTo(best.spot);
+  });
+
   bodyEl.append(el('div', { class: 'muted', style: 'margin-top:8px' },
-    ctx.mapId === 'overworld' ? 'You are the red dot. Teal dots are island portal anchors.' : 'You are off the map — in ' + (ZONE_LORE[S.zone]?.displayName || S.zone) + '.'));
-  const lore = ZONE_LORE[S.zone];
-  if (lore) bodyEl.append(el('div', { class: 'list-row', style: 'margin-top:8px' },
-    el('div', { class: 'row-main' },
-      el('div', { class: 'row-name' }, lore.displayName),
-      el('div', { class: 'row-desc' }, `${lore.description} `),
-      el('div', { class: 'row-desc', style: 'font-style:italic;color:#5a3c7a' }, `Rumour: ${lore.secretHint}`))));
+    'Click a spot on the map — or a destination below — to travel there. Locked waters open as your fishing level grows.'));
+
+  // --- travel list, grouped ---
+  const travelTo = (spot) => {
+    const reason = spotLockReason(spot, lvl, hasIsland);
+    if (reason) { emit('toast', { text: `${spot.name} is locked`, sub: reason }); return; }
+    emit('game:travel', { id: spot.id });
+  };
+  const groups = ['overworld', 'secret', 'ferry', 'island'];
+  for (const grp of groups) {
+    const spots = FISHING_SPOTS.filter((s) => s.group === grp);
+    if (!spots.length) continue;
+    bodyEl.append(el('div', { class: 'win-section-title' }, GROUP_TITLES[grp] || grp));
+    const list = el('div', { class: 'row-list' });
+    for (const spot of spots) {
+      const lore = ZONE_LORE[spot.id];
+      const reason = spotLockReason(spot, lvl, hasIsland);
+      const isHere = spot.id === currentId;
+      const row = el('div', { class: `list-row ${reason ? 'locked' : ''}` },
+        el('div', {}, icon(reason ? 'sign' : grp === 'ferry' ? 'ferry' : grp === 'island' ? 'island' : 'map', 22)),
+        el('div', { class: 'row-main' },
+          el('div', { class: 'row-name' }, spot.name),
+          el('div', { class: 'row-desc' }, lore?.tagline || '')),
+        isHere ? el('span', { class: 'muted' }, 'you are here')
+          : reason ? el('span', { class: 'muted', title: reason, style: 'text-align:right;max-width:140px' }, reason)
+            : el('button', { class: 'btn btn-small btn-primary', onclick: () => travelTo(spot) }, 'Travel'));
+      list.append(row);
+    }
+    bodyEl.append(list);
+  }
 }
 
 // ---------- settings ----------
@@ -531,11 +570,12 @@ function buildSettings(bodyEl, ctx) {
 
   bodyEl.append(el('div', { class: 'win-section-title' }, 'How to play'));
   bodyEl.append(el('div', { class: 'muted', html: `
-    <b>WASD</b> walk (or the touch joystick) · <b>Shift</b> run · scroll/pinch to zoom · right-click or long-press for options<br>
+    <b>Open the Map (M)</b> and pick a fishing spot to travel there — locked waters open as your fishing level grows.<br>
+    <b>WASD</b> walk the shoreline (or the touch joystick) · <b>Shift</b> run · scroll/pinch to zoom<br>
     <b>Click the water</b> to cast at that spot (or hold SPACE to charge a cast)<br>
     When the <b>!</b> appears — tap, and the fish is yours! Feisty fish give you less time to react; better gear buys it back.<br>
-    <b>E</b> talk / interact · <b>Enter</b> chat · <b>B</b> backpack · <b>F</b> dex · <b>K</b> skill · <b>J</b> achievements · <b>R</b> rod · <b>P</b> potions · <b>M</b> map · <b>I</b> island<br><br>
-    Find the sewer grate behind the bakery. Ride the ferry. Anchor your island. Catch all 1000.` }));
+    <b>B</b> backpack · <b>F</b> dex · <b>K</b> skill · <b>J</b> achievements · <b>R</b> rod · <b>P</b> potions · <b>T</b> shops · <b>M</b> map · <b>I</b> island · <b>Enter</b> chat<br><br>
+    Every shop and service lives in the <b>Shops menu (T)</b>. Level up to unlock the deep sea, the abyss, and more. Catch all 1000.` }));
 
   if (ctx.net?.roomCode) {
     bodyEl.append(el('div', { class: 'win-section-title' }, 'Multiplayer'));

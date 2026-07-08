@@ -9,7 +9,8 @@ import { Fishing } from './fishing/fishing.js';
 import { NPCManager, npcOptions } from './npc/npc.js';
 import { HUD } from './ui/hud.js';
 import { openWindow, closeWindow, currentWindow, openCustom } from './ui/windows.js';
-import { openShop, openBroker, openFerry, openBuilding, openIslandWindow, openLobbyWindow } from './ui/shops.js';
+import { openShop, openBroker, openFerry, openBuilding, openIslandWindow, openLobbyWindow, openTownMenu } from './ui/shops.js';
+import { SPOTS_BY_ID, spotLockReason } from './data/spots.js';
 import { Minimap } from './ui/minimap.js';
 import { showContextMenu } from './ui/context.js';
 import { maybeDismissCatchCard } from './ui/catchcard.js';
@@ -86,7 +87,7 @@ function startGame() {
     if (code === 'Space') e.preventDefault();
     const windowKeys = {
       KeyB: 'backpack', KeyF: 'dex', KeyK: 'skills', KeyJ: 'achievements',
-      KeyR: 'rod', KeyP: 'potions', KeyM: 'map', KeyI: 'island',
+      KeyR: 'rod', KeyP: 'potions', KeyM: 'map', KeyI: 'island', KeyT: 'shops',
     };
     if (code === 'Escape') {
       if (currentWindow()) return closeWindow();
@@ -102,7 +103,8 @@ function startGame() {
     if (windowKeys[code]) {
       closeDialogue();
       if (code === 'KeyI') return openIslandWindow();
-      if (code === 'KeyM') return openWindow('map', { playerPos: { x: player.x, z: player.z }, mapId: world.mapId });
+      if (code === 'KeyT') return openTownMenu();
+      if (code === 'KeyM') return openWindow('map', { currentSpotId: currentSpotId() });
       return openWindow(windowKeys[code], { net });
     }
     if (code === 'Enter') { hud.focusChat(); e.preventDefault(); return; }
@@ -150,7 +152,8 @@ function startGame() {
       const w = btn.dataset.window;
       closeDialogue();
       if (w === 'island') return openIslandWindow();
-      if (w === 'map') return openWindow('map', { playerPos: { x: player.x, z: player.z }, mapId: world.mapId });
+      if (w === 'shops') return openTownMenu();
+      if (w === 'map') return openWindow('map', { currentSpotId: currentSpotId() });
       if (w === 'settings') return openWindow('settings', { net });
       openWindow(w, { net });
     });
@@ -212,6 +215,60 @@ function switchMap(mapId, spawnHint = null) {
   for (const [, r] of remotes) r.rig.visible = mapForZone(r.zone) === mapId && mapId !== 'island';
   save();
 }
+
+// ---------------- map-based travel ----------------
+// Which fishing spot the angler is currently standing in (for the travel map).
+function currentSpotId() {
+  return world.mapId === 'overworld' ? S.zone : world.mapId;
+}
+// A spot is castable if you can stand there and reach water within a cast.
+function isCastableSpot(x, z) {
+  if (!world.walkableAt(x, z)) return false;
+  for (let d = 3; d <= 11; d += 1.5) {
+    for (let a = 0; a < 8; a++) {
+      const ang = (a / 8) * Math.PI * 2;
+      if (world.isWaterAt(x + Math.cos(ang) * d, z + Math.sin(ang) * d)) return true;
+    }
+  }
+  return false;
+}
+// Search outward from a spot's anchor for a walkable shoreline to drop the angler.
+function findWaterEdge(cx, cz, maxR = 150) {
+  if (isCastableSpot(cx, cz)) return { x: cx, z: cz };
+  for (let r = 4; r <= maxR; r += 4) {
+    for (let a = 0; a < 24; a++) {
+      const ang = (a / 24) * Math.PI * 2;
+      const x = cx + Math.cos(ang) * r, z = cz + Math.sin(ang) * r;
+      if (isCastableSpot(x, z)) return { x, z };
+    }
+  }
+  return null;
+}
+function travelToSpot(spot) {
+  closeWindow();
+  closeDialogue();
+  if (fishing.active) fishing.cancel();
+  player.walkTarget = null;
+  world.loadMap(spot.map);
+  let sp = world.map.spawn;
+  if (spot.map === 'overworld' && spot.anchor) sp = findWaterEdge(spot.anchor.x, spot.anchor.z) || sp;
+  player.place(sp.x, sp.z);
+  npcs.spawnForMap(spot.map);
+  minimap?.rebuild(world);
+  renderer.invalidate();
+  for (const [, r] of remotes) r.rig.visible = mapForZone(r.zone) === world.mapId && world.mapId !== 'island';
+  visitZone(world.zoneAt(sp.x, sp.z));
+  save();
+  const lore = ZONE_LORE[spot.id];
+  emit('toast', { text: `Arrived at ${spot.name}`, sub: lore?.sign || lore?.tagline || '' });
+}
+on('game:travel', ({ id }) => {
+  const spot = SPOTS_BY_ID[id];
+  if (!spot) return;
+  const reason = spotLockReason(spot, getLevel(), !!S.island.spot);
+  if (reason) { emit('toast', { text: `${spot.name} is locked`, sub: reason }); return; }
+  travelToSpot(spot);
+});
 
 // ---------------- right-click Choose Option menu ----------------
 canvas.addEventListener('contextmenu', (e) => {

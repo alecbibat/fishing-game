@@ -6,7 +6,7 @@ import { ATTACHMENTS, BAITS, POTIONS, RODS } from '../data/gen-items.js';
 import { FISH_BY_ID } from '../data/gen-fish.js';
 import { BACKPACK_TIERS, BUILDINGS, PORTAL_SPOTS } from '../data/static.js';
 import { ZONE_LORE } from '../data/gen-zones.js';
-import { openCustom, closeWindow } from './windows.js';
+import { openCustom, closeWindow, openWindow } from './windows.js';
 import { icon } from './icons.js';
 
 const rarPill = (r) => el('span', { class: 'pill', style: `background:${RARITY_COLOR[r]}` }, r);
@@ -195,6 +195,34 @@ export function buildBrewing(bodyEl, doses = 1) {
       }, 'Brew')));
   }
   bodyEl.append(list);
+}
+
+// ---------- Willowbrook shops & services menu ----------
+// With map-based travel you no longer walk to each storefront — this menu
+// gathers every shop and service in town behind one window.
+export function openTownMenu() {
+  openCustom('shops', 'Willowbrook — Shops & Services', (bodyEl) => {
+    coinsHeader(bodyEl);
+    const services = [
+      { icon: 'shop', name: 'General Store', desc: 'Backpack upgrades and everyday tackle.', open: () => openShop('general') },
+      { icon: 'bait', name: 'Bait Shop', desc: 'Worms, lures, and rarer baits.', open: () => openShop('bait') },
+      { icon: 'gadget', name: "Tinkerer's Attachments", desc: 'Bobbers, hooks, reels, and gadgets.', open: () => openShop('attachments') },
+      { icon: 'brewery', name: 'Potion Cauldron', desc: 'Brew potions from the fish you catch.', open: () => openShop('potions') },
+      { icon: 'rod', name: 'Rod Dealer', desc: 'Craft the next tier of fishing rod.', open: () => openShop('rods') },
+      { icon: 'bank', name: 'Bank of Willowbrook', desc: 'Deposit your catch for safekeeping.', open: () => openWindow('bank') },
+      { icon: 'portal', name: 'Island Broker', desc: 'Anchor or relocate your own island.', open: () => openBroker() },
+    ];
+    const list = el('div', { class: 'row-list' });
+    for (const s of services) {
+      list.append(el('div', { class: 'list-row' },
+        el('div', {}, icon(s.icon, 22)),
+        el('div', { class: 'row-main' },
+          el('div', { class: 'row-name' }, s.name),
+          el('div', { class: 'row-desc' }, s.desc)),
+        el('button', { class: 'btn btn-small btn-primary', onclick: s.open }, 'Open')));
+    }
+    bodyEl.append(list);
+  });
 }
 
 // ---------- island broker ----------
